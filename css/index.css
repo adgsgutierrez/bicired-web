@@ -69,6 +69,7 @@ input{
     margin-top: 10px;
     border-radius: 5px;
     border-color: transparent;
+    height: 60px;
 }
 
 .fa-google {
@@ -83,4 +84,13 @@ input{
 .col-centrada{
     float: none;
     margin: 0 auto;
+}
+.ui-dialog-titlebar {
+    background: white;
+    border: white;
+    font-size: 12px;
+}
+.labelseleccion{
+    font-size: 12px;
+    font-weight: bolder;
 }
