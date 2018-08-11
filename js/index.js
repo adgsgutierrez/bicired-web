@@ -12,7 +12,7 @@ $(document).ready(function () {
     $("#Ingresar").on('click', function () {
         console.log("click");
         if ($("#usuario").val() === "" || $("#clave").val() === "") {
-            swal("Mira Bien los Campos", "Alguno de los Campos Esta Vacio o no ha Seleccionado el Genero", "error");
+            swal("Mira Bien los Campos", "Alguno de los Campos Esta Vacio", "error");
         } else {
             swal({
                 title: "Confirmado",
