@@ -18,30 +18,47 @@ $(document).ready(function () {
             swal("Algo Esta Mal", "La direccion e-mail parece incorrecta", "error");
         } else {
 
-            swal({
-                title: "Confirmado",
-                text: "Se ha Registrado Correctamente",
-                type: "success",
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Conformado",
-                closeOnConfirm: false
-            }, function () {
-                ajaxregistro($("#nombre").val(), $("#correo").val(), $("#genero option:selected").text(), $("#clave").val(), $("#claveC").val());
-                window.location.href = 'index.html';
-            });
+            // swal({
+            //     title: "Confirmado",
+            //     text: "Se ha Registrado Correctamente",
+            //     type: "success",
+            //     confirmButtonClass: "btn-danger",
+            //     confirmButtonText: "Conformado",
+            //     closeOnConfirm: false
+            // }, function () {
+            //
+            //     window.location.href = 'index.html';
+            // });
+            ajaxregistro($("#nombre").val(), $("#correo").val(), $("#genero option:selected").text(), $("#clave").val(), $("#claveC").val());
         }
     });
 });
 
 function ajaxregistro(nombre, correo, genero, clave, claveConfirmada) {
-    var parametros = {nombre: nombre, correo: correo, genero: genero, clave: clave, claveConfirmada: claveConfirmada};
+    // var parametros = {nombre: nombre, correo: correo, genero: genero, clave: clave, claveConfirmada: claveConfirmada};
+    var parametros = {
+        "correo":correo,
+        "nombre": nombre ,
+        "genero":genero ,
+        "clave": claveConfirmada
+      };
     $.ajax({
         data: parametros,
-        type: 'POST',
-        url: 'bicired_backend/usuario/'
-//        success: function (data) {
-//            swal(data);
-//        }
+        type: 'PUT',
+        url: 'http://localhost/bicired_backend/usuario/',
+        success: function (data) {
+            data = JSON.parse(data);
+            console.log(data);
+            if(data.codigo != 200){
+                swal("Tenemos inconvenientes", data.mensaje, "error");
+            }else{
+              window.location.href = 'paginaPrincipal.html';
+            }
+        },error :function(err){
+           /** MOSTRAR ALERTA DE ERROR**/
+           console.log(err);
+           swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
+        }
     });
 }
 ;
