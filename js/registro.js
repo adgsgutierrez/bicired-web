@@ -17,19 +17,7 @@ $(document).ready(function () {
         } else if (!regex.test($('#correo').val().trim())) {
             swal("Algo Esta Mal", "La direccion e-mail parece incorrecta", "error");
         } else {
-
-            // swal({
-            //     title: "Confirmado",
-            //     text: "Se ha Registrado Correctamente",
-            //     type: "success",
-            //     confirmButtonClass: "btn-danger",
-            //     confirmButtonText: "Conformado",
-            //     closeOnConfirm: false
-            // }, function () {
-            //
-            //     window.location.href = 'index.html';
-            // });
-            ajaxregistro($("#nombre").val(), $("#correo").val(), $("#genero option:selected").text(), $("#clave").val(), $("#claveC").val());
+            ajaxregistro($("#nombre").val(), $("#correo").val(), $("#genero option:selected").val(), $("#clave").val(), $("#claveC").val());
         }
     });
 });
@@ -45,7 +33,7 @@ function ajaxregistro(nombre, correo, genero, clave, claveConfirmada) {
     $.ajax({
         data: parametros,
         type: 'PUT',
-        url: 'http://localhost/bicired_backend/usuario/',
+        url: URL_USUARIO,
         success: function (data) {
             data = JSON.parse(data);
             console.log(data);

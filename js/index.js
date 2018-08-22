@@ -1,11 +1,4 @@
-var config = {
-    apiKey: "AIzaSyAkDlGqJE3SPMkrF_ZbbRX4V-e_YoBTmuU",
-    authDomain: "bicired-3ca7d.firebaseapp.com",
-    databaseURL: "https://bicired-3ca7d.firebaseio.com",
-    projectId: "bicired-3ca7d",
-    storageBucket: "bicired-3ca7d.appspot.com",
-    messagingSenderId: "899099425162"
-};
+
 firebase.initializeApp(config);
 
 $(document).ready(function () {
@@ -15,17 +8,6 @@ $(document).ready(function () {
         if ($("#usuario").val() === "" || $("#clave").val() === "") {
             swal("Mira Bien los Campos", "Alguno de los Campos Esta Vacio", "error");
         } else {
-            // swal({
-            //     title: "Confirmado",
-            //     text: "Se ha Registrado Correctamente",
-            //     type: "success",
-            //     confirmButtonClass: "btn-danger",
-            //     confirmButtonText: "Conformado",
-            //     closeOnConfirm: false
-            // }, function () {
-            //
-            // });
-
             consultar_login($("#usuario").val() , $("#clave").val() , 'B');
         }
     });
@@ -52,7 +34,6 @@ var google = function () {
         var token = result.credential.accessToken;
         // The signed-in user info.
         var user = result.user;
-
         consultar_login(emailgoogle , '' , 'G');
     }).catch(function (error) {
       /**Mostrar mensaje de error*/
@@ -82,13 +63,11 @@ function consultar_login(email , clave , origen){
           "origen":origen,
           "clave": clave
         };
-
     console.log(parametros);
-
     $.ajax({
        data: parametros,
        type: 'POST',
-       url:'http://localhost/bicired_backend/usuario/',
+       url:URL_USUARIO,
        success: function (data) {
            console.log(data);
            data = JSON.parse(data);

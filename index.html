@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="img/icon.png" />
-        <link href="https://fonts.googleapis.com/css?family=Concert+One|Noticia+Text" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Concert+One|Noticia+Text">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
@@ -13,10 +13,11 @@
         <link rel="stylesheet" href="css/index.css">
         <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
         <script src="https://www.gstatic.com/firebasejs/5.3.1/firebase.js"></script>
-        <script type="text/javascript" src="js/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
         <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/lib/sweetalert.min.js"></script>
+        <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
@@ -100,7 +101,7 @@
                             </form>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button id="botonRedes"  class="btn btn-outline-light text-dark form-control">Con Redes</button> 
+                                    <button id="botonRedes"  class="btn btn-outline-light text-dark form-control">Con Redes</button>
                                 </div>
 
                             </div>
@@ -113,12 +114,12 @@
         <div id="dialog">
             <div class="row">
                 <div class="col-sm-12">
-                    <label class="labelseleccion">Seleccione Una</label> 
+                    <label class="labelseleccion">Seleccione Una</label>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <button id="btnfacebook" onclick="facebook()" class="btn-facebook" style="height: 60px;"><span class="fa fa-facebook"></span></button> 
+                    <button id="btnfacebook" onclick="facebook()" class="btn-facebook" style="height: 60px;"><span class="fa fa-facebook"></span></button>
                 </div>
                 <div class="col-sm-6">
                     <button id="btngoogle" class="btn-google"><span class="fa fa-google"></span></button>
