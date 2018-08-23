@@ -1,4 +1,3 @@
-
 var map;
 var contador = 0;
 var marker;
@@ -49,6 +48,9 @@ function initMap() {
 $( document ).ready(function() {
   /** Validacion de sesion **/
   isSession();
+//  
+  var email = sessionStorage.getItem(USUARIO_SESSION);
+  console.log(email);
   /** **/
   mapas.push({id:1,lng_o:'4.182892873752382' , ltd_o : '-74.26601401562499' , lng_d:'4.182892873752382' , ltd_d : '-74.26601401562499' , fecha : '14 Jun 2018' , descripcion : 'Esta es la ruta 1' , usuario : 'Camilo'});
   mapas.push({id:2,lng_o:'4.182892873752382' , ltd_o : '-74.26601401562499' , lng_d:'4.182892873752382' , ltd_d : '-74.26601401562499' , fecha : '14 Jun 2018' , descripcion : 'Esta es la ruta 2' , usuario : 'Camilo'});
@@ -62,18 +64,11 @@ $( document ).ready(function() {
     container = container + '<button style="float: right;" class="btn btn-primary" onclick="irEvento('+mapa.id+')">Quiero ir</button></div></div>';
   });
   $("#container").append(container);
-/*
 
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 4,
-    center: {lat: -33, lng: 151},
-    disableDefaultUI: true
-  });
-  */
 });
-var irEvento = function(id){
-  console.log("Asistir a "+id);
-}
+var CrearEvento = function(){
+  location.href = "crearEvento.html";
+};
 
 mapInit = function(){
 
@@ -90,7 +85,6 @@ mapInit = function(){
       lat: waypts[0].location.lat,
       lng:waypts[0].location.lng
     };
-    console.log("coordenada" , coordenada);
     map = new google.maps.Map(document.getElementById('map_'+mapa.id), {
         center: coordenada,
         zoom: 14,

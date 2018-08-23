@@ -1,0 +1,12 @@
+.floatButton{
+          position: fixed;
+          bottom: 25px;
+          right: 25px;
+          border-radius: 50px;
+          height: 60px;
+          width: 60px;
+          -webkit-box-shadow: 0px 0px 79px -18px rgba(0,0,0,0.75);
+          -moz-box-shadow: 0px 0px 79px -18px rgba(0,0,0,0.75);
+          box-shadow: 0px 0px 79px -18px rgba(0,0,0,0.75);
+        }
+
