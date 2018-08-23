@@ -74,6 +74,7 @@ function consultar_login(email , clave , origen){
            if(data.codigo != 200){
                swal("Tenemos inconvenientes", data.mensaje, "error");
            }else{
+             sessionStorage.setItem(USUARIO_SESSION, email);
              window.location.href = 'paginaPrincipal.html';
            }
        },error :function(err){

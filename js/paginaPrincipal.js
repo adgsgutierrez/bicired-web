@@ -7,7 +7,7 @@ var lat1;
 var lat2;
 var lng1;
 var lng2;
-  var mapas = [];
+var mapas = [];
 function initMap() {
 
     google.maps.event.addListener(map, 'click', function (event) {
@@ -47,6 +47,9 @@ function initMap() {
 }
 
 $( document ).ready(function() {
+  /** Validacion de sesion **/
+  isSession();
+  /** **/
   mapas.push({id:1,lng_o:'4.182892873752382' , ltd_o : '-74.26601401562499' , lng_d:'4.182892873752382' , ltd_d : '-74.26601401562499' , fecha : '14 Jun 2018' , descripcion : 'Esta es la ruta 1' , usuario : 'Camilo'});
   mapas.push({id:2,lng_o:'4.182892873752382' , ltd_o : '-74.26601401562499' , lng_d:'4.182892873752382' , ltd_d : '-74.26601401562499' , fecha : '14 Jun 2018' , descripcion : 'Esta es la ruta 2' , usuario : 'Camilo'});
   mapas.push({id:3,lng_o:'4.182892873752382' , ltd_o : '-74.26601401562499', lng_d:'4.182892873752382' , ltd_d : '-74.26601401562499' , fecha : '14 Jun 2018' , descripcion : 'Esta es la ruta 3' , usuario : 'Camilo'});

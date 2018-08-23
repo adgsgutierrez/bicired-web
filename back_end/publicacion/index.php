@@ -55,12 +55,24 @@ class PublicacionLogic {
 
 	private function listar($correo){
 		$response = new RespuestaDTO();
-		$sql = "SELECT * FROM TBL_PUBLICACION tp WHERE tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '".$correo."') OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '".$correo."')";
+		//$sql = "SELECT * FROM TBL_PUBLICACION tp WHERE tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '".$correo."') OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '".$correo."')  OR tp.fk_pbl_usr_correo = '".$correo."'";
+		$sql = "SELECT * FROM TBL_PUBLICACION tp WHERE
+							(tp.fk_pbl_usr_correo IN (
+									SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '$correo')
+									OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '$correo')
+									OR tp.fk_pbl_usr_correo = '$correo' ) AND pbl_estado = 'A'";
 		$result = ConexionDB::consultar($sql);
 		$publicaciones = array();
 		while ($dataResult = $result->fetch_object()){
 			$publicacion = new PublicacionDTO();
-
+			$publicacion->pk_pbl_id = $dataResult->pk_pbl_id;
+			$publicacion->pbl_fecha = $dataResult->pbl_fecha;
+			$publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
+			$publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
+			$publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
+			$publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
+			$publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
+			$publicacion->fk_pbl_usr_correo = $dataResult->fk_pbl_usr_correo;
 			array_push($publicaciones , $publicacion);
 		}
 		$response->setCodigo(Constante::EXITOSO_CODE);
