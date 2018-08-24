@@ -7,12 +7,13 @@ var lng1;
 var lng2;
 var mapas = [];
 var email;
+var marker1;
+var marker2;
+var bool = false;
 $(document).ready(function () {
     isSession();
 //  
     email = sessionStorage.getItem(USUARIO_SESSION);
-    console.log(email);
-
 
 });
 
@@ -21,27 +22,26 @@ mapInit = function () {
 
     var myLatlng = new google.maps.LatLng(4.18, -74.26);
 
+
     var container = '';
     mapas.push({id: 1, lng_o: parseFloat(myLatlng.lng().toString()), ltd_o: parseFloat(myLatlng.lat().toString()), lng_d: parseFloat('4.182892873752382'), ltd_d: parseFloat('-74.26601401562499'), descripcion: 'Esta es la ruta 1', usuario: email});
 //    
     mapas.map((mapa) => {
-        console.log(mapa);
+
         container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
-        container = container + '<p class="card-text">' + mapa.usuario + ' desea crear un evento<br>' + mapa.descripcion + '</p>';
-        container = container + '<div class="row"><div class="col-sm-5"><input class="form-control" id="fecha_evento"/></div></div>';
-        container = container + '<button style="float: right;" class="btn btn-primary" onclick="irEvento(' + mapa.id + ')">Quiero ir</button></div></div>';
+        container = container + '<p class="card-text">' + mapa.usuario + '</p><p class="card-text" id="parrafo"></p>';
+        container = container + '<div class="col-sm-5"><input class="form-control" id="datetimepicker10" /></div>';
+        container = container + '<br><button style="float: right;" class="btn btn-primary" onclick="guardar()">Guardar Evento</button><button style="float: left;" class="btn btn-primary" onclick="cancelar()">Cancelar</button></div></div>';
         $("#container").append(container);
-        console.log(mapa.ltd_o);
-        console.log(mapa.lng_o);
         var coordenada = {
             lat: mapa.ltd_o,
             lng: mapa.lng_o
         };
-        console.log(coordenada);
-        $("#fecha_evento").datepicker({
-            minDate: '0d',
-            changeMonth: true,
-            changeYear: true
+        $(function () {
+            $('#datetimepicker10').datetimepicker({
+                startDate: new Date(),
+                format: 'yyyy-mm-dd hh:ii'
+            });
         });
         map = new google.maps.Map(document.getElementById('map'), {
             center: coordenada,
@@ -57,27 +57,36 @@ mapInit = function () {
     });
     google.maps.event.addListener(map, 'click', function (event) {
         contador++;
-        if (contador <= 2) {
-            marker = new google.maps.Marker({
+
+        if (contador === 1) {
+            marker1 = new google.maps.Marker({
                 position: event.latLng,
                 map: map
             });
-            if (contador === 1) {
-                lat1 = marker.getPosition().lat().toString();
-                lng1 = marker.getPosition().lng().toString();
-            } else {
-                lat2 = marker.getPosition().lat().toString();
-                lng2 = marker.getPosition().lng().toString();
-                lineaRuta(lat1, lng1, lat2, lng2);
-
-            }
-            marker.setMap(null);
+            lat1 = marker1.getPosition().lat().toString();
+            lng1 = marker1.getPosition().lng().toString();
+//               
+        } else if (contador === 2) {
+            marker2 = new google.maps.Marker({
+                position: event.latLng,
+                map: map
+            });
+            lat2 = marker2.getPosition().lat().toString();
+            lng2 = marker2.getPosition().lng().toString();
+            $("#lt1").val(lat1);
+            $("#ln1").val(lng1);
+            $("#lt2").val(lat2);
+            $("#ln2").val(lng2);
+            lineaRuta(lat1, lng1, lat2, lng2);
+            bool = true;
+            console.log(bool);
         }
-
-
+        if (bool === true) {
+            marker1.setMap(null);
+            marker2.setMap(null);
+        }
+//        
     });
-
-
 };
 
 function lineaRuta(lat1, lng1, lat2, lng2) {
@@ -97,10 +106,59 @@ function lineaRuta(lat1, lng1, lat2, lng2) {
     }, function (response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
-
         } else {
             window.alert('Ha fallat la comunicació amb el mapa a causa de: ' + status);
         }
     });
+    var pos_1 = new google.maps.LatLng(lat1, lng1);
+    var pos_2 = new google.maps.LatLng(lat2, lng2);
+
+    console.log(Math.round(getDistance(pos_1, pos_2)));
+    console.log(getDistance(pos_1, pos_2));
+    $("#parrafo").text("hara un recorrido de " + Math.round(getDistance(pos_1, pos_2)) + " mts");
+
+}
+function rad(x) {
+    return x * Math.PI / 180;
+}
+;
+
+function getDistance(p1, p2) {
+    //	http://es.wikipedia.org/wiki/F{1f0778fe2e852b61c79949ce7b4bb677680b76fea251b03768a071033ace27eb}C3{1f0778fe2e852b61c79949ce7b4bb677680b76fea251b03768a071033ace27eb}B3rmula_del_Haversine
+    var R = 6378137; //radio de la tierra en metros
+    var dLat = rad(p2.lat() - p1.lat());
+    var dLong = rad(p2.lng() - p1.lng());
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d;
+}
+;
+
+function guardar() {
+    if ($("#datetimepicker10").val() === "") {
+        swal("No ha Ingresado la Fecha");
+    } else if ($("#lt1").val() === "" || $("#ln1").val() === "" || $("#lt2").val() === "" || $("#ln2").val() === "") {
+        swal("No ha Ingresado Correctamente la Ruta");
+    } else {
+        var parametros = {
+            fecha: $("#datetimepicker10").val(),
+            lt1: $("#lt1").val(),
+            ln1: $("#ln1").val(),
+            lt2: $("#lt2").val(),
+            ln2: $("#ln2").val(),
+            descripcion: $("#parrafo").text(),
+            usuario: email
+        };
+        $.ajax({
+            data: parametros,
+            url: 'back_end/publicacion/index.php',
+            type: 'POST',
+            success: function (data) {
+                swal(data);
+            }
+        });
+        console.log(parametros);
+    }
 }
 
