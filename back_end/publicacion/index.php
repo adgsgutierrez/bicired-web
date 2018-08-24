@@ -56,7 +56,9 @@ class PublicacionLogic {
 	private function listar($correo){
 		$response = new RespuestaDTO();
 		//$sql = "SELECT * FROM TBL_PUBLICACION tp WHERE tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '".$correo."') OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '".$correo."')  OR tp.fk_pbl_usr_correo = '".$correo."'";
-		$sql = "SELECT * FROM TBL_PUBLICACION tp WHERE
+		$sql = "SELECT * FROM TBL_PUBLICACION tp
+							INNER JOIN TBL_USUARIO tu on tp.fk_pbl_usr_correo = tu.pk_usr_correo
+							WHERE
 							(tp.fk_pbl_usr_correo IN (
 									SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '$correo')
 									OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '$correo')
@@ -66,13 +68,13 @@ class PublicacionLogic {
 		while ($dataResult = $result->fetch_object()){
 			$publicacion = new PublicacionDTO();
 			$publicacion->pk_pbl_id = $dataResult->pk_pbl_id;
-			$publicacion->pbl_fecha = $dataResult->pbl_fecha;
+			$publicacion->pbl_fecha = $this->conventirFecha($dataResult->pbl_fecha);
 			$publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
 			$publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
 			$publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
 			$publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
 			$publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
-			$publicacion->fk_pbl_usr_correo = $dataResult->fk_pbl_usr_correo;
+			$publicacion->fk_pbl_usr_correo = $dataResult->usr_nombre;
 			array_push($publicaciones , $publicacion);
 		}
 		$response->setCodigo(Constante::EXITOSO_CODE);
@@ -86,7 +88,51 @@ class PublicacionLogic {
 
 	}
 
-
+	function conventirFecha($input){
+		$data = explode(' ', $input);
+		$mesLetra = "";
+		$fecha = explode('-', $data[0]);
+		switch ($fecha[1]) {
+			case '01':
+				$mesLetra = "Enero";
+			break;
+			case '02':
+				$mesLetra = "Febrero";
+			break;
+			case '03':
+				$mesLetra = "Marzo";
+			break;
+			case '04':
+				$mesLetra = "Abril";
+			break;
+			case '05':
+				$mesLetra = "Mayo";
+			break;
+			case '06':
+				$mesLetra = "Junio";
+			break;
+			case '07':
+				$mesLetra = "Julio";
+			break;
+			case '08':
+				$mesLetra = "Agosto";
+			break;
+			case '09':
+				$mesLetra = "Septiembre";
+			break;
+			case '10':
+				$mesLetra = "Octubre";
+			break;
+			case '11':
+				$mesLetra = "Noviembre";
+			break;
+			case '12':
+				$mesLetra = "Diciembre";
+			break;
+		}
+		list($horaM , $minuto, $segundo) = explode(':', $data[1]);
+		return $fecha[2] . " de ".$mesLetra. " del ".$fecha[0]. " a las ".$horaM.":".$minuto;
+	}
 }
 
 $usuario = new PublicacionLogic($metodo , $data);
