@@ -54,8 +54,8 @@ $( document ).ready(function() {
      }
   });
 });
-var irEvento = function(id){
-  console.log("Asistir a "+id);
+var CrearEvento = function(){
+  location.href ="CrearEvento.html";
 }
 
 mapInit = function(){

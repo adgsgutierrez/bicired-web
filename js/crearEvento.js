@@ -14,6 +14,9 @@ $(document).ready(function () {
     isSession();
 //  
     email = sessionStorage.getItem(USUARIO_SESSION);
+    $("#volver").on('click', function () {
+        location.href = "paginaPrincipal.html";
+    });
 
 });
 
@@ -30,7 +33,7 @@ mapInit = function () {
 
         container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
         container = container + '<p class="card-text">' + mapa.usuario + '</p><p class="card-text" id="parrafo"></p>';
-        container = container + '<div class="col-sm-5"><input class="form-control" id="datetimepicker10" /></div>';
+        container = container + '<div class="col-sm-5"><input class="form-control" id="datetimepicker10" readonly/></div>';
         container = container + '<br><button style="float: right;" class="btn btn-primary" onclick="guardar()">Guardar Evento</button><button style="float: left;" class="btn btn-primary" onclick="cancelar()">Cancelar</button></div></div>';
         $("#container").append(container);
         var coordenada = {
