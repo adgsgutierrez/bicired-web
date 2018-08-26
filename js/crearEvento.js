@@ -14,9 +14,6 @@ $(document).ready(function () {
     isSession();
 //  
     email = sessionStorage.getItem(USUARIO_SESSION);
-    $("#volver").on('click', function () {
-        location.href = "paginaPrincipal.html";
-    });
 
 });
 
@@ -43,7 +40,8 @@ mapInit = function () {
         $(function () {
             $('#datetimepicker10').datetimepicker({
                 startDate: new Date(),
-                format: 'yyyy-mm-dd hh:ii'
+                format: 'yyyy-mm-dd hh:ii',
+                autoclose: true
             });
         });
         map = new google.maps.Map(document.getElementById('map'), {
@@ -140,9 +138,9 @@ function getDistance(p1, p2) {
 
 function guardar() {
     if ($("#datetimepicker10").val() === "") {
-        swal("No ha Ingresado la Fecha");
+        swal("Se Detecto un Problema","No ha Ingresado la Fecha","error");
     } else if ($("#lt1").val() === "" || $("#ln1").val() === "" || $("#lt2").val() === "" || $("#ln2").val() === "") {
-        swal("No ha Ingresado Correctamente la Ruta");
+        swal("Se Detecto un Problema","No ha Ingresado Correctamente la Ruta","error");
     } else {
         var parametros = {
             fecha: $("#datetimepicker10").val(),
@@ -158,10 +156,20 @@ function guardar() {
             url: 'back_end/publicacion/index.php',
             type: 'POST',
             success: function (data) {
-                swal(data);
+                swal({
+                    title:"Todo Correcto",
+                    text:data,
+                    type:"success"
+                },
+                function(){
+                     window.location.href = 'paginaPrincipal.html';
+                });
             }
         });
         console.log(parametros);
     }
+}
+function cancelar(){
+   location.href = "crearEvento.html"; 
 }
 

@@ -1,14 +1,16 @@
 var mapas = [];
+var correo;
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
 
 $( document ).ready(function() {
   /** Validacion de sesion **/
   isSession();
   $("#loaded").show();
   $("#unloaded").hide();
-  var correo = sessionStorage.getItem(USUARIO_SESSION);
+  correo = sessionStorage.getItem(USUARIO_SESSION);
   /** Validacion de session **/
   var parametros ={
       "listar":"all",

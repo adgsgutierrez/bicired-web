@@ -32,7 +32,7 @@ class UsuarioLogic {
 			break;
 			case 'POST':
 					if($data){
-							$response = $this->consultar_sesion($data->correo , $data->clave , $data->origen);
+							$response = $this->consultar_sesion($data->correo , $data->clave , $data->origen,$data->usuario,$data->foto);
 					}else{
 						$response = new RespuestaDTO();
 						$response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -71,7 +71,7 @@ class UsuarioLogic {
 		return $response ;
 	}
 
-	private function consultar_sesion($correo, $clave , $plataforma){
+	private function consultar_sesion($correo, $clave , $plataforma,$nombre_usuario,$foto){
 		$response = new RespuestaDTO();
     $response->setCodigo(Constante::EXITOSO_CODE);
 		$response->setMensaje(Constante::EXITOSO_MS);
@@ -93,11 +93,11 @@ class UsuarioLogic {
 
 		if(!$exist && $plataforma != 'B'){
 			/** CREANDO EL USUARIO DESDE REDES SOCIALES **/
-			$sql = "INSERT INTO TBL_USUARIO (pk_usr_correo,  usr_login) VALUES ('".$correo."', '".$plataforma."');";
+			$sql = "INSERT INTO TBL_USUARIO (pk_usr_correo,usr_nombre,usr_login,usr_foto) VALUES ('".$correo."','".$nombre_usuario."','".$plataforma."','".$foto."');";
 			$usuario->correo = $correo;
-			$usuario->foto = '';
+			$usuario->foto = $foto;
 			$usuario->genero = '';
-			$usuario->nombre = '';
+			$usuario->nombre = $nombre_usuario;
 			$result = ConexionDB::consultar($sql);
 			if(!$result){
 				$response->setCodigo(Constante::ERROR_REGISTRO_CD);

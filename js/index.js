@@ -4,11 +4,10 @@ firebase.initializeApp(config);
 $(document).ready(function () {
     $("#dialog").dialog({autoOpen: false, title: "Puedes iniciar con tus redes sociales", width: 350, resizable: false});
     $("#Ingresar").on('click', function () {
-        console.log("click");
         if ($("#usuario").val() === "" || $("#clave").val() === "") {
             swal("Mira Bien los Campos", "Alguno de los Campos Esta Vacio", "error");
         } else {
-            consultar_login($("#usuario").val() , $("#clave").val() , 'B');
+            consultar_login($("#usuario").val() , $("#clave").val() , 'B',"","");
         }
     });
     $("#botonRedes").on('click', function () {
@@ -24,7 +23,6 @@ $(document).ready(function () {
 });
 
 var google = function () {
-    console.log("Entroooo");
     var provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('https://www.googleapis.com/auth/userinfo.email');
     firebase.auth().signInWithPopup(provider).then(function (result) {
@@ -33,8 +31,9 @@ var google = function () {
         // This gives you a Google Access Token. You can use it to access the Google API.
         var token = result.credential.accessToken;
         // The signed-in user info.
-        var user = result.user;
-        consultar_login(emailgoogle , '' , 'G');
+        var user = result["user"]["displayName"];
+        var photo = result["user"]["photoURL"];
+        consultar_login(emailgoogle , '' , 'G',user,photo);
     }).catch(function (error) {
       /**Mostrar mensaje de error*/
         swal("Tenemos inconvenientes", "Google nos envio un mensaje de error. Por favor reintenta", "error");
@@ -57,13 +56,15 @@ var facebook = function () {
     });
 };
 
-function consultar_login(email , clave , origen){
-    var parametros ={
+function consultar_login(email , clave , origen,usuario,foto){
+     var  parametros ={
           "correo":email,
           "origen":origen,
-          "clave": clave
-        };
-    console.log(parametros);
+          "clave": clave,
+          "usuario":usuario,
+          "foto":foto
+        }; 
+    
     $.ajax({
        data: parametros,
        type: 'POST',
