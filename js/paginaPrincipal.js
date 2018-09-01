@@ -1,5 +1,6 @@
 var mapas = [];
 var correo;
+var buscador ;
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -12,6 +13,28 @@ $(document).ready(function () {
     $("#unloaded").hide();
     correo = sessionStorage.getItem(USUARIO_SESSION);
     /** Validacion de session **/
+    $("#buscar_perfil").on('click',function(){
+        if(buscador !== undefined){
+           sessionStorage.setItem(USUARIO_BUSQUEDA , buscador);        
+        location.href = "perfil.html"; 
+        }else if(buscador === undefined && $("#buscar_persona").val() !== ""){
+            swal({
+                title:"Esta persona no existe ",
+                type:"error"
+            });
+        }else{
+            swal({
+                title:"El campo esta vacio ",
+                type:"error"
+            });
+        }
+        
+    });
+    
+    $("#cerrarpaginaprincipal").on("click",function(){
+        sessionStorage.clear();
+        location.href = "index.html";
+    });
     var parametros = {
         "listar": "all",
         "correo": correo
@@ -48,11 +71,13 @@ $(document).ready(function () {
                     type: 'GET',
                     success: function (data) {
                         data = JSON.parse(data);
-
                         var lista = data.datos;
 
                         $("#buscar_persona").autocomplete({
-                            source: lista
+                            source: lista,
+                            select : function(event , ui){
+                                buscador = ui.item.id;
+                            }
                         });
                     }
                 });

@@ -14,7 +14,10 @@ $(document).ready(function () {
     isSession();
 //  
     email = sessionStorage.getItem(USUARIO_SESSION);
-
+    $("#cerrarcrearevento").on("click", function () {
+        sessionStorage.clear();
+        location.href = "index.html";
+    });
 });
 
 
@@ -138,9 +141,9 @@ function getDistance(p1, p2) {
 
 function guardar() {
     if ($("#datetimepicker10").val() === "") {
-        swal("Se Detecto un Problema","No ha Ingresado la Fecha","error");
+        swal("Se Detecto un Problema", "No ha Ingresado la Fecha", "error");
     } else if ($("#lt1").val() === "" || $("#ln1").val() === "" || $("#lt2").val() === "" || $("#ln2").val() === "") {
-        swal("Se Detecto un Problema","No ha Ingresado Correctamente la Ruta","error");
+        swal("Se Detecto un Problema", "No ha Ingresado Correctamente la Ruta", "error");
     } else {
         var parametros = {
             fecha: $("#datetimepicker10").val(),
@@ -157,19 +160,19 @@ function guardar() {
             type: 'POST',
             success: function (data) {
                 swal({
-                    title:"Todo Correcto",
-                    text:data,
-                    type:"success"
+                    title: "Todo Correcto",
+                    text: data,
+                    type: "success"
                 },
-                function(){
-                     window.location.href = 'paginaPrincipal.html';
-                });
+                        function () {
+                            window.location.href = 'paginaPrincipal.html';
+                        });
             }
         });
         console.log(parametros);
     }
 }
-function cancelar(){
-   location.href = "crearEvento.html"; 
+function cancelar() {
+    location.href = "crearEvento.html";
 }
 

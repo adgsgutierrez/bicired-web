@@ -12,3 +12,4 @@ var URL_USUARIO = URL_HOST + 'back_end/usuario/';
 var URL_PUBLICACION = URL_HOST + 'back_end/publicacion/';
 
 var USUARIO_SESSION = 'cookie_session';
+var USUARIO_BUSQUEDA = 'cookie_busqueda';

@@ -38,28 +38,29 @@
                 <div class="dropdown" style="right: 100px">
                     <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="paginaPrincipal.html"><i class="fas fa-home"></i> Pagina Principal</a>
-                        <a class="dropdown-item" href="crearEvento.html"><i class="fas fa-edit"></i> Crear Evento</a>
-                        <a class="dropdown-item" href="index.html"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
+                        <a style="cursor:pointer" class="dropdown-item" href="paginaPrincipal.html"><i class="fas fa-home"></i> Pagina Principal</a>
+                        <a style="cursor:pointer" class="dropdown-item" href="crearEvento.html"><i class="fas fa-edit"></i> Crear Evento</a>
+                        <a style="cursor:pointer" class="dropdown-item" id="cerrarperfil"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
                     </div>
                 </div>
             </div>
         </nav>
-        <br>
-        <div class="row">
-            <div class="col-sm-10">
-                <center><h1>Crea tu Evento</h1></center>
+        <br><br><br>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <img id="imagen" style="width:100%" src="" >
+                </div>
+                <div class="col-sm-7" style="top: 150px">
+                    <div class="col-sm-12">
+                        <label style="font-size:32px" id="nombreP">nombre</label>
+                    </div>
+                    <div class="col-sm-12">
+                        <label style="font-size:24px" id="correoP">correo</label>
+                    </div>
+                </div>
             </div>
         </div>
-        <br>
-        <input type="hidden" id="lt1"/>
-        <input type="hidden" id="ln1"/>
-        <input type="hidden" id="lt2"/>
-        <input type="hidden" id="ln2"/>
-
-        <div id = "container" class="col-sm-10 ">
-
-        </div>
-        <br><br><br>
     </body>
 </html>

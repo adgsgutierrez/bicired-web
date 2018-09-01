@@ -20,6 +20,8 @@ class UsuarioLogic {
                 if ($data) {
                     if ($data->funcion == 'lista_usuarios') {
                         $response = $this->lista_usuarios($data->correo);
+                    }else if($data->funcion == 'datos_perfil'){
+                        $response = $this->datos_perfil($data->correo);
                     } else if ($data->listar == 'all') {
                         $response = $this->listar();
                     } else {
@@ -134,13 +136,34 @@ class UsuarioLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select usr_nombre from TBL_USUARIO where pk_usr_correo <> '" . $correo."'";
+        $sql = "select pk_usr_correo , usr_nombre from TBL_USUARIO where pk_usr_correo <> '" . $correo."'";
         $result = ConexionDB::consultar($sql);
+        //retornar el objeto usuario
         $lista_usuario = array();
         while ($dataResult = $result->fetch_object()) {
-            $lista_usuario[] = $dataResult->usr_nombre;
+            $user = new stdClass();
+            $user->label = $dataResult->usr_nombre;
+            $user->id = $dataResult->pk_usr_correo;
+            array_push($lista_usuario, $user);
         }
         $response->setDatos($lista_usuario);
+        return $response;
+    }
+    
+    private function datos_perfil($correo){
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql="select * from TBL_USUARIO where pk_usr_correo='".$correo."'";
+        $usuario = new UsuarioDTO();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $usuario->foto = $dataResult->usr_foto;
+            $usuario->genero = $dataResult->usr_genero;
+            $usuario->correo = $dataResult->pk_usr_correo;
+            $usuario->nombre = $dataResult->usr_nombre;
+        }
+        $response->setDatos($usuario);
         return $response;
     }
 
