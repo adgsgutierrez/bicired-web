@@ -10,32 +10,25 @@ var email;
 var marker1;
 var marker2;
 var bool = false;
-var location;
-
 $(document).ready(function () {
     isSession();
-//
+//  
     email = sessionStorage.getItem(USUARIO_SESSION);
-    if ("geolocation" in navigator){ //check geolocation available
-        navigator.geolocation.watchPosition(function(position){
-            location.ltd = position.coords.latitude;
-            location.lgt = position.coords.longitude;
-        });
-    }else{
-        console.log("Browser doesn't support geolocation!");
-    }
-
+    $("#cerrarcrearevento").on("click", function () {
+        sessionStorage.clear();
+        location.href = "index.html";
+    });
 });
 
 
 mapInit = function () {
 
-    var myLatlng = new google.maps.LatLng(location.ltd, location.lgt);
-var myLatlng = new google.maps.LatLng(4.6097102, -74.081749);
+    var myLatlng = new google.maps.LatLng(4.18, -74.26);
+
 
     var container = '';
     mapas.push({id: 1, lng_o: parseFloat(myLatlng.lng().toString()), ltd_o: parseFloat(myLatlng.lat().toString()), lng_d: parseFloat('4.182892873752382'), ltd_d: parseFloat('-74.26601401562499'), descripcion: 'Esta es la ruta 1', usuario: email});
-//
+//    
     mapas.map((mapa) => {
 
         container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
@@ -50,7 +43,8 @@ var myLatlng = new google.maps.LatLng(4.6097102, -74.081749);
         $(function () {
             $('#datetimepicker10').datetimepicker({
                 startDate: new Date(),
-                format: 'yyyy-mm-dd hh:ii'
+                format: 'yyyy-mm-dd hh:ii',
+                autoclose: true
             });
         });
         map = new google.maps.Map(document.getElementById('map'), {
@@ -75,7 +69,7 @@ var myLatlng = new google.maps.LatLng(4.6097102, -74.081749);
             });
             lat1 = marker1.getPosition().lat().toString();
             lng1 = marker1.getPosition().lng().toString();
-//
+//               
         } else if (contador === 2) {
             marker2 = new google.maps.Marker({
                 position: event.latLng,
@@ -95,7 +89,7 @@ var myLatlng = new google.maps.LatLng(4.6097102, -74.081749);
             marker1.setMap(null);
             marker2.setMap(null);
         }
-//
+//        
     });
 };
 
@@ -147,9 +141,9 @@ function getDistance(p1, p2) {
 
 function guardar() {
     if ($("#datetimepicker10").val() === "") {
-        swal("No ha Ingresado la Fecha");
+        swal("Se Detecto un Problema", "No ha Ingresado la Fecha", "error");
     } else if ($("#lt1").val() === "" || $("#ln1").val() === "" || $("#lt2").val() === "" || $("#ln2").val() === "") {
-        swal("No ha Ingresado Correctamente la Ruta");
+        swal("Se Detecto un Problema", "No ha Ingresado Correctamente la Ruta", "error");
     } else {
         var parametros = {
             fecha: $("#datetimepicker10").val(),
@@ -165,14 +159,20 @@ function guardar() {
             url: 'back_end/publicacion/index.php',
             type: 'POST',
             success: function (data) {
-                swal({ title: "Genial",
-                        text: data,
-                        type: "success"} ,
-                        function(){
-                     window.location.href = 'paginaPrincipal.html';
-                });
+                swal({
+                    title: "Todo Correcto",
+                    text: data,
+                    type: "success"
+                },
+                        function () {
+                            window.location.href = 'paginaPrincipal.html';
+                        });
             }
         });
         console.log(parametros);
     }
 }
+function cancelar() {
+    location.href = "crearEvento.html";
+}
+

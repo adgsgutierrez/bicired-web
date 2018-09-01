@@ -9,8 +9,7 @@
 class Constante{
 
   /** Constantes del sistema**/
-    //const SERVIDOR_DB = 'localhost';
-    const SERVIDOR_DB = '192.168.64.3';
+    const SERVIDOR_DB = 'localhost';
     const PUERTO_DB = '3306' ;
     const BASE_DATOS = 'bicired' ;
     const USUARIO_DB = 'root' ;
