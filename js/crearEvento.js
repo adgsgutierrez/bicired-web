@@ -10,25 +10,32 @@ var email;
 var marker1;
 var marker2;
 var bool = false;
+var location;
+
 $(document).ready(function () {
     isSession();
-//  
+//
     email = sessionStorage.getItem(USUARIO_SESSION);
-    $("#volver").on('click', function () {
-        location.href = "paginaPrincipal.html";
-    });
+    if ("geolocation" in navigator){ //check geolocation available
+        navigator.geolocation.watchPosition(function(position){
+            location.ltd = position.coords.latitude;
+            location.lgt = position.coords.longitude;
+        });
+    }else{
+        console.log("Browser doesn't support geolocation!");
+    }
 
 });
 
 
 mapInit = function () {
 
-    var myLatlng = new google.maps.LatLng(4.18, -74.26);
-
+    var myLatlng = new google.maps.LatLng(location.ltd, location.lgt);
+var myLatlng = new google.maps.LatLng(4.6097102, -74.081749);
 
     var container = '';
     mapas.push({id: 1, lng_o: parseFloat(myLatlng.lng().toString()), ltd_o: parseFloat(myLatlng.lat().toString()), lng_d: parseFloat('4.182892873752382'), ltd_d: parseFloat('-74.26601401562499'), descripcion: 'Esta es la ruta 1', usuario: email});
-//    
+//
     mapas.map((mapa) => {
 
         container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
@@ -68,7 +75,7 @@ mapInit = function () {
             });
             lat1 = marker1.getPosition().lat().toString();
             lng1 = marker1.getPosition().lng().toString();
-//               
+//
         } else if (contador === 2) {
             marker2 = new google.maps.Marker({
                 position: event.latLng,
@@ -88,7 +95,7 @@ mapInit = function () {
             marker1.setMap(null);
             marker2.setMap(null);
         }
-//        
+//
     });
 };
 
@@ -158,10 +165,14 @@ function guardar() {
             url: 'back_end/publicacion/index.php',
             type: 'POST',
             success: function (data) {
-                swal(data);
+                swal({ title: "Genial",
+                        text: data,
+                        type: "success"} ,
+                        function(){
+                     window.location.href = 'paginaPrincipal.html';
+                });
             }
         });
         console.log(parametros);
     }
 }
-

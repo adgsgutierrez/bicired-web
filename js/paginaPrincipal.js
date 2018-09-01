@@ -55,7 +55,7 @@ $( document ).ready(function() {
   });
 });
 var CrearEvento = function(){
-  location.href ="CrearEvento.html";
+  location.href ="crearEvento.html";
 }
 
 mapInit = function(){
