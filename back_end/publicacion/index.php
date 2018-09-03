@@ -61,8 +61,8 @@ class PublicacionLogic {
 							INNER JOIN TBL_USUARIO tu on tp.fk_pbl_usr_correo = tu.pk_usr_correo
 							WHERE
 							(tp.fk_pbl_usr_correo IN (
-									SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '$correo')
-									OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '$correo')
+									SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '$correo' and ta.amg_estado = 'A')
+									OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '$correo' and ta.amg_estado = 'A')
 									OR tp.fk_pbl_usr_correo = '$correo' ) AND pbl_estado = 'A'";
         $result = ConexionDB::consultar($sql);
         $publicaciones = array();

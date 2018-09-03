@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.css">
         <link rel="stylesheet" href="bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="css/sweetalert.css" />
         <link rel="stylesheet" href="css/index.css">
         <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -22,6 +23,8 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
         <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
         <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRScgEFeejI1wkkL3hvQOnloHimm7-5mE&callback=mapInit" async ></script>-->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/lib/session.js"></script>
         <script type="text/javascript" src="js/perfil.js"></script>
@@ -38,6 +41,7 @@
                 <div class="dropdown" style="right: 100px">
                     <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a style="cursor:pointer" id="perfillogea" class="dropdown-item" href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>
                         <a style="cursor:pointer" class="dropdown-item" href="paginaPrincipal.html"><i class="fas fa-home"></i> Pagina Principal</a>
                         <a style="cursor:pointer" class="dropdown-item" href="crearEvento.html"><i class="fas fa-edit"></i> Crear Evento</a>
                         <a style="cursor:pointer" class="dropdown-item" id="cerrarperfil"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
@@ -52,15 +56,106 @@
                 <div class="col-sm-3">
                     <img id="imagen" style="width:100%" src="" >
                 </div>
-                <div class="col-sm-7" style="top: 150px">
+                <div class="col-sm-5" style="top: 100px">
                     <div class="col-sm-12">
-                        <label style="font-size:32px" id="nombreP">nombre</label>
+                        <label style="font-size:32px" id="nombreP"></label>
                     </div>
                     <div class="col-sm-12">
-                        <label style="font-size:24px" id="correoP">correo</label>
+                        <label style="font-size:24px" id="correoP"></label>
+                    </div>
+                    <div class="col-sm-12">
+                        <label style="font-size:24px" id="generoP"></label>
+                    </div>
+                </div>
+                <div class="col-sm-4" style="top: 80px">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <button id="aaaaaa" class="btn btn-primary"><i class="fa fa-plus-square"></i> Añadir Amigo</button>
+                        </div>
+                    </div>
+                    <div class="row" id="amigosop" >
+                        <div class="col-sm-4">
+                            <button id="amigos" style="visibility: hidden" class="btn btn-primary" disabled><i class="fa fa-check" ></i> Amigos</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button id="bloqueado" style="visibility: hidden" class="btn btn-primary" disabled><i class="fa fa-check" ></i> Bloqueado</button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row" id="opcionesamigo" style="visibility: hidden">
+                        <div class="col-sm-6">
+                            <button id="eliminaramigos" class="btn btn-primary"><i class="fa fa-trash"></i> Eliminar Amigo</button>
+                        </div>
+                        <div class="col-sm-6">
+                            <button id="bloquearamigos" class="btn btn-primary"><i class="fa fa-ban"></i> Bloquear Amigo</button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <button  data-toggle="modal" data-target="#editarperfil" id="editar" class="btn btn-primary"><i class="fas fa-edit"></i> Editar Perfil</button>
+                        </div>
+                        <div class="col-sm-6">
+                            <button data-toggle="modal" data-target="#perfilbloqueados" id="amibloqueados" class="btn btn-primary"><i class="fa fa-ban"></i> Amigos Bloqueados</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="editarperfil" tabindex="-1" role="dialog" aria-labelledby="editarperfil" aria-hidden="true" >
+                <div class="modal-dialog modal-lg" style="width: 800px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar Perfil</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label>Correo</label>
+                            <input id="correoac" class="form-control" readonly="readonly"/>
+                            <label>Nombre</label>
+                            <input id="nombreac" class="form-control" type="text"/>
+                            <label>Genero</label>
+                            <select class="form-control" id="generoac">
+                                <option value="">Seleccione</option>
+                                <option value="M">Hombre</option>
+                                <option value="F">Mujer</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="actualizar_perfil" type="button" class="btn btn-primary"><i class="fa fa-save"></i> Actualizar Perfil</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="perfilbloqueados" tabindex="-1" role="dialog" aria-labelledby="perfilbloqueados" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content" style="width: 770px">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Amigos Bloqueados</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="datatableeliminar" class="table table-bordered display nowrap table-responsive" style="width: 100%"></table>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <br><br><br>
+        <div class="container" id="contamigos" style="visibility: hidden">
+            <div class="row col-sm-10">
+                <span style="font-size:36px">Amigos <i class="fa fa-users" style="font-size:36px"></i></span>
+            </div>
+            <br>
+            <div class="row col-sm-10">
+                <table id="datatableamigos" class="table table-bordered" style="width: 100%"></table> 
+            </div>
+        </div>
+        <br><br>
     </body>
 </html>
