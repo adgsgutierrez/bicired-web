@@ -15,8 +15,8 @@ $(document).ready(function () {
     /** Validacion de session **/
     $("#buscar_perfil").on('click',function(){
         if(buscador !== undefined){
-           sessionStorage.setItem(USUARIO_BUSQUEDA , buscador);        
-        location.href = "perfil.html"; 
+           sessionStorage.setItem(USUARIO_BUSQUEDA , buscador);
+        location.href = "perfil.html";
         }else if(buscador === undefined && $("#buscar_persona").val() !== ""){
             swal({
                 title:"Esta persona no existe ",
@@ -28,9 +28,9 @@ $(document).ready(function () {
                 type:"error"
             });
         }
-        
+
     });
-    
+
     $("#cerrarpaginaprincipal").on("click",function(){
         sessionStorage.clear();
         location.href = "index.html";
@@ -57,6 +57,7 @@ $(document).ready(function () {
                                 lng_d: event.pbl_ltg_destino,
                                 ltd_d: event.pbl_ltd_destino,
                                 fecha: event.pbl_fecha,
+                                number_fecha: event.number_fecha,
                                 descripcion: event.pbl_descripcion,
                                 usuario: capitalizeFirstLetter(event.fk_pbl_usr_correo)
                             });
@@ -72,7 +73,7 @@ $(document).ready(function () {
                     success: function (data) {
                         data = JSON.parse(data);
                         var lista = data.datos;
-
+                        console.log();
                         $("#buscar_persona").autocomplete({
                             source: lista,
                             select : function(event , ui){
@@ -85,7 +86,22 @@ $(document).ready(function () {
                 mapas.map((mapa) => {
                     container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map_' + mapa.id + '" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
                     container = container + '<p class="card-text">' + mapa.usuario + ' invitó a un evento el día ' + mapa.fecha + '<br>' + mapa.descripcion + '</p>';
-                    container = container + '<button style="float: right;" class="btn btn-primary" onclick="irEvento(' + mapa.id + ')">Quiero ir</button></div></div>';
+console.log("Mapa ", mapa);
+                    var TMPDate = (mapa.number_fecha.split(" ")[0]).split("-");
+                    var TMPHour = (mapa.number_fecha.split(" ")[1]).split(":");
+                    var fecha = new Date();
+                    fecha.setDate(TMPDate[2]);
+                    fecha.setMonth((parseInt(TMPDate[1]) - 1 ));
+                    fecha.setFullYear(TMPDate[0]);
+                    fecha.setHours(TMPHour[0]);
+                    fecha.setMinutes(TMPHour[1]);
+                    console.log("fecha.getTime() > Date.now()" , fecha , new Date);
+                    if(fecha.getTime() > Date.now()){
+                        container = container + '<button style="float: right;" class="btn btn-primary" onclick="irEvento(' + mapa.id + ')">Quiero ir</button></div></div>';
+                    }else{
+                        container = container + '<button style="float: right;" class="btn btn-primary" onclick="subirFotos(' + mapa.id + ')">Momentos</button></div></div>';
+                    }
+
                 });
                 $("#container").append(container);
                 mapInit();
@@ -100,7 +116,7 @@ $(document).ready(function () {
     });
 });
 var CrearEvento = function () {
-    location.href = "CrearEvento.html";
+    location.href = "crearEvento.html";
 }
 
 mapInit = function () {
@@ -146,4 +162,8 @@ mapInit = function () {
             }
         });
     });
+}
+
+function subirFotos(id_publicacion){
+  location.href = "fotografias.html?evento="+id_publicacion;
 }

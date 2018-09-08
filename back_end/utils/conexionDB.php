@@ -25,9 +25,9 @@ class ConexionDB {
     }
 
     public static function consultar($string) {
-        $log = new Log();
-        $log->sql();
-        $log->insert('Consultando el sql [' . $string . ']', 'conexionDB.php');
+        //$log = new Log();
+        //$log->sql();
+        //$log->insert('Consultando el sql [' . $string . ']', 'conexionDB.php');
         // Conectando al servidor de Base de datos
         $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
         $link->set_charset("utf8");

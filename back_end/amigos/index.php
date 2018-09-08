@@ -18,7 +18,7 @@ class AmigosLogic {
         switch ($metodo) {
             case 'GET':
                 if ($data) {
-                    
+
                 } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -27,12 +27,12 @@ class AmigosLogic {
                 break;
             case 'POST':
                 if ($data) {
-                    if ($data->funcion == "eliminar_amigo") {
+                    if (isset($data->funcion) && $data->funcion == "eliminar_amigo") {
                         $response = $this->eliminar_amigo($data->cologeado, $data->coamigo);
-                    } else if ($data->funcion == "verificar") {
+                    } else if (isset($data->funcion) && $data->funcion == "verificar") {
                         $response = $this->verificar($data->cologeado, $data->coamigo);
                     } else if (!isset($data->funcion)) {
-                        $response = $this->añadir_amigo($data->cologeado, $data->coamigo);
+                        $response = $this->anadir_amigo($data->cologeado, $data->coamigo);
                     } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -47,7 +47,7 @@ class AmigosLogic {
             case 'PUT':
                 // echo json_encode($data);
                 if ($data) {
-                    if($data->funcion == "desbloquear"){
+                    if(isset($data->funcion) && $data->funcion  == "desbloquear"){
                         $response = $this->desbloquear_amigo($data->cologeado, $data->desperfil);
                     }else if(isset($data->coamigo)){
                         $response = $this->bloquear_amigo($data->cologeado, $data->coamigo);
@@ -56,7 +56,7 @@ class AmigosLogic {
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                     $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
                     }
-                    
+
                 } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -67,12 +67,12 @@ class AmigosLogic {
         echo json_encode($response);
     }
 
-    private function añadir_amigo($correolog, $correoami) {
+    private function anadir_amigo($correolog, $correoami) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "INSERT INTO tbl_amigos (fk_amg_origen, fk_amg_destino, amg_fecha, amg_estado,actu_estado) VALUES ('" . $correolog . "', '" . $correoami . "',SYSDATE(), 'A','');";
-        //echo $sql;
+        $sql = "INSERT INTO TBL_AMIGOS (fk_amg_origen, fk_amg_destino, amg_fecha, amg_estado,actu_estado) VALUES ('" . $correolog . "', '" . $correoami . "',SYSDATE(), 'A','');";
+        echo $sql;
         $result = ConexionDB::consultar($sql);
         if (!$result) {
             $response->setCodigo(Constante::ERROR_REGISTRO_CD);
@@ -85,7 +85,7 @@ class AmigosLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select fk_amg_origen,fk_amg_destino from tbl_amigos where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
+        $sql = "select fk_amg_origen,fk_amg_destino from TBL_AMIGOS where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
         $usuario = new AmigosDTO();
         $result = ConexionDB::consultar($sql);
         while ($dataResult = $result->fetch_object()) {
@@ -100,7 +100,7 @@ class AmigosLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "DELETE from tbl_amigos where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
+        $sql = "DELETE from TBL_AMIGOS where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
         //echo $sql;
         $result = ConexionDB::consultar($sql);
         if (!$result) {
@@ -114,7 +114,7 @@ class AmigosLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "update tbl_amigos set amg_estado = 'S' , actu_estado = '".$correolog."' where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or (fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "')";
+        $sql = "update TBL_AMIGOS set amg_estado = 'S' , actu_estado = '".$correolog."' where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or (fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "')";
         //echo $sql;
         $result = ConexionDB::consultar($sql);
         if (!$result) {
@@ -127,7 +127,7 @@ private function desbloquear_amigo($correolog, $correoami) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "update tbl_amigos set amg_estado = 'A' , actu_estado = '' where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
+        $sql = "update TBL_AMIGOS set amg_estado = 'A' , actu_estado = '' where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
         //echo $sql;
         $result = ConexionDB::consultar($sql);
         if (!$result) {
