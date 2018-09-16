@@ -155,7 +155,7 @@ class UsuarioLogic {
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
         $sql = "SELECT DISTINCT * FROM TBL_USUARIO WHERE pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_destino  and a.amg_estado='S' and (fk_amg_destino='".$correo."' or fk_amg_origen='".$correo."')) and pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_origen and a.amg_estado='S' and (fk_amg_destino='".$correo."' or fk_amg_origen='".$correo."')) and pk_usr_correo <> '".$correo."'";
-        echo $sql;
+//        echo $sql;
         $result = ConexionDB::consultar($sql);
         //retornar el objeto usuario
         $lista_usuario = array();
@@ -203,7 +203,7 @@ class UsuarioLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select DISTINCT * from tbl_usuario u where pk_usr_correo in (select fk_amg_destino from tbl_amigos where amg_estado = 'S' and fk_amg_origen='".$correo."' and actu_estado='".$correo."') or pk_usr_correo in (select fk_amg_origen from tbl_amigos where amg_estado = 'S' and fk_amg_destino='".$correo."' and actu_estado='".$correo."')";
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'S' and fk_amg_origen='".$correo."' and actu_estado='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'S' and fk_amg_destino='".$correo."' and actu_estado='".$correo."')";
         $usuario = array();
         $header = array();
         $header[] = array("title" => "foto", "data" => "foto");
@@ -249,7 +249,7 @@ class UsuarioLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select DISTINCT * from tbl_usuario u where pk_usr_correo in (select fk_amg_destino from tbl_amigos where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from tbl_amigos where amg_estado = 'A' and fk_amg_destino='".$correo."')";
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
         $usuario = array();
         $header = array();
         $header[] = array("title" => "foto", "data" => "foto");
