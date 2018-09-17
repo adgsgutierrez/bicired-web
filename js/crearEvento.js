@@ -33,19 +33,31 @@ mapInit = function () {
 
         container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
         container = container + '<p class="card-text">' + mapa.usuario + '</p><p class="card-text" id="parrafo"></p>';
-        container = container + '<div class="col-sm-5"><input class="form-control" id="datetimepicker10" readonly/></div>';
+        container = container + '<div class="row"><div class="col-sm-5"><input class="form-control" id="datetimepicker10" readonly/></div>';
+        container = container + '<div class="col-sm-5" style="position:relative;top:-32px;margin-left: 60px;"><label>Amigos a Invitar</label><form id="formpersonasinvitadas"><select class="selectpicker" multiple data-live-search="true" title="Seleccione.." size="4"></select></form></div></div>';
         container = container + '<br><button style="float: right;" class="btn btn-primary" onclick="guardar()">Guardar Evento</button><button style="float: left;" class="btn btn-primary" onclick="cancelar()">Cancelar</button></div></div>';
         $("#container").append(container);
         var coordenada = {
             lat: mapa.ltd_o,
             lng: mapa.lng_o
         };
-        $(function () {
-            $('#datetimepicker10').datetimepicker({
-                startDate: new Date(),
-                format: 'yyyy-mm-dd hh:ii',
-                autoclose: true
-            });
+        $('#datetimepicker10').datetimepicker({
+            startDate: new Date(),
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true
+        });
+        var parametros = {"correo": email, "funcion": "listarmigos"};
+        $.ajax({
+            data: parametros,
+            type: 'POST',
+            url: URL_USUARIO,
+            success: function (data) {
+                data = JSON.parse(data);
+                $.each(data.datos, function (key, value) {
+                    $(".selectpicker").append('<option value=' + value.id + '>' + value.label + '</option>');
+                });
+
+            }
         });
         map = new google.maps.Map(document.getElementById('map'), {
             center: coordenada,
@@ -161,10 +173,19 @@ function guardar() {
             success: function (data) {
                 swal({
                     title: "Todo Correcto",
-                    text: data,
+                    text: 'El Evento Fue Creado Con Exito',
                     type: "success"
                 },
                         function () {
+                            if ($(".selectpicker").val()) {
+                                var parametro = {usuario: email,
+                                    invitados: $(".selectpicker").val(), idpublicacion: data};
+                                $.ajax({
+                                    data:parametro,
+                                    type: 'POST',
+                                    url:URL_PUBLICACION
+                                });
+                            }
                             window.location.href = 'paginaPrincipal.html';
                         });
             }

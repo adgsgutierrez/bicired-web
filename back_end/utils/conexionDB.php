@@ -84,6 +84,16 @@ class ConexionDB {
       `usr_foto` text,
       PRIMARY KEY (`pk_usr_correo`)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+        $sql_5="CREATE TABLE IF NOT EXISTS TBL_INVITAR_AMIGOS (
+      `id_invitacion_amigo` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+      `fk_pbl_id` int(10) UNSIGNED DEFAULT NULL,
+      `usuario_invita` varchar(150) DEFAULT NULL,
+      `usuario_invitado` varchar(150) DEFAULT NULL,
+      `invitacion_estado` enum('A','P') DEFAULT NULL,
+      KEY `id_invitacion_amigo` (`id_invitacion_amigo`),
+      KEY `fk_pbl_id` (`fk_pbl_id`),
+      FOREIGN KEY (`fk_pbl_id`) REFERENCES `TBL_PUBLICACION` (`pk_pbl_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
         $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
         $link->set_charset("utf8");
 //        echo 'consulta';
@@ -91,6 +101,7 @@ class ConexionDB {
         $result = $link->query($sql_1);
         $result = $link->query($sql_3);
         $result = $link->query($sql_2);
+        $result = $link->query($sql_5);
     }
 
 }

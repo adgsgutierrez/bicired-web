@@ -33,7 +33,15 @@ class PublicacionLogic {
                 break;
             case 'POST':
                 if ($data) {
-                    $response = $this->registar_publicacion($data->fecha, $data->lt1, $data->ln1, $data->lt2, $data->ln2, $data->descripcion, $data->usuario);
+                    if (isset($data->invitados)) {
+                        $response = $this->invitar_amigos($data->invitados, $data->usuario, $data->idpublicacion);
+                    } else if (!isset($data->invitados)) {
+                        $response = $this->registar_publicacion($data->fecha, $data->lt1, $data->ln1, $data->lt2, $data->ln2, $data->descripcion, $data->usuario);
+                    } else {
+                        $response = new RespuestaDTO();
+                        $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
+                        $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
+                    }
                 } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -64,7 +72,7 @@ class PublicacionLogic {
 									SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '$correo' and ta.amg_estado = 'A')
 									OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '$correo' and ta.amg_estado = 'A')
 									OR tp.fk_pbl_usr_correo = '$correo' ) AND pbl_estado = 'A' ORDER BY pk_pbl_id DESC";
-                  //echo $sql;
+        //echo $sql;
         $result = ConexionDB::consultar($sql);
         $publicaciones = array();
         while ($dataResult = $result->fetch_object()) {
@@ -91,29 +99,42 @@ class PublicacionLogic {
                 . "values('" . $fecha . "'," . doubleval($lt1) . "," . doubleval($ln1) . "," . doubleval($lt2) . "," . doubleval($ln2) . ",'" . $descripcion . "','A','" . $usuario . "') ";
 
         $result = ConexionDB::consultar($sql);
-
-        if($result){
-            echo 'El Evento Fue Creado Con Exito';
-            exit();
+        if ($result) {
+            $sql_2 = "SELECT MAX(pk_pbl_id) as id FROM TBL_PUBLICACION;";
+            $result_1 = ConexionDB::consultar($sql_2);
+            $id;
+            while ($dataResult = $result_1->fetch_object()) {
+                $id = $dataResult->id;
+            }
         }
+        echo ($id);
+        exit();
+    }
+    
+    private function invitar_amigos($invitados,$usuario,$idpublicacion){
+        for ($index = 0; $index < count($invitados); $index++) {
+            $sql="INSERT INTO TBL_INVITAR_AMIGOS(fk_pbl_id,usuario_invita,usuario_invitado,invitacion_estado) values (". intval($idpublicacion).",'".$usuario."','".$invitados[$index]."','P')";
+            $result = ConexionDB::consultar($sql);
+        }
+        exit();
     }
 
-    private function consultarImagenes($publicacion){
-      $response = new RespuestaDTO();
-      $sql = "SELECT * FROM TBL_FOTOGRAFIAS tp INNER JOIN TBL_USUARIO tu on tp.correo = tu.pk_usr_correo WHERE publicacion= '".$publicacion."'";
-      $result = ConexionDB::consultar($sql);
-      $fotos = array();
-      while ($dataResult = $result->fetch_object()) {
-        $foto = new stdClass();
-        $foto->fecha = $this->conventirFecha($dataResult->fecha);
-        $foto->imagenes = $dataResult->imagen;
-        $foto->usuario = $dataResult->usr_nombre;
-        array_push($fotos , $foto);
-      }
-      $response->setCodigo(Constante::EXITOSO_CODE);
-      $response->setMensaje(Constante::EXITOSO_CODE);
-      $response->setDatos($fotos);
-      return $response;
+    private function consultarImagenes($publicacion) {
+        $response = new RespuestaDTO();
+        $sql = "SELECT * FROM TBL_FOTOGRAFIAS tp INNER JOIN TBL_USUARIO tu on tp.correo = tu.pk_usr_correo WHERE publicacion= '" . $publicacion . "'";
+        $result = ConexionDB::consultar($sql);
+        $fotos = array();
+        while ($dataResult = $result->fetch_object()) {
+            $foto = new stdClass();
+            $foto->fecha = $this->conventirFecha($dataResult->fecha);
+            $foto->imagenes = $dataResult->imagen;
+            $foto->usuario = $dataResult->usr_nombre;
+            array_push($fotos, $foto);
+        }
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_CODE);
+        $response->setDatos($fotos);
+        return $response;
     }
 
     function conventirFecha($input) {
@@ -161,8 +182,6 @@ class PublicacionLogic {
         list($horaM, $minuto, $segundo) = explode(':', $data[1]);
         return $fecha[2] . " de " . $mesLetra . " del " . $fecha[0] . " a las " . $horaM . ":" . $minuto;
     }
-
-
 
 }
 
