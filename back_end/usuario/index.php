@@ -43,7 +43,9 @@ class UsuarioLogic {
                         $response = $this->amigos($data->cologeado);
                     }else if ($data->funcion == "amigos_bloqueados") {
                         $response = $this->lista_amigos_bloqueados($data->cologeado);
-                    } else {
+                    }else if($data->funcion == "listarmigos"){
+                        $response = $this->listaamigos($data->correo);
+                    }else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
@@ -155,7 +157,7 @@ class UsuarioLogic {
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
         $sql = "SELECT DISTINCT * FROM TBL_USUARIO WHERE pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_destino  and a.amg_estado='S' and (fk_amg_destino='".$correo."' or fk_amg_origen='".$correo."')) and pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_origen and a.amg_estado='S' and (fk_amg_destino='".$correo."' or fk_amg_origen='".$correo."')) and pk_usr_correo <> '".$correo."'";
-        //echo $sql;
+//        echo $sql;
         $result = ConexionDB::consultar($sql);
         //retornar el objeto usuario
         $lista_usuario = array();
@@ -250,7 +252,6 @@ class UsuarioLogic {
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
         $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
-        //echo $sql;
         $usuario = array();
         $header = array();
         $header[] = array("title" => "foto", "data" => "foto");
@@ -291,7 +292,23 @@ class UsuarioLogic {
 
         return array("data" => $usuario_datos, "header" => $header);
     }
-
+private function listaamigos($correo){
+     $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
+        $result = ConexionDB::consultar($sql);
+        //retornar el objeto usuario
+        $lista_usuario = array();
+        while ($dataResult = $result->fetch_object()) {
+            $user = new stdClass();
+            $user->label = $dataResult->usr_nombre;
+            $user->id = $dataResult->pk_usr_correo;
+            array_push($lista_usuario, $user);
+        }
+        $response->setDatos($lista_usuario);
+        return $response;
+}
 }
 
 $usuario = new UsuarioLogic($metodo, $data);
