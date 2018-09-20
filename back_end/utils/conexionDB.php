@@ -15,8 +15,8 @@ class ConexionDB {
         $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB);
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=" . Constante::BASE_DATOS;
         $result = $link->query($query);
-        //if ($result) {
-        if (true ==  false) {
+        if ($result) {
+        //if (true ==  false) {
             /** La bases de datos Existe* */
         } else {
             $sql = "create database " . Constante::BASE_DATOS;
@@ -42,7 +42,7 @@ class ConexionDB {
     private static function createTables() {
         $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
         $link->set_charset("utf8");
-        echo 'consulta';
+        //echo 'consulta';
         $result = $link->query(Constante::CREATE_DATABASE);
     }
 
