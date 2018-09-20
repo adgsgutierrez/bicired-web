@@ -18,17 +18,23 @@ class UsuarioLogic {
         switch ($metodo) {
             case 'GET':
                 if ($data) {
+                  if(isset($data->funcion)){
                     if ($data->funcion == 'lista_usuarios') {
                         $response = $this->lista_usuarios($data->correo);
                     } else if ($data->funcion == 'datos_perfil') {
                         $response = $this->datos_perfil($data->correo);
-                    } else if ($data->listar == 'all') {
-                        $response = $this->listar();
-                    } else {
+                    }
+                  }else if(isset($data->listar)){
+                    if ($data->listar == 'all') {
+                       $response = $this->listar();
+                     }else if ($data->listar == 'notificacion') {
+                         $response = $this->notificaciones($data->correo);
+                     }
+                  }else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
-                    }
+                  }
                 } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -292,23 +298,54 @@ class UsuarioLogic {
 
         return array("data" => $usuario_datos, "header" => $header);
     }
-private function listaamigos($correo){
-     $response = new RespuestaDTO();
-        $response->setCodigo(Constante::EXITOSO_CODE);
-        $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
-        $result = ConexionDB::consultar($sql);
-        //retornar el objeto usuario
-        $lista_usuario = array();
-        while ($dataResult = $result->fetch_object()) {
-            $user = new stdClass();
-            $user->label = $dataResult->usr_nombre;
-            $user->id = $dataResult->pk_usr_correo;
-            array_push($lista_usuario, $user);
-        }
-        $response->setDatos($lista_usuario);
-        return $response;
-}
+    private function listaamigos($correo){
+         $response = new RespuestaDTO();
+            $response->setCodigo(Constante::EXITOSO_CODE);
+            $response->setMensaje(Constante::EXITOSO_MS);
+            $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
+            $result = ConexionDB::consultar($sql);
+            //retornar el objeto usuario
+            $lista_usuario = array();
+            while ($dataResult = $result->fetch_object()) {
+                $user = new stdClass();
+                $user->label = $dataResult->usr_nombre;
+                $user->id = $dataResult->pk_usr_correo;
+                array_push($lista_usuario, $user);
+            }
+            $response->setDatos($lista_usuario);
+            return $response;
+    }
+
+    private function notificaciones($usuario){
+
+      $response = new RespuestaDTO();
+     $response->setCodigo(Constante::EXITOSO_CODE);
+     $response->setMensaje(Constante::EXITOSO_MS);
+
+      $sql = "SELECT
+      tia.id_invitacion_amigo as id,
+      tu.usr_nombre as invita ,
+      tp.pbl_descripcion as descripcion,
+      tp.pbl_fecha as fecha
+      FROM TBL_PUBLICACION tp INNER JOIN TBL_INVITAR_AMIGOS tia on tia.fk_pbl_id = tp.pk_pbl_id
+      INNER JOIN TBL_USUARIO tu on tu.pk_usr_correo = tia.usuario_invita
+      WHERE tp.pbl_fecha > NOW() AND tia.usuario_invitado = '".$usuario."' AND tia.invitacion_estado = 'P'";
+
+echo $sql;
+
+      $result = ConexionDB::consultar($sql);
+      $lista_notificacion = array();
+      while ($dataResult = $result->fetch_object()) {
+          $notificacion = new stdClass();
+          $notificacion->id = $dataResult->id;
+          $notificacion->user = $dataResult->invita;
+          $notificacion->fecha = $dataResult->fecha;
+          $notificacion->descripcion = $dataResult->descripcion;
+          array_push($lista_notificacion, $notificacion);
+      }
+      $response->setDatos($lista_notificacion);
+      return $response;
+    }
 }
 
 $usuario = new UsuarioLogic($metodo, $data);

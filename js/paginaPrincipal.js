@@ -5,6 +5,27 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+var consultar_notificaciones = function (){
+  setInterval(function(){
+    var parametros = {
+        "listar": "notificacion",
+        "correo": correo
+    };
+    $.ajax({
+        data: parametros,
+        type: 'GET',
+        url: URL_USUARIO,
+        success: function (data) {
+          console.log(data);
+        }, error: function (err) {
+            /** MOSTRAR ALERTA DE ERROR**/
+            console.log(err);
+            swal("Tenemos inconvenientes", "Tus notificaciones deberán esperar un poco", "error");
+        }
+      })
+  }, 3000);
+}
+
 
 $(document).ready(function () {
     /** Validacion de sesion **/
@@ -114,6 +135,9 @@ console.log("Mapa ", mapa);
             swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
         }
     });
+
+    /** Funcion que inicia el hilo de busqueda de las notificaciones **/
+    consultar_notificaciones();
 });
 var CrearEvento = function () {
     location.href = "crearEvento.html";

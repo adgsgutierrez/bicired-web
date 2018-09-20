@@ -97,3 +97,11 @@ input{
 .sorting_1{
     width: 10%;
 }
+.navbar:hover{
+  background: #4CAF50;
+}
+
+.btn-primary:hover {
+    background: #4CAF50;
+    border: 1px solid #4CAF50;
+}
