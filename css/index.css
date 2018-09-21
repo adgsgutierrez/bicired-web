@@ -102,6 +102,48 @@ input{
 }
 
 .btn-primary:hover {
-    background: #4CAF50;
-    border: 1px solid #4CAF50;
+  color: #fff;
+  background-color: #4CAF50 !important;
+  border-color: #4CAF50 !important;
+}
+.notificacion{
+  margin-right: -15rem;
+    margin-left: -18rem;
+}
+.btn-primary:hover {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+.class-badge{
+  background: blue;
+  height: auto;
+  width: 20px;
+  position: absolute;
+  top: 20px;
+  right: 0px;
+  border-radius: 50%;
+}
+.dropdown-menu.show {
+    display: block;
+    padding: 15px;
+}
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 20rem;
+    padding: .5rem 0;
+    margin: .125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
 }

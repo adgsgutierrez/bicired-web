@@ -5,7 +5,29 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+var aceptarEvento = function(id_publicacion){
+  console.log("id_publicacion" , id_publicacion);
+  var parametros = {
+      "listar": "guardar_novedad",
+      "id_publicacion": id_publicacion
+  };
+  $.ajax({
+      data: parametros,
+      type: 'GET',
+      url: URL_USUARIO,
+      success: function (data) {
+        console.log(data);
+
+      }, error: function (err) {
+          /** MOSTRAR ALERTA DE ERROR**/
+          console.log(err);
+          swal("Tenemos inconvenientes", "Tus notificaciones deberán esperar un poco", "error");
+      }
+    })
+}
+
 var consultar_notificaciones = function (){
+  $("#badge-icon").hide();
   setInterval(function(){
     var parametros = {
         "listar": "notificacion",
@@ -17,6 +39,21 @@ var consultar_notificaciones = function (){
         url: URL_USUARIO,
         success: function (data) {
           console.log(data);
+          var object = JSON.parse(data);
+          if(object.datos.length > 0){
+            //Colocar el badge
+            $("#badge-icon").html(object.datos.length);
+            $("#badge-icon").show();
+            //consultar_notificaciones
+            var html = "";
+            object.datos.map(function(badge){
+              html = html + "<li onclick='aceptarEvento("+badge.id+")'>"+badge.user+" te ha invitado a un evento el dia "+badge.fecha+"<button type='button' class='btn btn-primary'>Ir</button></li><hr/>";
+            });
+            $("#menu-notificacion").html(html);
+          }else{
+            $("#badge-icon").hide();
+          }
+
         }, error: function (err) {
             /** MOSTRAR ALERTA DE ERROR**/
             console.log(err);
@@ -187,6 +224,8 @@ mapInit = function () {
         });
     });
 }
+
+
 
 function subirFotos(id_publicacion){
   location.href = "fotografias.html?evento="+id_publicacion;

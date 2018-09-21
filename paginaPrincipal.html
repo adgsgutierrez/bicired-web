@@ -57,10 +57,15 @@
                     <input id="buscar_persona" type="text" class="form-control" placeholder="Buscar..."/>
                     <button id="buscar_perfil"  class="btn btn-primary input-group-btn" type="button"><i class="fa fa-search"></i></button>
                 </div>
+                <div class="dropdown notificacion">
+                  <span class="badge class-badge" id="badge-icon"></span>
+                  <button class="btn btn-primary" type="button" data-toggle="dropdown"><i class="fa fa-bell" aria-hidden="true"></i></button>
+                  <ul class="dropdown-menu" id="menu-notificacion" style="left: -19rem;">
 
+                  </ul>
+                </div>
                 <div class="dropdown" style="right: 100px">
-                  <button  type="button" class="btn btn-primary"><i class="fa fa-bell" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-primary" id="botoninvitaciones" onclick="location.href = 'invitacionAmigo.html';"><i class="fa fa-envelope"></i></button>
+                   <button type="button" class="btn btn-primary" id="botoninvitaciones" onclick="location.href = 'invitacionAmigo.html';"><i class="fa fa-envelope"></i></button>
                    <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a style="cursor:pointer" class="dropdown-item"  href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>

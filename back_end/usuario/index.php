@@ -29,6 +29,12 @@ class UsuarioLogic {
                        $response = $this->listar();
                      }else if ($data->listar == 'notificacion') {
                          $response = $this->notificaciones($data->correo);
+                     }else if ($data->listar == 'guardar_novedad') {
+                         $response = $this->guardar_asistencia($data->id_publicacion);
+                     }else {
+                           $response = new RespuestaDTO();
+                           $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
+                           $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
                      }
                   }else {
                         $response = new RespuestaDTO();
@@ -331,20 +337,78 @@ class UsuarioLogic {
       INNER JOIN TBL_USUARIO tu on tu.pk_usr_correo = tia.usuario_invita
       WHERE tp.pbl_fecha > NOW() AND tia.usuario_invitado = '".$usuario."' AND tia.invitacion_estado = 'P'";
 
-echo $sql;
-
       $result = ConexionDB::consultar($sql);
       $lista_notificacion = array();
       while ($dataResult = $result->fetch_object()) {
           $notificacion = new stdClass();
           $notificacion->id = $dataResult->id;
           $notificacion->user = $dataResult->invita;
-          $notificacion->fecha = $dataResult->fecha;
+          $notificacion->fecha = $this->conventirFecha($dataResult->fecha);
           $notificacion->descripcion = $dataResult->descripcion;
           array_push($lista_notificacion, $notificacion);
       }
       $response->setDatos($lista_notificacion);
       return $response;
+    }
+
+    private function guardar_asistencia($id_publicacion){
+      $response = new RespuestaDTO();
+      $response->setCodigo(Constante::EXITOSO_CODE);
+      $response->setMensaje(Constante::EXITOSO_MS);
+
+      $sql = "UPDATE TBL_INVITAR_AMIGOS
+        SET invitacion_estado = 'A'
+        WHERE id_invitacion_amigo = ".$id_publicacion;
+
+      $result = ConexionDB::consultar($sql);
+      $response->setDatos($result);
+      return $response;
+    }
+
+    function conventirFecha($input) {
+        $data = explode(' ', $input);
+        $mesLetra = "";
+        $fecha = explode('-', $data[0]);
+        switch ($fecha[1]) {
+            case '01':
+                $mesLetra = "Enero";
+                break;
+            case '02':
+                $mesLetra = "Febrero";
+                break;
+            case '03':
+                $mesLetra = "Marzo";
+                break;
+            case '04':
+                $mesLetra = "Abril";
+                break;
+            case '05':
+                $mesLetra = "Mayo";
+                break;
+            case '06':
+                $mesLetra = "Junio";
+                break;
+            case '07':
+                $mesLetra = "Julio";
+                break;
+            case '08':
+                $mesLetra = "Agosto";
+                break;
+            case '09':
+                $mesLetra = "Septiembre";
+                break;
+            case '10':
+                $mesLetra = "Octubre";
+                break;
+            case '11':
+                $mesLetra = "Noviembre";
+                break;
+            case '12':
+                $mesLetra = "Diciembre";
+                break;
+        }
+        list($horaM, $minuto, $segundo) = explode(':', $data[1]);
+        return $fecha[2] . " de " . $mesLetra . " del " . $fecha[0] . " a las " . $horaM . ":" . $minuto;
     }
 }
 
