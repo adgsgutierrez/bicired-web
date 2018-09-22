@@ -88,7 +88,7 @@ class ConexionDB {
       PRIMARY KEY (`pk_usr_correo`)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 
-        $sql_5="CREATE TABLE IF NOT EXISTS TBL_INVITAR_AMIGOS (
+        $sql_5 = "CREATE TABLE IF NOT EXISTS TBL_INVITAR_AMIGOS (
       `id_invitacion_amigo` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
       `fk_pbl_id` int(10) UNSIGNED DEFAULT NULL,
       `usuario_invita` varchar(150) DEFAULT NULL,
@@ -98,7 +98,16 @@ class ConexionDB {
       KEY `fk_pbl_id` (`fk_pbl_id`),
       FOREIGN KEY (`fk_pbl_id`) REFERENCES `TBL_PUBLICACION` (`pk_pbl_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
-    
+
+        $sql_6 = "CREATE TABLE IF NOT EXISTS TBL_MENSAJES (
+      `fk_amg_envia` varchar(150) DEFAULT NULL,
+      `fk_amg_recibe` varchar(150) DEFAULT NULL,
+      `mensaje` varchar(255) DEFAULT NULL,
+      `mensaje_fecha` date DEFAULT NULL,
+      FOREIGN KEY (`fk_amg_envia`) REFERENCES `TBL_USUARIO` (`pk_usr_correo`),
+      FOREIGN KEY (`fk_amg_recibe`) REFERENCES `TBL_USUARIO` (`pk_usr_correo`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+
         $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
         $link->set_charset("utf8");
 //        echo 'consulta';
@@ -107,6 +116,7 @@ class ConexionDB {
         $result = $link->query($sql_3);
         $result = $link->query($sql_2);
         $result = $link->query($sql_5);
+        $result = $link->query($sql_6);
     }
 
 }

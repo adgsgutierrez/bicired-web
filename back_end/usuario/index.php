@@ -18,29 +18,33 @@ class UsuarioLogic {
         switch ($metodo) {
             case 'GET':
                 if ($data) {
-                  if(isset($data->funcion)){
-                    if ($data->funcion == 'lista_usuarios') {
-                        $response = $this->lista_usuarios($data->correo);
-                    } else if ($data->funcion == 'datos_perfil') {
-                        $response = $this->datos_perfil($data->correo);
-                    }
-                  }else if(isset($data->listar)){
-                    if ($data->listar == 'all') {
-                       $response = $this->listar();
-                     }else if ($data->listar == 'notificacion') {
-                         $response = $this->notificaciones($data->correo);
-                     }else if ($data->listar == 'guardar_novedad') {
-                         $response = $this->guardar_asistencia($data->id_publicacion);
-                     }else {
-                           $response = new RespuestaDTO();
-                           $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
-                           $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
-                     }
-                  }else {
+                    if (isset($data->funcion)) {
+                        if ($data->funcion == 'lista_usuarios') {
+                            $response = $this->lista_usuarios($data->correo);
+                        } else if ($data->funcion == 'datos_perfil') {
+                            $response = $this->datos_perfil($data->correo);
+                        } else {
+                            $response = new RespuestaDTO();
+                            $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
+                            $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
+                        }
+                    } else if (isset($data->listar)) {
+                        if ($data->listar == 'all') {
+                            $response = $this->listar();
+                        } else if ($data->listar == 'notificacion') {
+                            $response = $this->notificaciones($data->correo);
+                        } else if ($data->listar == 'guardar_novedad') {
+                            $response = $this->guardar_asistencia($data->id_publicacion);
+                        } else {
+                            $response = new RespuestaDTO();
+                            $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
+                            $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
+                        }
+                    } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
-                  }
+                    }
                 } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -51,13 +55,20 @@ class UsuarioLogic {
                 if ($data) {
                     if (!isset($data->funcion)) {
                         $response = $this->consultar_sesion($data->correo, $data->clave, $data->origen, $data->usuario, $data->foto);
-                    } else if($data->funcion == "amigos"){
+                    } else if ($data->funcion == "amigos") {
                         $response = $this->amigos($data->cologeado);
-                    }else if ($data->funcion == "amigos_bloqueados") {
+                    } else if ($data->funcion == "amigos_bloqueados") {
                         $response = $this->lista_amigos_bloqueados($data->cologeado);
-                    }else if($data->funcion == "listarmigos"){
+                    } else if ($data->funcion == "listarmigos") {
                         $response = $this->listaamigos($data->correo);
-                    }else {
+                    } else if ($data->funcion == 'amigosmensaje') {
+                        $response = $this->amigos_mensaje($data->usuariologeado);
+                    } else if ($data->funcion === "enviarmensaje") {
+                        if ($data->mensaje) {
+                            $response = $this->enviar_mensaje($data->envia, $data->recibe, $data->mensaje);
+                        }
+                        $response = $this->ver_mensaje($data->envia, $data->recibe);
+                    } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
@@ -72,9 +83,11 @@ class UsuarioLogic {
                 // echo json_encode($data);
                 if ($data) {
                     if (isset($data->funcion)) {
-                        $response = $this->actualizar_perfil($data->correo, $data->nombre, $data->genero);
+                        if ($data->funcion === "acperfil") {
+                            $response = $this->actualizar_perfil($data->correo, $data->nombre, $data->genero);
+                        }
                     } else if (!isset($data->funcion)) {
-                        $response = $this->registar_usuario($data->correo, $data->nombre, $data->genero, $data->clave);
+                        $response = $this->registrar_usuario($data->correo, $data->nombre, $data->genero, $data->clave);
                     } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -150,7 +163,7 @@ class UsuarioLogic {
         return $response;
     }
 
-    private function registar_usuario($correo, $nombre, $genero, $clave) {
+    private function registrar_usuario($correo, $nombre, $genero, $clave) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
@@ -168,7 +181,7 @@ class UsuarioLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "SELECT DISTINCT * FROM TBL_USUARIO WHERE pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_destino  and a.amg_estado='S' and (fk_amg_destino='".$correo."' or fk_amg_origen='".$correo."')) and pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_origen and a.amg_estado='S' and (fk_amg_destino='".$correo."' or fk_amg_origen='".$correo."')) and pk_usr_correo <> '".$correo."'";
+        $sql = "SELECT DISTINCT * FROM TBL_USUARIO WHERE pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_destino  and a.amg_estado='S' and (fk_amg_destino='" . $correo . "' or fk_amg_origen='" . $correo . "')) and pk_usr_correo NOT IN (select pk_usr_correo from TBL_USUARIO u,TBL_AMIGOS a where u.pk_usr_correo=a.fk_amg_origen and a.amg_estado='S' and (fk_amg_destino='" . $correo . "' or fk_amg_origen='" . $correo . "')) and pk_usr_correo <> '" . $correo . "'";
 //        echo $sql;
         $result = ConexionDB::consultar($sql);
         //retornar el objeto usuario
@@ -217,7 +230,7 @@ class UsuarioLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'S' and fk_amg_origen='".$correo."' and actu_estado='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'S' and fk_amg_destino='".$correo."' and actu_estado='".$correo."')";
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'S' and fk_amg_origen='" . $correo . "' and actu_estado='" . $correo . "') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'S' and fk_amg_destino='" . $correo . "' and actu_estado='" . $correo . "')";
         $usuario = array();
         $header = array();
         $header[] = array("title" => "foto", "data" => "foto");
@@ -235,7 +248,7 @@ class UsuarioLogic {
                 $genero = "Mujer";
                 $usuario["foto"] = '<img id="imagen" style="width:100%" src="' . $foto . '" >';
                 $usuario["genero"] = $genero;
-                $usuario["accion"] = '<button id="desbloquear" type="button" class="btn btn-primary" data-correo="'.$dataResult->pk_usr_correo.'"><i class="fa fa-unlock"></i> Desbloquear Amigo</button>';
+                $usuario["accion"] = '<button id="desbloquear" type="button" class="btn btn-primary" data-correo="' . $dataResult->pk_usr_correo . '"><i class="fa fa-unlock"></i> Desbloquear Amigo</button>';
             } else if ($dataResult->usr_foto == null && $dataResult->usr_genero == "M") {
                 $foto = "img/perfil-hombre.jpg";
                 $usuario["nombre"] = $dataResult->usr_nombre;
@@ -243,13 +256,13 @@ class UsuarioLogic {
                 $genero = "Hombre";
                 $usuario["foto"] = '<img id="imagen" style="width:100%" src="' . $foto . '" >';
                 $usuario["genero"] = $genero;
-                $usuario["accion"] = '<button id="desbloquear" type="button" class="btn btn-primary" data-correo="'.$dataResult->pk_usr_correo.'"><i class="fa fa-unlock"></i> Desbloquear Amigo</button>';
+                $usuario["accion"] = '<button id="desbloquear" type="button" class="btn btn-primary" data-correo="' . $dataResult->pk_usr_correo . '"><i class="fa fa-unlock"></i> Desbloquear Amigo</button>';
             } else {
                 $usuario["foto"] = '<img id="imagen" style="width:100%" src="' . $dataResult->usr_foto . '" >';
                 $usuario["nombre"] = $dataResult->usr_nombre;
                 $usuario["correo"] = $dataResult->pk_usr_correo;
                 $usuario["genero"] = $dataResult->usr_genero;
-                $usuario["accion"] = '<button id="desbloquear" type="button" class="btn btn-primary" data-correo="'.$dataResult->pk_usr_correo.'"><i class="fa fa-unlock"></i> Desbloquear Amigo</button>';
+                $usuario["accion"] = '<button id="desbloquear" type="button" class="btn btn-primary" data-correo="' . $dataResult->pk_usr_correo . '"><i class="fa fa-unlock"></i> Desbloquear Amigo</button>';
             }
             $usuario_datos[] = $usuario;
         }
@@ -259,11 +272,11 @@ class UsuarioLogic {
         return array("data" => $usuario_datos, "header" => $header);
     }
 
-    private function amigos($correo){
+    private function amigos($correo) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='" . $correo . "') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='" . $correo . "')";
         $usuario = array();
         $header = array();
         $header[] = array("title" => "foto", "data" => "foto");
@@ -304,65 +317,66 @@ class UsuarioLogic {
 
         return array("data" => $usuario_datos, "header" => $header);
     }
-    private function listaamigos($correo){
-         $response = new RespuestaDTO();
-            $response->setCodigo(Constante::EXITOSO_CODE);
-            $response->setMensaje(Constante::EXITOSO_MS);
-            $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='".$correo."') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='".$correo."')";
-            $result = ConexionDB::consultar($sql);
-            //retornar el objeto usuario
-            $lista_usuario = array();
-            while ($dataResult = $result->fetch_object()) {
-                $user = new stdClass();
-                $user->label = $dataResult->usr_nombre;
-                $user->id = $dataResult->pk_usr_correo;
-                array_push($lista_usuario, $user);
-            }
-            $response->setDatos($lista_usuario);
-            return $response;
+
+    private function listaamigos($correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='" . $correo . "') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='" . $correo . "')";
+        $result = ConexionDB::consultar($sql);
+        //retornar el objeto usuario
+        $lista_usuario = array();
+        while ($dataResult = $result->fetch_object()) {
+            $user = new stdClass();
+            $user->label = $dataResult->usr_nombre;
+            $user->id = $dataResult->pk_usr_correo;
+            array_push($lista_usuario, $user);
+        }
+        $response->setDatos($lista_usuario);
+        return $response;
     }
 
-    private function notificaciones($usuario){
+    private function notificaciones($usuario) {
 
-      $response = new RespuestaDTO();
-     $response->setCodigo(Constante::EXITOSO_CODE);
-     $response->setMensaje(Constante::EXITOSO_MS);
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
 
-      $sql = "SELECT
+        $sql = "SELECT
       tia.id_invitacion_amigo as id,
       tu.usr_nombre as invita ,
       tp.pbl_descripcion as descripcion,
       tp.pbl_fecha as fecha
       FROM TBL_PUBLICACION tp INNER JOIN TBL_INVITAR_AMIGOS tia on tia.fk_pbl_id = tp.pk_pbl_id
       INNER JOIN TBL_USUARIO tu on tu.pk_usr_correo = tia.usuario_invita
-      WHERE tp.pbl_fecha > NOW() AND tia.usuario_invitado = '".$usuario."' AND tia.invitacion_estado = 'P'";
+      WHERE tp.pbl_fecha > NOW() AND tia.usuario_invitado = '" . $usuario . "' AND tia.invitacion_estado = 'P'";
 
-      $result = ConexionDB::consultar($sql);
-      $lista_notificacion = array();
-      while ($dataResult = $result->fetch_object()) {
-          $notificacion = new stdClass();
-          $notificacion->id = $dataResult->id;
-          $notificacion->user = $dataResult->invita;
-          $notificacion->fecha = $this->conventirFecha($dataResult->fecha);
-          $notificacion->descripcion = $dataResult->descripcion;
-          array_push($lista_notificacion, $notificacion);
-      }
-      $response->setDatos($lista_notificacion);
-      return $response;
+        $result = ConexionDB::consultar($sql);
+        $lista_notificacion = array();
+        while ($dataResult = $result->fetch_object()) {
+            $notificacion = new stdClass();
+            $notificacion->id = $dataResult->id;
+            $notificacion->user = $dataResult->invita;
+            $notificacion->fecha = $this->conventirFecha($dataResult->fecha);
+            $notificacion->descripcion = $dataResult->descripcion;
+            array_push($lista_notificacion, $notificacion);
+        }
+        $response->setDatos($lista_notificacion);
+        return $response;
     }
 
-    private function guardar_asistencia($id_publicacion){
-      $response = new RespuestaDTO();
-      $response->setCodigo(Constante::EXITOSO_CODE);
-      $response->setMensaje(Constante::EXITOSO_MS);
+    private function guardar_asistencia($id_publicacion) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
 
-      $sql = "UPDATE TBL_INVITAR_AMIGOS
+        $sql = "UPDATE TBL_INVITAR_AMIGOS
         SET invitacion_estado = 'A'
-        WHERE id_invitacion_amigo = ".$id_publicacion;
+        WHERE id_invitacion_amigo = " . $id_publicacion;
 
-      $result = ConexionDB::consultar($sql);
-      $response->setDatos($result);
-      return $response;
+        $result = ConexionDB::consultar($sql);
+        $response->setDatos($result);
+        return $response;
     }
 
     function conventirFecha($input) {
@@ -410,6 +424,59 @@ class UsuarioLogic {
         list($horaM, $minuto, $segundo) = explode(':', $data[1]);
         return $fecha[2] . " de " . $mesLetra . " del " . $fecha[0] . " a las " . $horaM . ":" . $minuto;
     }
+
+    private function amigos_mensaje($correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select DISTINCT * from TBL_USUARIO u where pk_usr_correo in (select fk_amg_destino from TBL_AMIGOS where amg_estado = 'A' and fk_amg_origen='" . $correo . "') or pk_usr_correo in (select fk_amg_origen from TBL_AMIGOS where amg_estado = 'A' and fk_amg_destino='" . $correo . "')";
+        $arreglousuario = array();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $usuario = new UsuarioDTO();
+            $usuario->foto = $dataResult->usr_foto;
+            $usuario->genero = $dataResult->usr_genero;
+            $usuario->correo = $dataResult->pk_usr_correo;
+            $usuario->nombre = $dataResult->usr_nombre;
+            array_push($arreglousuario, $usuario);
+        }
+        $response->setDatos($arreglousuario);
+        return $response;
+    }
+
+    private function enviar_mensaje($envia, $recibe, $mensaje) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "INSERT INTO TBL_MENSAJES (fk_amg_envia, fk_amg_recibe, mensaje, mensaje_fecha) VALUES ('" . $envia . "', '" . $recibe . "', '" . $mensaje . "', NOW());";
+        //echo $sql;
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        }
+        return $response;
+    }
+
+    private function ver_mensaje($envia, $recibe) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "SELECT * FROM `tbl_mensajes` WHERE (`fk_amg_envia` = '" . $envia . "' and `fk_amg_recibe` = '" . $recibe . "' ) or (`fk_amg_envia` = '" . $recibe . "' and `fk_amg_recibe` = '" . $envia . "') order by `mensaje_fecha` asc;";
+        $arreglomensajes = array();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $mensajes = new stdClass();
+            $mensajes->envia = $dataResult->fk_amg_envia;
+            $mensajes->recibe = $dataResult->fk_amg_recibe;
+            $mensajes->mensaje = $dataResult->mensaje;
+            $mensajes->fecha_mensaje = $dataResult->mensaje_fecha;
+            array_push($arreglomensajes, $mensajes);
+        }
+        $response->setDatos($arreglomensajes);
+        return $response;
+    }
+
 }
 
 $usuario = new UsuarioLogic($metodo, $data);
