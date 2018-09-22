@@ -2,6 +2,7 @@
 firebase.initializeApp(config);
 
 $(document).ready(function () {
+
     $("#dialog").dialog({autoOpen: false, title: "Puedes iniciar con tus redes sociales", width: 350, resizable: false});
     $("#Ingresar").on('click', function () {
         if ($("#usuario").val() === "" || $("#clave").val() === "") {
@@ -49,7 +50,7 @@ var facebook = function () {
         // This gives you a Facebook Access Token. You can use it to access the Facebook API.
         var token = result.credential.accessToken;
         // The signed-in user info.
-        var user = result.user;
+        var user = result.user.email;
         consultar_login(user , '' , 'F');
     }).catch(function (error) {
         swal("Tenemos inconvenientes", "Facebook nos envio un mensaje de error. Por favor reintenta", "error");
@@ -63,8 +64,8 @@ function consultar_login(email , clave , origen,usuario,foto){
           "clave": clave,
           "usuario":usuario,
           "foto":foto
-        }; 
-    
+        };
+        console.log("parametros" , parametros);
     $.ajax({
        data: parametros,
        type: 'POST',
