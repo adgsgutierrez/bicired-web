@@ -5,7 +5,11 @@ body{
 input{
     font-family: 'Noticia Text', serif;
 }
-
+#iframe-header{
+  width: 100%;
+    height: 5rem;
+    border: 0px;
+}
 .img-login-slide-1 {
     filter:grayscale(100%);
     background-repeat:no-repeat;
@@ -107,8 +111,9 @@ input{
   border-color: #4CAF50 !important;
 }
 .notificacion{
-  margin-right: -15rem;
-    margin-left: -18rem;
+  display: block;
+  position: absolute;
+  padding: 9px;
 }
 .btn-primary:hover {
     color: #fff;
@@ -146,4 +151,14 @@ input{
     background-clip: padding-box;
     border: 1px solid rgba(0,0,0,.15);
     border-radius: .25rem;
+}
+.input-text-search{
+  width: 100% !important;
+     right: 0px !important;
+    margin: auto;
+    position: absolute;
+    padding: 7px;
+}
+.container{
+      margin-top: 5%;
 }

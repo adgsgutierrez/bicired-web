@@ -2,37 +2,31 @@
 
 require('../head.php');
 require('AmigosDTO.php');
+require('AmigosDTO.php');
 
-class AmigosLogic {
+class IndexAmigosLogic {
 
     private $usuario;
-    private $log;
-    private $location = 'logic/amigos/amigos.php';
 
     public function __construct($metodo, $data) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
         $this->usuario = new stdClass();
-        $this->log = new Log();
         switch ($metodo) {
             case 'GET':
-                if ($data) {
-
-                } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                     $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
-                }
                 break;
             case 'POST':
                 if ($data) {
                     if (isset($data->funcion) && $data->funcion == "eliminar_amigo") {
-                        $response = $this->eliminar_amigo($data->cologeado, $data->coamigo);
+                        $response = AmigoLogic::eliminar_amigo($data->cologeado, $data->coamigo);
                     } else if (isset($data->funcion) && $data->funcion == "verificar") {
-                        $response = $this->verificar($data->cologeado, $data->coamigo);
+                        $response = AmigoLogic::verificar($data->cologeado, $data->coamigo);
                     } else if (!isset($data->funcion)) {
-                        $response = $this->anadir_amigo($data->cologeado, $data->coamigo);
+                        $response = AmigoLogic::anadir_amigo($data->cologeado, $data->coamigo);
                     } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -45,18 +39,16 @@ class AmigosLogic {
                 }
                 break;
             case 'PUT':
-                // echo json_encode($data);
                 if ($data) {
                     if(isset($data->funcion) && $data->funcion  == "desbloquear"){
-                        $response = $this->desbloquear_amigo($data->cologeado, $data->desperfil);
+                        $response = AmigoLogic::desbloquear_amigo($data->cologeado, $data->desperfil);
                     }else if(isset($data->coamigo)){
-                        $response = $this->bloquear_amigo($data->cologeado, $data->coamigo);
+                        $response = AmigoLogic::bloquear_amigo($data->cologeado, $data->coamigo);
                     }else{
                         $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                     $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
                     }
-
                 } else {
                     $response = new RespuestaDTO();
                     $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -67,77 +59,6 @@ class AmigosLogic {
         echo json_encode($response);
     }
 
-    private function anadir_amigo($correolog, $correoami) {
-        $response = new RespuestaDTO();
-        $response->setCodigo(Constante::EXITOSO_CODE);
-        $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "INSERT INTO TBL_AMIGOS (fk_amg_origen, fk_amg_destino, amg_fecha, amg_estado,actu_estado) VALUES ('" . $correolog . "', '" . $correoami . "',SYSDATE(), 'A','');";
-        echo $sql;
-        $result = ConexionDB::consultar($sql);
-        if (!$result) {
-            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
-            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
-        }
-        return $response;
-    }
-
-    private function verificar($correolog, $correoami) {
-        $response = new RespuestaDTO();
-        $response->setCodigo(Constante::EXITOSO_CODE);
-        $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select fk_amg_origen,fk_amg_destino from TBL_AMIGOS where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
-        $usuario = new AmigosDTO();
-        $result = ConexionDB::consultar($sql);
-        while ($dataResult = $result->fetch_object()) {
-            $usuario->fk_amg_origen = $dataResult->fk_amg_origen;
-            $usuario->fk_amg_destino = $dataResult->fk_amg_destino;
-        }
-        $response->setDatos($usuario);
-        return $response;
-    }
-
-    private function eliminar_amigo($correolog, $correoami) {
-        $response = new RespuestaDTO();
-        $response->setCodigo(Constante::EXITOSO_CODE);
-        $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "DELETE from TBL_AMIGOS where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
-        //echo $sql;
-        $result = ConexionDB::consultar($sql);
-        if (!$result) {
-            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
-            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
-        }
-        return $response;
-    }
-
-    private function bloquear_amigo($correolog, $correoami) {
-        $response = new RespuestaDTO();
-        $response->setCodigo(Constante::EXITOSO_CODE);
-        $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "update TBL_AMIGOS set amg_estado = 'S' , actu_estado = '".$correolog."' where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or (fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "')";
-        //echo $sql;
-        $result = ConexionDB::consultar($sql);
-        if (!$result) {
-            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
-            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
-        }
-        return $response;
-    }
-private function desbloquear_amigo($correolog, $correoami) {
-        $response = new RespuestaDTO();
-        $response->setCodigo(Constante::EXITOSO_CODE);
-        $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "update TBL_AMIGOS set amg_estado = 'A' , actu_estado = '' where fk_amg_origen = '" . $correolog . "' and fk_amg_destino = '" . $correoami . "' or fk_amg_origen = '" . $correoami . "' and fk_amg_destino = '" . $correolog . "'";
-        //echo $sql;
-        $result = ConexionDB::consultar($sql);
-        if (!$result) {
-            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
-            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
-        }
-        return $response;
-    }
-
 }
-
-$usuario = new AmigosLogic($metodo, $data);
+$usuario = new IndexAmigosLogic($metodo, $data);
 ?>

@@ -1,5 +1,7 @@
 <?php
-
+/**
+* DTO de la calse amigos
+**/
 class AmigosDTO {
 
     public $fk_amg_origen;

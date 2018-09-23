@@ -8,7 +8,8 @@ var config = {
 };
 
 //var URL_HOST = 'http://localhost/bicired-web/';
-var URL_HOST = 'http://192.168.64.3/bicired-web/';
+//var URL_HOST = 'http://192.168.64.3/bicired-web/';
+var URL_HOST = 'http://bicired.dxexperience.com/';
 var URL_USUARIO = URL_HOST + 'back_end/usuario/';
 var URL_PUBLICACION = URL_HOST + 'back_end/publicacion/';
 var URL_AMIGO = URL_HOST + 'back_end/amigos/';
