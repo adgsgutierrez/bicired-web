@@ -11,6 +11,7 @@
 	include('utils/responseService.php');
 	include('utils/conexionDB.php');
 	include('utils/constante.php');
+	include('utils/utils.php');
 
 	ConexionDB::initDataBase();
 
