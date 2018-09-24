@@ -462,7 +462,7 @@ class UsuarioLogic {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "SELECT * FROM `tbl_mensajes` WHERE (`fk_amg_envia` = '" . $envia . "' and `fk_amg_recibe` = '" . $recibe . "' ) or (`fk_amg_envia` = '" . $recibe . "' and `fk_amg_recibe` = '" . $envia . "') order by `mensaje_fecha` asc;";
+        $sql = "SELECT * FROM `TBL_MENSAJES` WHERE (`fk_amg_envia` = '" . $envia . "' and `fk_amg_recibe` = '" . $recibe . "' ) or (`fk_amg_envia` = '" . $recibe . "' and `fk_amg_recibe` = '" . $envia . "') order by `mensaje_fecha` asc;";
         $arreglomensajes = array();
         $result = ConexionDB::consultar($sql);
         while ($dataResult = $result->fetch_object()) {

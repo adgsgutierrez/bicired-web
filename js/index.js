@@ -50,8 +50,7 @@ var facebook = function () {
         // This gives you a Facebook Access Token. You can use it to access the Facebook API.
         var token = result.credential.accessToken;
         // The signed-in user info.
-        var user = result.user.email;
-        consultar_login(user , '' , 'F');
+        consultar_login(result.user.email , '' , 'F' , result.user.providerData[0].displayName, result.user.photoURL);
     }).catch(function (error) {
         swal("Tenemos inconvenientes", "Facebook nos envio un mensaje de error. Por favor reintenta", "error");
     });

@@ -8,7 +8,13 @@
  **/
 class Constante{
 
-  /** Constantes del sistema**/
+  /** Constantes del sistema
+    const SERVIDOR_DB = 'dxexperience.com';
+    const PUERTO_DB = '3306' ;
+    const BASE_DATOS = 'dxexperi_bici' ;
+    const USUARIO_DB = 'dxexperi_ubici' ;
+    const CLAVE_DB = 'LhwjiU6hqKiS' ;
+**/
     const SERVIDOR_DB = '192.168.64.3';
     const PUERTO_DB = '3306' ;
     const BASE_DATOS = 'bicired' ;

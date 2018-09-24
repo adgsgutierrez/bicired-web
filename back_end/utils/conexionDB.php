@@ -30,6 +30,7 @@ class ConexionDB {
         //$log->sql();
         //$log->insert('Consultando el sql [' . $string . ']', 'conexionDB.php');
         // Conectando al servidor de Base de datos
+        //echo $string;
         $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
         $link->set_charset("utf8");
         $result = $link->query($string);
@@ -39,7 +40,7 @@ class ConexionDB {
         return $datos;
     }
 
-    private static function createTables() {
+    private function createTables() {
         $sql_1 = "CREATE TABLE IF NOT EXISTS TBL_AMIGOS (
       `fk_amg_origen` varchar(150) DEFAULT NULL,
       `fk_amg_destino` varchar(150) DEFAULT NULL,
