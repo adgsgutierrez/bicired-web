@@ -24,33 +24,54 @@
         <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRScgEFeejI1wkkL3hvQOnloHimm7-5mE&callback=mapInit" async ></script>
+        <!-- <script type="text/javascript" src="js/paginaPrincipal.js"></script> -->
         <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/lib/session.js"></script>
         <script type="text/javascript" src="js/crearEvento.js"></script>
+
     </head>
     <body>
-        <nav class="navbar navbar-inverse btn-primary">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" style="font-size: 2rem;">
-                        <img src="img/icon-header.png" class="img-rounded" style="width: 50px;">
-                        <b>BICI-RED</b>
-                    </a>
+      <nav class="navbar navbar-inverse btn-primary">
+          <!-- <div class="container-fluid"> -->
+              <div class="row" style="width: 100%;">
+                <div class="col-xs-3 col-sm-3	col-md-3	col-lg-3"  onclick="location.href = 'paginaPrincipal.html'">
+                      <a class="navbar-brand" style="font-size: 2rem;">
+                          <img src="img/icon-header.png" class="img-rounded" style="width: 50px;">
+                          <b>BICI-RED</b>
+                      </a>
                 </div>
-                <div class="dropdown" style="right: 100px">
+                <div class="col-xs-6 col-sm-6	col-md-6	col-lg-6">
+                  <div class="input-group input-text-search">
+                      <input id="buscar_persona" type="text" class="form-control" placeholder="Buscar..."/>
+                      <button id="buscar_perfil"  class="btn btn-primary input-group-btn" type="button"><i class="fa fa-search"></i></button>
+                  </div>
+                </div>
+
+                <div class="col-xs-3 col-sm-3	col-md-3 col-lg-3">
+                  <div class="dropdown notificacion" style="right: 120px;">
+                    <span class="badge class-badge" id="badge-icon"></span>
+                    <button class="btn btn-primary" type="button" data-toggle="dropdown"><i class="fa fa-bell" aria-hidden="true"></i></button>
+                    <ul class="dropdown-menu" id="menu-notificacion" style="left: -19rem;">
+                      No se encontraron notificaciones
+                    </ul>
+                  </div>
+                  <div class="notificacion" style="right: 60px;">
                     <button type="button" class="btn btn-primary" id="botoninvitaciones" onclick="location.href = 'crearMensaje.html';"><i class="fa fa-envelope"></i></button>
-                    <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a style="cursor:pointer" class="dropdown-item" href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>
-                        <a style="cursor:pointer" class="dropdown-item" href="paginaPrincipal.html"><i class="fas fa-home"></i> Pagina Principal</a>
-                        <a style="cursor:pointer" class="dropdown-item" id="cerrarcrearevento"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
-                    </div>
+                  </div>
+                  <div class="dropdown notificacion" style="right: 0px;">
+                     <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  style="left: 30px; position: relative;top: 37px;">
+                          <a style="cursor:pointer" class="dropdown-item"  href="paginaPrincipal.html"><i class="fa fa-home"></i>Home</a>
+                          <a style="cursor:pointer" class="dropdown-item"  href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>
+                          <a style="cursor:pointer" class="dropdown-item" id="cerrarpaginaprincipal"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
+                      </div>
+                  </div>
                 </div>
-            </div>
-        </nav>
-        <br>
+              </div>
+          <!-- </div> -->
+      </nav>
         <div class="row">
-            <div class="col-sm-10">
+            <div class="col-sm-12">
                 <center><h1>Crea tu Evento</h1></center>
             </div>
         </div>
@@ -60,7 +81,7 @@
         <input type="hidden" id="lt2"/>
         <input type="hidden" id="ln2"/>
 
-        <div id = "container" class="col-sm-10 ">
+        <div id = "container" class="col-sm-12 ">
 
         </div>
         <br><br><br>

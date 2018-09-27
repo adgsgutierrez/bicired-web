@@ -1,7 +1,7 @@
 <?php
 
 require('../head.php');
-require('AmigosDTO.php');
+require('AmigosLogica.php'); 
 require('AmigosDTO.php');
 
 class IndexAmigosLogic {

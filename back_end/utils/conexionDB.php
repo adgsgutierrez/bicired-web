@@ -9,7 +9,6 @@
 class ConexionDB {
 
     private $link;
-    private $log;
 
     public static function initDataBase() {
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=" . Constante::BASE_DATOS;
@@ -42,7 +41,7 @@ class ConexionDB {
 
     public static function consultar($string) {
         // Conectando al servidor de Base de datos
-        $link = new mysqli(Constante::SERVIDOR_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
+        $link = new mysqli(Constante::SERVIDOR_DB .":".Constante::PUERTO_DB, Constante::USUARIO_DB, Constante::CLAVE_DB, Constante::BASE_DATOS);
         $link->set_charset("utf8");
         $result = $link->query($string);
         //copiando los datos para retornarlos

@@ -162,3 +162,12 @@ input{
 .container{
       margin-top: 5%;
 }
+.contacts-chat{
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border-radius: 18px;
+  padding: 16px;
+  border: .5px solid #4daf50;
+  margin: 10px;
+}

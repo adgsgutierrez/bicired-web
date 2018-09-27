@@ -9,7 +9,7 @@
 class Constante{
 
   /** Constantes del sistema**/
-    const SERVIDOR_DB = 'dxexperience';
+    const SERVIDOR_DB = 'dxexperience.com';
     const PUERTO_DB = '3306' ;
     const BASE_DATOS = 'dxexperi_bici' ;
     const USUARIO_DB = 'dxexperi_ubici' ;

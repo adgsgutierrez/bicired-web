@@ -52,7 +52,7 @@ class IndexUsuarioLogic {
             case 'POST':
                 if ($data) {
                     if (!isset($data->funcion)) {
-                        $response = $this->consultar_sesion($data->correo, $data->clave, $data->origen, $data->usuario, $data->foto);
+                        $response =UsuarioLogic::consultar_sesion($data->correo, $data->clave, $data->origen, $data->usuario, $data->foto);
                     } else if ($data->funcion == "amigos") {
                         $response = UsuarioLogic::amigos($data->cologeado);
                     } else if ($data->funcion == "amigos_bloqueados") {

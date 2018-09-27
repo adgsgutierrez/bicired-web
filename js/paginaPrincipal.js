@@ -180,50 +180,61 @@ var CrearEvento = function () {
     location.href = "crearEvento.html";
 }
 
-mapInit = function () {
-    mapas.map((mapa) => {
-        var ltg_o = parseFloat(mapa.ltd_o);
-        var lng_o = parseFloat(mapa.lng_o);
-        var ltg_d = parseFloat(mapa.ltd_d);
-        var lng_d = parseFloat(mapa.lng_d);
-        //get api uses
-        var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer;
-        //waypoints to add
-        var waypts = [
-            {location: {lat: ltg_o, lng: lng_o}, stopover: true},
-            {location: {lat: ltg_d, lng: lng_d}, stopover: true}];
-        var coordenada = {
-            lat: waypts[0].location.lat,
-            lng: waypts[0].location.lng
-        };
-        map = new google.maps.Map(document.getElementById('map_' + mapa.id), {
-            center: coordenada,
-            zoom: 14,
-            type: "ROADMAP",
-            zoomControl: true,
-            mapTypeControl: false,
-            scaleControl: false,
-            streetViewControl: true,
-            rotateControl: false,
-            fullscreenControl: false
-        });
-        directionsDisplay.setMap(map);
-        directionsService.route({
-            origin: {lat: waypts[0].location.lat, lng: waypts[0].location.lng}, //db waypoint start
-            destination: {lat: waypts[0].location.lat, lng: waypts[0].location.lng}, //db waypoint end
-            waypoints: waypts,
-            travelMode: google.maps.TravelMode.WALKING
-        }, function (response, status) {
-            if (status === google.maps.DirectionsStatus.OK) {
-                directionsDisplay.setDirections(response);
-            } else {
-                console.log('Ha fallado la comunicación con el mapa a causa de: ' + status);
-                swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
-            }
-        });
-    });
+var map_recursive = (index)=>{
+  var ltg_o = parseFloat(mapas[index].ltd_o);
+  var lng_o = parseFloat(mapas[index].lng_o);
+  var ltg_d = parseFloat(mapas[index].ltd_d);
+  var lng_d = parseFloat(mapas[index].lng_d);
+  //get api uses
+  var directionsService = new google.maps.DirectionsService;
+  var directionsDisplay = new google.maps.DirectionsRenderer;
+  //waypoints to add
+  var waypts = [
+      {location: {lat: ltg_o, lng: lng_o}, stopover: true},
+      {location: {lat: ltg_d, lng: lng_d}, stopover: true}];
+  var coordenada = {
+      lat: waypts[0].location.lat,
+      lng: waypts[0].location.lng
+  };
+  map = new google.maps.Map(document.getElementById('map_' + mapas[index].id), {
+      center: coordenada,
+      zoom: 14,
+      type: "ROADMAP",
+      zoomControl: true,
+      mapTypeControl: false,
+      scaleControl: false,
+      streetViewControl: true,
+      rotateControl: false,
+      fullscreenControl: false
+  });
+  directionsDisplay.setMap(map);
+  directionsService.route({
+      origin: {lat: waypts[0].location.lat, lng: waypts[0].location.lng}, //db waypoint start
+      destination: {lat: waypts[0].location.lat, lng: waypts[0].location.lng}, //db waypoint end
+      waypoints: waypts,
+      travelMode: google.maps.TravelMode.WALKING
+  }, function (response, status) {
+      if (status === google.maps.DirectionsStatus.OK) {
+          directionsDisplay.setDirections(response);
+          index = index + 1;
+          if(mapas.length > index){
+              map_recursive(index);
+          }
+      } else {
+          console.log('Ha fallado la comunicación con el mapa a causa de: ' + status);
+          swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
+      }
+  });
 }
+
+mapInit = function () {
+  index = 0;
+  if(mapas.length > index){
+      map_recursive(index);
+  }
+}
+
+
 
 
 
