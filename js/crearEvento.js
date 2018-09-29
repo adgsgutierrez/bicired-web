@@ -11,8 +11,8 @@ var marker1;
 var marker2;
 var bool = false;
 /**
-* Metodo inicial de carga de la pagina
-**/
+ * Metodo inicial de carga de la pagina
+ **/
 $(document).ready(function () {
     isSession();
     email = sessionStorage.getItem(USUARIO_SESSION);
@@ -23,14 +23,14 @@ $(document).ready(function () {
 });
 
 /**
-* Init los mapas
-**/
-var renderMapa = function (latitud , longitud) {
+ * Init los mapas
+ **/
+var renderMapa = function (latitud, longitud) {
     var container = '';
     container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
     container = container + '<p class="card-text">' + email + '</p><p class="card-text" id="parrafo"></p>';
     container = container + '<div class="row"><div class="col-sm-5"><input class="form-control" id="datetimepicker10" readonly/></div>';
-    container = container + '<div class="col-sm-5" style="position:relative;top:-32px;margin-left: 60px;"><label>Amigos a Invitar</label><br><select id="amigos" name="amigos" multiple></select></div></div>';
+    container = container + '<div class="col-sm-5" style="position:relative;top:-32px;margin-left: 60px;"><label>Amigos a Invitar</label><br><select class="selectpicker" id="amigos" name="amigos" title="Seleccione" multiple></select></div></div>';
     container = container + '<br><button style="float: right;" class="btn btn-primary" onclick="guardar()">Guardar Evento</button><button style="float: left;" class="btn btn-primary" onclick="cancelar()">Cancelar</button></div></div>';
     $("#container").append(container);
     var coordenada = {
@@ -48,17 +48,17 @@ var renderMapa = function (latitud , longitud) {
         type: 'POST',
         url: URL_USUARIO,
         success: function (data) {
-            console.log("data",data);
+            console.log("data", data);
             data = JSON.parse(data);
-            if(data.datos.length > 0){
-              $.each(data.datos, function (key, value) {
-                  $("#amigos").append('<option value=' + value.id + '>' + value.label + '</option>');
-              });
-            }else{
-              $("#amigos").append('<option value="" disabled> No tienes personas para invitar</option>');
+            if (data.datos.length > 0) {
+                $.each(data.datos, function (key, value) {
+                    $("#amigos").append('<option value=' + value.id + '>' + value.label + '</option>');
+                });
+            } else {
+                $("#amigos").append('<option value="" disabled> No tienes personas para invitar</option>');
             }
-        },error :function(error){
-          console.error(error);
+        }, error: function (error) {
+            console.error(error);
         }
     });
     map = new google.maps.Map(document.getElementById('map'), {
@@ -104,8 +104,8 @@ var renderMapa = function (latitud , longitud) {
     });
 };
 /**
-* Metodo para dibujar la linea de ruta del mapa
-**/
+ * Metodo para dibujar la linea de ruta del mapa
+ **/
 function lineaRuta(lat1, lng1, lat2, lng2) {
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer;
@@ -131,10 +131,11 @@ function lineaRuta(lat1, lng1, lat2, lng2) {
 }
 function rad(x) {
     return x * Math.PI / 180;
-};
+}
+;
 /**
-* Metodo para calcular la distancia de los puntos
-**/
+ * Metodo para calcular la distancia de los puntos
+ **/
 function getDistance(p1, p2) {
     var R = 6378137; //radio de la tierra en metros
     var dLat = rad(p2.lat() - p1.lat());
@@ -145,15 +146,15 @@ function getDistance(p1, p2) {
     return d;
 }
 /**
-* Metodo para guardar el evento
-**/
-var guardar = function() {
+ * Metodo para guardar el evento
+ **/
+var guardar = function () {
     if ($("#datetimepicker10").val() === "") {
         swal("Se Detecto un Problema", "No ha Ingresado la Fecha", "error");
     } else if (lt1 === "" || ln1 === "" || lt2 === "" || ln2 === "") {
         swal("Se Detecto un Problema", "No ha Ingresado Correctamente la Ruta", "error");
     } else {
-      //lat1, lng1, lat2, lng2
+        //lat1, lng1, lat2, lng2
         var parametros = {
             fecha: $("#datetimepicker10").val(),
             lt1: lat1,
@@ -169,46 +170,46 @@ var guardar = function() {
             url: URL_PUBLICACION,
             type: 'POST',
             success: function (data) {
-              console.log("data",data);
+                console.log("data", data);
                 swal({
                     title: "Todo Correcto",
                     text: 'El Evento Fue Creado Con Exito',
                     type: "success"
                 },
-                function () {
-                    if ($(".selectpicker").val()) {
-                        var parametro = {usuario: email,
-                            invitados: $(".selectpicker").val(), idpublicacion: data};
-                        $.ajax({
-                            data:parametro,
-                            type: 'POST',
-                            url:URL_PUBLICACION
+                        function () {
+                            if ($(".selectpicker").val()) {
+                                var parametro = {usuario: email,
+                                    invitados: $(".selectpicker").val(), idpublicacion: data};
+                                $.ajax({
+                                    data: parametro,
+                                    type: 'POST',
+                                    url: URL_PUBLICACION
+                                });
+                            }
+                            window.location.href = 'paginaPrincipal.html';
                         });
-                    }
-                    window.location.href = 'paginaPrincipal.html';
-                });
             }
         });
         console.log(parametros);
     }
 }
 /**
-* Metodo para obtener la ubicacion de la persona
-**/
-var mapInit = function() {
-  $.ajax({
-      type: 'GET',
-      url: 'https://ipinfo.io/geo',
-      success: function (data) {
-          console.log(data);
-          var ubicacion = data.loc.split(',');
-          renderMapa(parseFloat(ubicacion[0]),parseFloat(ubicacion[1]));
-      }
-  });
+ * Metodo para obtener la ubicacion de la persona
+ **/
+var mapInit = function () {
+    $.ajax({
+        type: 'GET',
+        url: 'https://ipinfo.io/geo',
+        success: function (data) {
+            console.log(data);
+            var ubicacion = data.loc.split(',');
+            renderMapa(parseFloat(ubicacion[0]), parseFloat(ubicacion[1]));
+        }
+    });
 }
 /**
-* Metodo para cancelar la operacion de crear evento
-**/
+ * Metodo para cancelar la operacion de crear evento
+ **/
 function cancelar() {
     location.href = "crearEvento.html";
 }
