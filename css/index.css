@@ -174,3 +174,6 @@ input{
 #imagen{
     border-radius: 50%;   
 }
+#datatableamigos_wrapper{
+    width: 100%;
+}
