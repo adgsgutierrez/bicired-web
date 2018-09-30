@@ -24,52 +24,53 @@
         <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
         <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRScgEFeejI1wkkL3hvQOnloHimm7-5mE&callback=mapInit" async ></script>-->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+        <link rel="stylesheet" href="https://cdn.datatables.net/plug-ins/1.10.19/i18n/English.json"/>
         <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/lib/session.js"></script>
         <script type="text/javascript" src="js/perfil.js"></script>
-        <script type="text/javascript" src="js/paginaPrincipal.js"></script>
+        <!--        <script type="text/javascript" src="js/paginaPrincipal.js"></script>-->
     </head>
     <body>
-      <nav class="navbar navbar-inverse btn-primary">
-          <!-- <div class="container-fluid"> -->
-              <div class="row" style="width: 100%;">
+        <nav class="navbar navbar-inverse btn-primary">
+            <!-- <div class="container-fluid"> -->
+            <div class="row" style="width: 100%;">
                 <div class="col-xs-3 col-sm-3	col-md-3	col-lg-3"  onclick="location.href = 'paginaPrincipal.html'">
-                      <a class="navbar-brand" style="font-size: 2rem;">
-                          <img src="img/icon-header.png" class="img-rounded" style="width: 50px;">
-                          <b>BICI-RED</b>
-                      </a>
+                    <a class="navbar-brand" style="font-size: 2rem;">
+                        <img src="img/icon-header.png" class="img-rounded" style="width: 50px;">
+                        <b>BICI-RED</b>
+                    </a>
                 </div>
                 <div class="col-xs-6 col-sm-6	col-md-6	col-lg-6">
-                  <div class="input-group input-text-search">
-                      <input id="buscar_persona" type="text" class="form-control" placeholder="Buscar..."/>
-                      <button id="buscar_perfil"  class="btn btn-primary input-group-btn" type="button"><i class="fa fa-search"></i></button>
-                  </div>
+                    <div class="input-group input-text-search">
+                        <input id="buscar_persona" type="text" class="form-control" placeholder="Buscar..."/>
+                        <button id="buscar_perfil"  class="btn btn-primary input-group-btn" type="button"><i class="fa fa-search"></i></button>
+                    </div>
                 </div>
 
                 <div class="col-xs-3 col-sm-3	col-md-3 col-lg-3">
-                  <div class="dropdown notificacion" style="right: 120px;">
-                    <span class="badge class-badge" id="badge-icon"></span>
-                    <button class="btn btn-primary" type="button" data-toggle="dropdown"><i class="fa fa-bell" aria-hidden="true"></i></button>
-                    <ul class="dropdown-menu" id="menu-notificacion" style="left: -19rem;">
-                      No se encontraron notificaciones
-                    </ul>
-                  </div>
-                  <div class="notificacion" style="right: 60px;">
-                    <button type="button" class="btn btn-primary" id="botoninvitaciones" onclick="location.href = 'crearMensaje.html';"><i class="fa fa-envelope"></i></button>
-                  </div>
-                  <div class="dropdown notificacion" style="right: 0px;">
-                     <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  style="left: 30px; position: relative;top: 37px;">
-                          <a style="cursor:pointer" class="dropdown-item"  href="paginaPrincipal.html"><i class="fa fa-home"></i>Home</a>
-                          <a style="cursor:pointer" class="dropdown-item"  href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>
-                          <a style="cursor:pointer" class="dropdown-item" id="cerrarpaginaprincipal"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
-                      </div>
-                  </div>
+                    <div class="dropdown notificacion" style="right: 120px;">
+                        <span class="badge class-badge" id="badge-icon"></span>
+                        <button class="btn btn-primary" type="button" data-toggle="dropdown"><i class="fa fa-bell" aria-hidden="true"></i></button>
+                        <ul class="dropdown-menu" id="menu-notificacion" style="left: -19rem;">
+                            No se encontraron notificaciones
+                        </ul>
+                    </div>
+                    <div class="notificacion" style="right: 60px;">
+                        <button type="button" class="btn btn-primary" id="botoninvitaciones" onclick="location.href = 'crearMensaje.html';"><i class="fa fa-envelope"></i></button>
+                    </div>
+                    <div class="dropdown notificacion" style="right: 0px;">
+                        <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  style="left: 30px; position: relative;top: 37px;">
+                            <a style="cursor:pointer" class="dropdown-item"  href="paginaPrincipal.html"><i class="fa fa-home"></i>Home</a>
+                            <a style="cursor:pointer" class="dropdown-item"  href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>
+                            <a style="cursor:pointer" class="dropdown-item" id="cerrarpaginaprincipal"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
+                        </div>
+                    </div>
                 </div>
-              </div>
-          <!-- </div> -->
-      </nav>
+            </div>
+            <!-- </div> -->
+        </nav>
         <div class="container" >
             <div class="row">
                 <div class="col-sm-3">
@@ -157,7 +158,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <table id="datatableeliminar" class="table table-bordered display nowrap table-responsive" style="width: 100%"></table>
+                            <table id="datatableeliminar" class="table table-striped table-bordered" style="width: 100%"></table>
                         </div>
                         <div class="modal-footer">
                         </div>
@@ -167,12 +168,12 @@
         </div>
         <br><br><br>
         <div class="container" id="contamigos" style="visibility: hidden">
-            <div class="row col-sm-10">
+            <div class="row col-sm-12">
                 <span style="font-size:36px">Amigos <i class="fa fa-users" style="font-size:36px"></i></span>
             </div>
             <br>
-            <div class="row col-sm-10">
-                <table id="datatableamigos" class="table table-bordered" style="width: 100%"></table>
+            <div class="row col-sm-12">
+                <table id="datatableamigos" class="table table-striped table-bordered" style="width: 100%"></table>
             </div>
         </div>
         <br><br>
