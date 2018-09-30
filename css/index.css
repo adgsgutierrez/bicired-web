@@ -171,3 +171,36 @@ input{
   border: .5px solid #4daf50;
   margin: 10px;
 }
+.header-chat{
+  height: 80px;
+  /* border-bottom: 2px solid darkgray; */
+  border-left: 0.5px solid #4daf50;
+  border-bottom: 0.5px solid #4daf50;
+  border-right: 0.5px solid #4daf50;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 0px 0px 20px 20px;
+  margin-bottom: 3rem;
+}
+.item-send-chat{
+  width: auto;
+  height: auto;
+  text-align: right;
+  background: #5bb962;
+  padding: 9px;
+  position: absolute;
+  right: 10px;
+  border-radius: 15px 15px 0px;
+  color: white;
+}
+.item-recevied-chat{
+  width: auto;
+  height: auto;
+  text-align: left;
+  background: #3F51B5;
+  padding: 9px;
+  position: absolute;
+  left: 10px;
+  border-radius: 15px 15px 15px 0pc;
+  color: white;
+}
