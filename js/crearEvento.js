@@ -20,6 +20,7 @@ $(document).ready(function () {
         sessionStorage.clear();
         location.href = "index.html";
     });
+
 });
 
 /**
@@ -30,7 +31,7 @@ var renderMapa = function (latitud, longitud) {
     container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
     container = container + '<p class="card-text">' + email + '</p><p class="card-text" id="parrafo"></p>';
     container = container + '<div class="row"><div class="col-sm-5"><input class="form-control" id="datetimepicker10" readonly/></div>';
-    container = container + '<div class="col-sm-5" style="position:relative;top:-32px;margin-left: 60px;"><label>Amigos a Invitar</label><br><select class="selectpicker" id="amigos" name="amigos" title="Seleccione" multiple></select></div></div>';
+    container = container + '<div class="col-sm-5" style="position:relative;top:-32px;margin-left: 60px;"><label>Amigos a Invitar</label><br><select id="amigos" name="amigos" title="Seleccione" multiple></select></div></div>';
     container = container + '<br><button style="float: right;" class="btn btn-primary" onclick="guardar()">Guardar Evento</button><button style="float: left;" class="btn btn-primary" onclick="cancelar()">Cancelar</button></div></div>';
     $("#container").append(container);
     var coordenada = {
@@ -170,7 +171,6 @@ var guardar = function () {
             url: URL_PUBLICACION,
             type: 'POST',
             success: function (data) {
-                console.log("data", data);
                 swal({
                     title: "Todo Correcto",
                     text: 'El Evento Fue Creado Con Exito',

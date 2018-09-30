@@ -82,5 +82,41 @@ class PublicacionLogic{
       $response->setDatos($fotos);
       return $response;
   }
+  
+    public static function insertar_megusta($id, $correo) {
+        $response = new RespuestaDTO();
+        $sql = "insert into TBL_MEGUSTA (fk_pbl_id,estado_me_gusta,persona_me_gusta)VALUES (" . $id . ",'A','" . $correo . "')";
+        $result = ConexionDB::consultar($sql);
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_CODE);
+        return $response;
+    }
+
+    public static function actualizar_megusta($id, $correo) {
+        $response = new RespuestaDTO();
+        $sql = "update TBL_MEGUSTA set estado_me_gusta = 'D' where persona_me_gusta = '" . $correo . "' and fk_pbl_id=" . $id . "";
+        $result = ConexionDB::consultar($sql);
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_CODE);
+        return $response;
+    }
+
+    public static function mostrar_megusta($id, $correo) {
+        $response = new RespuestaDTO();
+        $sql = "select * from TBL_MEGUSTA where estado_me_gusta = 'A' and persona_me_gusta = '" . $correo . "'  and fk_pbl_id = " . $id . "";
+        $result = ConexionDB::consultar($sql);
+        $megustas = array();
+        while ($dataResult = $result->fetch_object()) {
+            $megusta = new stdClass();
+            $megusta->fk_pbl_id = $dataResult->fk_pbl_id;
+            $megusta->estado_me_gusta = $dataResult->estado_me_gusta;
+            $megusta->persona_me_gusta = $dataResult->persona_me_gusta;
+            array_push($megustas, $megusta);
+        }
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_CODE);
+        $response->setDatos($megustas);
+        return $response;
+    }
 }
 ?>

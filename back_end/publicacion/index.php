@@ -33,9 +33,15 @@ class IndexPublicacionLogic {
                 if ($data) {
                     if (isset($data->invitados)) {
                         $response = PublicacionLogic::invitar_amigos($data->invitados, $data->usuario, $data->idpublicacion);
-                    } else if (!isset($data->invitados)) {
+                    } else if (isset($data->usuario)) {
                         $response = PublicacionLogic::registar_publicacion($data->fecha, $data->lt1, $data->ln1, $data->lt2, $data->ln2, $data->descripcion, $data->usuario);
-                    } else {
+                    } else if ($data->funcion == "ver_megusta") {
+                        $response = PublicacionLogic::mostrar_megusta($data->id_publicacion, $data->correo);
+                    } else if ($data->funcion == "actualizar_megusta") {
+                        $response = PublicacionLogic::actualizar_megusta($data->id_publicacion, $data->correo);
+                    } else if ($data->funcion == "insertar_megusta") {
+                        $response = PublicacionLogic::insertar_megusta($data->id_publicacion, $data->correo);
+                    }else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);

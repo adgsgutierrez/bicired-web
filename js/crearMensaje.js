@@ -1,7 +1,7 @@
 $(document).ready(function () {
     isSession();
     correo = sessionStorage.getItem(USUARIO_SESSION);
-    $("#cerrarmensajes").on("click", function () {
+    $("#cerrarpaginaprincipal").on("click", function () {
         sessionStorage.clear();
         location.href = "index.html";
     });
