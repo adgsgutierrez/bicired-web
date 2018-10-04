@@ -45,6 +45,7 @@
                     <div class="input-group input-text-search">
                         <input id="buscar_persona" type="text" class="form-control" placeholder="Buscar..."/>
                         <button id="buscar_perfil"  class="btn btn-primary input-group-btn" type="button"><i class="fa fa-search"></i></button>
+                        <button data-toggle="modal" data-target="#filtrobusqueda" id="busquedaavanzada"  class="btn btn-primary input-group-btn" type="button">Busqueda Avanzada</button>
                     </div>
                 </div>
 
@@ -162,6 +163,48 @@
                         </div>
                         <div class="modal-footer">
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="filtrobusqueda" tabindex="-1" role="dialog" aria-labelledby="filtrobusqueda" aria-hidden="true" >
+            <div class="modal-dialog modal-lg" style="width: 800px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Buscar Persona</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Edad</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <label>De </label>
+                            </div>
+                            <div class="col-sm-5" style="text-align: center">
+                                <input id="edadinicio" class="form-control" readonly="readonly"/>
+                            </div>
+                            <div class="col-sm-1" style="text-align: center">
+                                <label> A </label>
+                            </div>
+                            <div class="col-sm-5" style="text-align: center">
+                                <input id="edadfin" class="form-control" readonly="readonly"/>
+                            </div>
+                        </div>
+                        <label>Genero</label>
+                        <select class="form-control" id="generoac">
+                            <option value="">Seleccione</option>
+                            <option value="M">Hombre</option>
+                            <option value="F">Mujer</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="actualizar_perfil" type="button" class="btn btn-primary"><i class="fa fa-save"></i> Buscar Persona</button>
                     </div>
                 </div>
             </div>

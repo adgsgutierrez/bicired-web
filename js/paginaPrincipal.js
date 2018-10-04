@@ -160,7 +160,7 @@ $(document).ready(function () {
 
                     });
                     console.log(parametros_mapa);
-                    container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map_' + mapa.id + '" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
+                    container = container + '<br><div class="card col-centrada" style="width: 95%;"><div class="card-body"><div id="map_' + mapa.id + '" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
                     container = container + '<p class="card-text">' + mapa.usuario + ' invitó a un evento el día ' + mapa.fecha + '<br>' + mapa.descripcion + '</p>';
                     container = container + '<div id="cajamegusta' + mapa.id + '" style="float: left;"></div>';
                     var TMPDate = (mapa.number_fecha.split(" ")[0]).split("-");
