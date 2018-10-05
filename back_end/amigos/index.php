@@ -1,7 +1,7 @@
 <?php
 
 require('../head.php');
-require('AmigosLogica.php'); 
+require('AmigosLogica.php');
 require('AmigosDTO.php');
 
 class IndexAmigosLogic {
@@ -15,9 +15,9 @@ class IndexAmigosLogic {
         $this->usuario = new stdClass();
         switch ($metodo) {
             case 'GET':
-                    $response = new RespuestaDTO();
-                    $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
-                    $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
+                $response = new RespuestaDTO();
+                $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
+                $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
                 break;
             case 'POST':
                 if ($data) {
@@ -25,6 +25,9 @@ class IndexAmigosLogic {
                         $response = AmigoLogic::eliminar_amigo($data->cologeado, $data->coamigo);
                     } else if (isset($data->funcion) && $data->funcion == "verificar") {
                         $response = AmigoLogic::verificar($data->cologeado, $data->coamigo);
+                    } else if (isset($data->funcion) && $data->funcion == "lista_comunidades") {
+
+                        $response = AmigoLogic::lista_comunidades();
                     } else if (!isset($data->funcion)) {
                         $response = AmigoLogic::anadir_amigo($data->cologeado, $data->coamigo);
                     } else {
@@ -40,14 +43,16 @@ class IndexAmigosLogic {
                 break;
             case 'PUT':
                 if ($data) {
-                    if(isset($data->funcion) && $data->funcion  == "desbloquear"){
+                    if ($data->funcion == "desbloquear") {
                         $response = AmigoLogic::desbloquear_amigo($data->cologeado, $data->desperfil);
-                    }else if(isset($data->coamigo)){
+                    } else if ($data->funcion == "crear_comunidad") {
+                        $response = AmigoLogic::crear_comunidad($data->correo, $data->nombre_comunidad);
+                    } else if (isset($data->coamigo)) {
                         $response = AmigoLogic::bloquear_amigo($data->cologeado, $data->coamigo);
-                    }else{
+                    } else {
                         $response = new RespuestaDTO();
-                    $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
-                    $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
+                        $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
+                        $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
                     }
                 } else {
                     $response = new RespuestaDTO();
@@ -60,5 +65,6 @@ class IndexAmigosLogic {
     }
 
 }
+
 $usuario = new IndexAmigosLogic($metodo, $data);
 ?>

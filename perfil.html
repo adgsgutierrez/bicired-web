@@ -24,7 +24,6 @@
         <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
         <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRScgEFeejI1wkkL3hvQOnloHimm7-5mE&callback=mapInit" async ></script>-->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
-        <link rel="stylesheet" href="https://cdn.datatables.net/plug-ins/1.10.19/i18n/English.json"/>
         <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/lib/session.js"></script>
@@ -77,7 +76,7 @@
                 <div class="col-sm-3">
                     <img id="imagen" style="width:100%; border-radius: 50%;" src="" >
                 </div>
-                <div class="col-sm-5" style="top: 100px">
+                <div class="col-sm-5" style="top: 60px">
                     <div class="col-sm-12">
                         <label style="font-size:32px" id="nombreP"></label>
                     </div>
@@ -87,8 +86,11 @@
                     <div class="col-sm-12">
                         <label style="font-size:24px" id="generoP"></label>
                     </div>
+                    <div class="col-sm-12">
+                        <label style="font-size:24px" id="edadP"></label>
+                    </div>
                 </div>
-                <div class="col-sm-4" style="top: 80px">
+                <div class="col-sm-4" style="top: 60px">
                     <div class="row">
                         <div class="col-sm-6">
                             <button id="aaaaaa" class="btn btn-primary"><i class="fa fa-plus-square"></i> Añadir Amigo</button>
@@ -108,7 +110,12 @@
                             <button id="eliminaramigos" class="btn btn-primary"><i class="fa fa-trash"></i> Eliminar Amigo</button>
                         </div>
                         <div class="col-sm-6">
-                            <button id="bloquearamigos" class="btn btn-primary"><i class="fa fa-ban"></i> Bloquear Amigo</button>
+                            <button  id="bloquearamigos" class="btn btn-primary"><i class="fa fa-ban"></i> Bloquear Amigo</button>
+                        </div>
+                    </div>
+                    <div class="row" id="cajamiscomunidades">
+                        <div class="col-sm-6">
+                            <button data-toggle="modal" data-target="#comunidad" id="miscomunidades" class="btn btn-primary"><i class="fa fa-list-alt"></i> Mis Comunidades</button>
                         </div>
                     </div>
                     <br>
@@ -142,6 +149,8 @@
                                 <option value="M">Hombre</option>
                                 <option value="F">Mujer</option>
                             </select>
+                            <label>Edad</label>
+                            <input id="edadac" type="text" class="form-control"/>
                         </div>
                         <div class="modal-footer">
                             <button id="actualizar_perfil" type="button" class="btn btn-primary"><i class="fa fa-save"></i> Actualizar Perfil</button>
@@ -162,6 +171,7 @@
                             <table id="datatableeliminar" class="table table-striped table-bordered" style="width: 100%"></table>
                         </div>
                         <div class="modal-footer">
+
                         </div>
                     </div>
                 </div>
@@ -179,7 +189,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <label>Edad</label>
+                                <label>Edad a buscar:</label>
                             </div>
                         </div>
                         <div class="row">
@@ -187,24 +197,61 @@
                                 <label>De </label>
                             </div>
                             <div class="col-sm-5" style="text-align: center">
-                                <input id="edadinicio" class="form-control" readonly="readonly"/>
+                                <input id="edadinicio" class="form-control"/>
                             </div>
                             <div class="col-sm-1" style="text-align: center">
                                 <label> A </label>
                             </div>
                             <div class="col-sm-5" style="text-align: center">
-                                <input id="edadfin" class="form-control" readonly="readonly"/>
+                                <input id="edadfin" class="form-control"/>
                             </div>
                         </div>
                         <label>Genero</label>
-                        <select class="form-control" id="generoac">
-                            <option value="">Seleccione</option>
+                        <select class="form-control" id="generoacb">
+                            <option value="0">Seleccione</option>
                             <option value="M">Hombre</option>
                             <option value="F">Mujer</option>
                         </select>
+                        <button id="buscar_perfil_filtro" type="button" class="btn btn-primary" style="float: right;margin-top: 20px;"><i class="	fa fa-search"></i> Buscar Persona</button>
                     </div>
                     <div class="modal-footer">
-                        <button id="actualizar_perfil" type="button" class="btn btn-primary"><i class="fa fa-save"></i> Buscar Persona</button>
+                        <div class="col-sm-12">
+                            <table id="datatableavanzado" class="table table-striped table-bordered" style="width: 100%;"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="comunidad" tabindex="-1" role="dialog" aria-labelledby="comunidad" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" style="width: 770px">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Mis Comunidades</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="datatablecomunidad" class="table table-striped table-bordered" style="width: 100%"></table>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="cuerpocomunidad" class="col-sm-12" style="display: none">
+                            <div class="col-sm-12">
+                                <h3>Crear Comunidad</h3>
+                            </div>
+                            <div class="col-sm-12" style="margin-top: 20px;">
+                                <div class="col-sm-10">
+                                    <label>Nombre Comunidad</label>
+                                    <input type="text" id="nombre_co" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-12" style="margin-top: 20px;">
+                                <div class="col-sm-12" style="text-align: center">
+                                    <button type="button" class="btn btn-primary" id="crear_co">Crear Comunidad</button>
+                                </div>
+                            </div>
+                        </div>
+                        <span id="crearcomunidad" aria-hidden="true"><i class="fa fa-plus"></i></span>
                     </div>
                 </div>
             </div>

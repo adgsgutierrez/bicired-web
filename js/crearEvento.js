@@ -10,12 +10,90 @@ var email;
 var marker1;
 var marker2;
 var bool = false;
+var buscador;
 /**
  * Metodo inicial de carga de la pagina
  **/
 $(document).ready(function () {
     isSession();
     email = sessionStorage.getItem(USUARIO_SESSION);
+    $("#buscar_perfil_filtro").on('click', function () {
+        if ($("#edadinicio").val() === "" && $("#edadfin").val() === "" && $("#generoacb option:selected").val() === "0") {
+            swal({
+                title: "Debe hacer la busqueda por el rango de edades o por genero",
+                type: "error"
+            });
+        } else if (($("#edadinicio").val() === "" && $("#edadfin").val() !== "") || ($("#edadinicio").val() !== "" && $("#edadfin").val() === "")) {
+            swal({
+                title: "Debe ingresar el rango completo de edades",
+                type: "error"
+            });
+        } else {
+            var parametros = {"correo": email, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.ajax({
+                data: parametros,
+                type: 'POST',
+                url: URL_USUARIO,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data) {
+                        var table = $("#datatableavanzado").DataTable({
+                            "language": {
+                                "sProcessing": "Procesando...",
+                                "sLengthMenu": "Mostrar _MENU_ registros",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "sEmptyTable": "Ningun dato disponible en esta tabla",
+                                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                "sInfoPostFix": "",
+                                "sSearch": "Buscar:",
+                                "sUrl": "",
+                                "sInfoThousands": ",",
+                                "sLoadingRecords": "Cargando...",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Ultimo",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                }
+                            },
+                            destroy: true,
+                            data: data.data,
+                            columns: data.header
+                        });
+                        $('#datatableavanzado tbody').on('click', 'tr', function () {
+                            sessionStorage.setItem(USUARIO_BUSQUEDA, $(this).find("td").eq(2).html());
+                            location.href = "perfil.html";
+
+                        });
+                    }
+                }
+            });
+
+        }
+    });
+    $("#buscar_perfil").on('click', function () {
+        if (buscador !== undefined) {
+            sessionStorage.setItem(USUARIO_BUSQUEDA, buscador);
+            location.href = "perfil.html";
+        } else if (buscador === undefined && $("#buscar_persona").val() !== "") {
+            swal({
+                title: "Esta persona no existe ",
+                type: "error"
+            });
+        } else {
+            swal({
+                title: "El campo esta vacio ",
+                type: "error"
+            });
+        }
+
+    });
     $("#cerrarcrearevento").on("click", function () {
         sessionStorage.clear();
         location.href = "index.html";

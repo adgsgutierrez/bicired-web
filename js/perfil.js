@@ -2,9 +2,91 @@ var busqueda;
 var perfilini;
 $(document).ready(function () {
     isSession();
-
     perfilini = sessionStorage.getItem(USUARIO_SESSION);
+    $("#crearcomunidad").on('click', function () {
+        $("#cuerpocomunidad").css("display", "block");
+        $("#nombre_co").val("");
+    });
+    $("#crear_co").on('click', function () {
+        if ($("#nombre_co").val() === "") {
+            swal({
+                title: "El campo nombre esta vacio",
+                type: "error"
+            });
+        } else {
+            var parametros = {"correo": perfilini, "nombre_comunidad": $("#nombre_co").val(), "funcion": "crear_comunidad"};
+            $.ajax({
+                data: parametros,
+                type: 'PUT',
+                url: URL_AMIGO,
+                success: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+        $("#cuerpocomunidad").css("display", "none");
+        $("#nombre_co").val("");
+    });
+    $("#buscar_perfil_filtro").on('click', function () {
+        if ($("#edadinicio").val() === "" && $("#edadfin").val() === "" && $("#generoacb option:selected").val() === "0") {
+            swal({
+                title: "Debe hacer la busqueda por el rango de edades o por genero",
+                type: "error"
+            });
+        } else if (($("#edadinicio").val() === "" && $("#edadfin").val() !== "") || ($("#edadinicio").val() !== "" && $("#edadfin").val() === "")) {
+            swal({
+                title: "Debe ingresar el rango completo de edades",
+                type: "error"
+            });
+        } else {
+            var parametros = {"correo": perfilini, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.ajax({
+                data: parametros,
+                type: 'POST',
+                url: URL_USUARIO,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data) {
+                        var table = $("#datatableavanzado").DataTable({
+                            "language": {
+                                "sProcessing": "Procesando...",
+                                "sLengthMenu": "Mostrar _MENU_ registros",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "sEmptyTable": "Ningun dato disponible en esta tabla",
+                                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                "sInfoPostFix": "",
+                                "sSearch": "Buscar:",
+                                "sUrl": "",
+                                "sInfoThousands": ",",
+                                "sLoadingRecords": "Cargando...",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Ultimo",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                }
+                            },
+                            destroy: true,
+                            data: data.data,
+                            columns: data.header
+                        });
+                        $('#datatableavanzado tbody').on('click', 'tr', function () {
+                            sessionStorage.setItem(USUARIO_BUSQUEDA, $(this).find("td").eq(2).html());
+                            location.href = "perfil.html";
 
+                        });
+                    }
+                }
+            });
+
+        }
+    });
     var parametros_lista = {
         "correo": perfilini,
         "funcion": "lista_usuarios"
@@ -24,8 +106,24 @@ $(document).ready(function () {
             });
         }
     });
+    $("#buscar_perfil").on('click', function () {
+        if (buscador !== undefined) {
+            sessionStorage.setItem(USUARIO_BUSQUEDA, buscador);
+            location.href = "perfil.html";
+        } else if (buscador === undefined && $("#buscar_persona").val() !== "") {
+            swal({
+                title: "Esta persona no existe ",
+                type: "error"
+            });
+        } else {
+            swal({
+                title: "El campo esta vacio ",
+                type: "error"
+            });
+        }
 
-    $("#cerrarperfil").on("click", function () {
+    });
+    $("#cerrarpaginaprincipal").on("click", function () {
         sessionStorage.clear();
         location.href = "index.html";
     });
@@ -47,8 +145,10 @@ $(document).ready(function () {
         $("#editar").css("display", "none");
         $("#amibloqueados").css("display", "none");
         $("#contamigos").css("display", "none");
+        $("#cajamiscomunidades").css("display", "none");
     } else if (busqueda === perfilini) {
         $("#contamigos").css("visibility", "visible");
+        $("#cajamiscomunidades").css("visibility", "visible");
         $("#aaaaaa").css("display", "none");
         $("#perfillogea").css("display", "none");
     }
@@ -65,7 +165,6 @@ $(document).ready(function () {
                     agregar_amigo();
                 });
     });
-
     $("#eliminaramigos").on('click', function () {
         swal({
             title: "Desea eliminar a " + $("#nombreac").val() + " ?",
@@ -79,7 +178,6 @@ $(document).ready(function () {
                     eliminar_amigo();
                 });
     });
-
     $("#bloquearamigos").on('click', function () {
         swal({
             title: "Desea bloquear a " + $("#nombreac").val() + " ?",
@@ -95,23 +193,29 @@ $(document).ready(function () {
     });
 });
 function actualizar_perfil() {
-    var parametros = {"correo": $("#correoac").val(), "nombre": $("#nombreac").val(), "genero": $("#generoac").val(), "funcion": "acperfil"};
-
-    $.ajax({
-        data: parametros,
-        url: URL_USUARIO,
-        type: 'PUT',
-        success: function (data) {
-            if (data) {
-                swal({
-                    title: "Se actualizo correctamente su perfil",
-                    type: "success"
-                }, function () {
-                    location.href = "perfil.html";
-                });
+    var parametros = {"correo": $("#correoac").val(), "nombre": $("#nombreac").val(), "genero": $("#generoac").val(), "edad": $("#edadac").val(), "funcion": "acperfil"};
+    if ($("#correoac").val() === "" || $("#nombreac").val() === "" || $("#generoac").val() === "" || $("#edadac").val() === "") {
+        swal({
+            title: "Hay un campo vacío",
+            type: "error"
+        });
+    } else {
+        $.ajax({
+            data: parametros,
+            url: URL_USUARIO,
+            type: 'PUT',
+            success: function (data) {
+                if (data) {
+                    swal({
+                        title: "Se actualizo correctamente su perfil",
+                        type: "success"
+                    }, function () {
+                        location.href = "perfil.html";
+                    });
+                }
             }
-        }
-    });
+        });
+    }
 }
 function datos_perfil() {
     var parametros = {"correo": busqueda, "funcion": "datos_perfil"};
@@ -130,6 +234,9 @@ function datos_perfil() {
             }
             $("#correoP").text(data.datos.correo);
             $("#nombreP").text(data.datos.nombre);
+            if (data.datos.edad) {
+                $("#edadP").text(data.datos.edad + " AÃ±os");
+            }
             if (data.datos.foto === null) {
                 if (data.datos.genero === "M") {
                     $("#imagen").attr("src", "img/perfil-hombre.jpg");
@@ -169,12 +276,10 @@ function agregar_amigo() {
                     $("#amigos").css("visibility", "visible");
                     $("#opcionesamigo").css("visibility", "visible");
                 });
-
             }
 
         }
     });
-
 }
 
 function verificacion_amistad() {
@@ -277,7 +382,6 @@ function amigos_bloqueados() {
                 data: data.data,
                 columns: data.header
             });
-
             $('#datatableeliminar tbody').on('click', 'button', function () {
                 var datos = table.row($(this).parents('tr')).data();
                 console.log(datos.correo);
@@ -339,7 +443,6 @@ function amigos() {
                 data: data.data,
                 columns: data.header
             });
-
         }
     });
 }

@@ -12,13 +12,15 @@
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
         <link rel="stylesheet" href="css/sweetalert.css" />
         <link rel="stylesheet" href="css/index.css">
-            <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="js/lib/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
         <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRScgEFeejI1wkkL3hvQOnloHimm7-5mE&callback=mapInit" async ></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/lib/session.js"></script>
         <script type="text/javascript" src="js/paginaPrincipal.js"></script>
@@ -99,7 +101,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <label>Edad</label>
+                                <label>Edad a buscar:</label>
                             </div>
                         </div>
                         <div class="row">
@@ -107,24 +109,27 @@
                                 <label>De </label>
                             </div>
                             <div class="col-sm-5" style="text-align: center">
-                                <input id="edadinicio" class="form-control" readonly="readonly"/>
+                                <input id="edadinicio" class="form-control"/>
                             </div>
                             <div class="col-sm-1" style="text-align: center">
                                 <label> A </label>
                             </div>
                             <div class="col-sm-5" style="text-align: center">
-                                <input id="edadfin" class="form-control" readonly="readonly"/>
+                                <input id="edadfin" class="form-control"/>
                             </div>
                         </div>
                         <label>Genero</label>
-                        <select class="form-control" id="generoac">
-                            <option value="">Seleccione</option>
+                        <select class="form-control" id="generoacb">
+                            <option value="0">Seleccione</option>
                             <option value="M">Hombre</option>
                             <option value="F">Mujer</option>
                         </select>
+                        <button id="buscar_perfil_filtro" type="button" class="btn btn-primary" style="float: right;margin-top: 20px;"><i class="	fa fa-search"></i> Buscar Persona</button>
                     </div>
                     <div class="modal-footer">
-                        <button id="actualizar_perfil" type="button" class="btn btn-primary"><i class="fa fa-save"></i> Buscar Persona</button>
+                        <div class="col-sm-12">
+                            <table id="datatableavanzado" class="table table-striped table-bordered" style="width: 100%;"></table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,8 +139,9 @@
                 <div id = "container" class="col-sm-8">
 
                 </div>
-                <div style="height: 800px;width: 400px;">
-                    <div class="card col-centrada" style="width: 100%;margin-top: 30px;height: 700px"></div>
+                <div style="height: 1000px;width: 400px;">
+                    <div style="text-align: center;margin-top: 20px;"><h3>Comunidades</h3></div>
+                    <div id="listacomunidades" class="card col-centrada" style="width: 100%;margin-top: 30px;height: 950px;overflow-y: scroll;overflow-x: hidden;"></div>
 
                 </div>
             </div>
@@ -199,34 +205,34 @@
         <button class="open-button" onclick="openForm()"><i class="fa fa-commenting" aria-hidden="true"></i></button>
 
         <div class="chat-popup" id="myForm">
-          <div class="list-group form-customize form-container" id="contactos">
-            <div id="usuariosOnline">
-              <a onclick="enviarMensajes(1)" class="list-group-item list-group-item-action">Chat 1</a>
-              <a onclick="enviarMensajes(2)" class="list-group-item list-group-item-action">Chat 2</a>
-              <a onclick="enviarMensajes(3)" class="list-group-item list-group-item-action">Chat 3</a>
+            <div class="list-group form-customize form-container" id="contactos">
+                <div id="usuariosOnline">
+                    <a onclick="enviarMensajes(1)" class="list-group-item list-group-item-action">Chat 1</a>
+                    <a onclick="enviarMensajes(2)" class="list-group-item list-group-item-action">Chat 2</a>
+                    <a onclick="enviarMensajes(3)" class="list-group-item list-group-item-action">Chat 3</a>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn cancel" onclick="closeForm()">Cerrar</button>
+                    </div>
+                </div>
             </div>
-            <br>
-            <div class="row">
-              <div class="col">
-                <button type="button" class="btn cancel" onclick="closeForm()">Cerrar</button>
-              </div>
+            <div class="form-customize form-container" id="mensajes">
+                <label for="msg"><b>Chat con </b></label>
+                <div id="viewMensajes"></div>
+                <div class="form-group">
+                    <input type="text" id="mensajeEnviar" name="mensajeEnviar" class="form-control" id="usr">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn cancel" onclick="volver()">Volver</button>
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn" id="enviarChat">Send</button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="form-customize form-container" id="mensajes">
-            <label for="msg"><b>Chat con </b></label>
-            <div id="viewMensajes"></div>
-            <div class="form-group">
-              <input type="text" id="mensajeEnviar" name="mensajeEnviar" class="form-control" id="usr">
-            </div>
-            <div class="row">
-              <div class="col">
-                <button type="button" class="btn cancel" onclick="volver()">Volver</button>
-              </div>
-              <div class="col">
-                <button type="submit" class="btn" id="enviarChat">Send</button>
-              </div>
-            </div>
-          </div>
         </div>
     </body>
 </html>

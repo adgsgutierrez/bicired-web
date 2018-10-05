@@ -52,7 +52,7 @@ class IndexUsuarioLogic {
             case 'POST':
                 if ($data) {
                     if (!isset($data->funcion)) {
-                        $response =UsuarioLogic::consultar_sesion($data->correo, $data->clave, $data->origen, $data->usuario, $data->foto);
+                        $response = UsuarioLogic::consultar_sesion($data->correo, $data->clave, $data->origen, $data->usuario, $data->foto);
                     } else if ($data->funcion == "amigos") {
                         $response = UsuarioLogic::amigos($data->cologeado);
                     } else if ($data->funcion == "amigos_bloqueados") {
@@ -66,6 +66,8 @@ class IndexUsuarioLogic {
                             $response = UsuarioLogic::enviar_mensaje($data->envia, $data->recibe, $data->mensaje);
                         }
                         $response = UsuarioLogic::ver_mensaje($data->envia, $data->recibe);
+                    } else if ($data->funcion == "busqueda_avanzada") {
+                        $response = UsuarioLogic::busqueda_avanzada($data->correo, $data->edadinicio, $data->edadfin, $data->genero);
                     } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
@@ -82,7 +84,7 @@ class IndexUsuarioLogic {
                 if ($data) {
                     if (isset($data->funcion)) {
                         if ($data->funcion === "acperfil") {
-                            $response = UsuarioLogic::actualizar_perfil($data->correo, $data->nombre, $data->genero);
+                            $response = UsuarioLogic::actualizar_perfil($data->correo, $data->nombre, $data->genero, $data->edad);
                         }
                     } else if (!isset($data->funcion)) {
                         $response = UsuarioLogic::registrar_usuario($data->correo, $data->nombre, $data->genero, $data->clave);

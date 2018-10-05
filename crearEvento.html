@@ -25,6 +25,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRScgEFeejI1wkkL3hvQOnloHimm7-5mE&callback=mapInit" async ></script>
         <!-- <script type="text/javascript" src="js/paginaPrincipal.js"></script> -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/constantes.js"></script>
         <script type="text/javascript" src="js/lib/session.js"></script>
         <script type="text/javascript" src="js/crearEvento.js"></script>
@@ -83,7 +85,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <label>Edad</label>
+                                <label>Edad a buscar:</label>
                             </div>
                         </div>
                         <div class="row">
@@ -91,24 +93,27 @@
                                 <label>De </label>
                             </div>
                             <div class="col-sm-5" style="text-align: center">
-                                <input id="edadinicio" class="form-control" readonly="readonly"/>
+                                <input id="edadinicio" class="form-control"/>
                             </div>
                             <div class="col-sm-1" style="text-align: center">
                                 <label> A </label>
                             </div>
                             <div class="col-sm-5" style="text-align: center">
-                                <input id="edadfin" class="form-control" readonly="readonly"/>
+                                <input id="edadfin" class="form-control"/>
                             </div>
                         </div>
                         <label>Genero</label>
-                        <select class="form-control" id="generoac">
-                            <option value="">Seleccione</option>
+                        <select class="form-control" id="generoacb">
+                            <option value="0">Seleccione</option>
                             <option value="M">Hombre</option>
                             <option value="F">Mujer</option>
                         </select>
+                        <button id="buscar_perfil_filtro" type="button" class="btn btn-primary" style="float: right;margin-top: 20px;"><i class="	fa fa-search"></i> Buscar Persona</button>
                     </div>
                     <div class="modal-footer">
-                        <button id="actualizar_perfil" type="button" class="btn btn-primary"><i class="fa fa-save"></i> Buscar Persona</button>
+                        <div class="col-sm-12">
+                            <table id="datatableavanzado" class="table table-striped table-bordered" style="width: 100%;"></table>
+                        </div>
                     </div>
                 </div>
             </div>

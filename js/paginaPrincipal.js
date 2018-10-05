@@ -4,7 +4,7 @@ var buscador;
 var socket;
 var contactos = [];
 var mensajesArreglo = [];
-var chatActivo = '' ;
+var chatActivo = '';
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -73,6 +73,85 @@ $(document).ready(function () {
     $("#loaded").show();
     $("#unloaded").hide();
     correo = sessionStorage.getItem(USUARIO_SESSION);
+    mostrar_comunidades();
+    $("#buscar_perfil_filtro").on('click', function () {
+        if ($("#edadinicio").val() === "" && $("#edadfin").val() === "" && $("#generoacb option:selected").val() === "0") {
+            swal({
+                title: "Debe hacer la busqueda por el rango de edades o por genero",
+                type: "error"
+            });
+        } else if (($("#edadinicio").val() === "" && $("#edadfin").val() !== "") || ($("#edadinicio").val() !== "" && $("#edadfin").val() === "")) {
+            swal({
+                title: "Debe ingresar el rango completo de edades",
+                type: "error"
+            });
+        } else {
+            var parametros = {"correo": correo, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.ajax({
+                data: parametros,
+                type: 'POST',
+                url: URL_USUARIO,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data) {
+                        var table = $("#datatableavanzado").DataTable({
+                            "language": {
+                                "sProcessing": "Procesando...",
+                                "sLengthMenu": "Mostrar _MENU_ registros",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "sEmptyTable": "Ningun dato disponible en esta tabla",
+                                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                "sInfoPostFix": "",
+                                "sSearch": "Buscar:",
+                                "sUrl": "",
+                                "sInfoThousands": ",",
+                                "sLoadingRecords": "Cargando...",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Ultimo",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                }
+                            },
+                            destroy: true,
+                            data: data.data,
+                            columns: data.header
+                        });
+                        $('#datatableavanzado tbody').on('click', 'tr', function () {
+                            sessionStorage.setItem(USUARIO_BUSQUEDA, $(this).find("td").eq(2).html());
+                            location.href = "perfil.html";
+
+                        });
+                    }
+                }
+            });
+
+        }
+    });
+    /** Validacion de session **/
+    $("#buscar_perfil").on('click', function () {
+        if (buscador !== undefined) {
+            sessionStorage.setItem(USUARIO_BUSQUEDA, buscador);
+            location.href = "perfil.html";
+        } else if (buscador === undefined && $("#buscar_persona").val() !== "") {
+            swal({
+                title: "Esta persona no existe ",
+                type: "error"
+            });
+        } else {
+            swal({
+                title: "El campo esta vacio ",
+                type: "error"
+            });
+        }
+
+    });
     //CHAT
     $("#mensajes").hide();
     $("#contactos").show();
@@ -81,53 +160,53 @@ $(document).ready(function () {
     var userInput = sessionStorage.getItem(USUARIO_SESSION);
     var nameInput = sessionStorage.getItem('NAME');
     socket.emit('user on', {
-      user: nameInput,
-      correo: userInput
+        user: nameInput,
+        correo: userInput
     });
 
     //enviarChat
-    $('#enviarChat').on('click',function(){
-      var mensaje = $('#mensajeEnviar').val();
-      if(mensaje != ''){
-        socket.emit('chat message', mensaje , sessionStorage.getItem(USUARIO_SESSION) , chatActivo);
-        $('#mensajeEnviar').val('');
-        return false;
-      }
+    $('#enviarChat').on('click', function () {
+        var mensaje = $('#mensajeEnviar').val();
+        if (mensaje != '') {
+            socket.emit('chat message', mensaje, sessionStorage.getItem(USUARIO_SESSION), chatActivo);
+            $('#mensajeEnviar').val('');
+            return false;
+        }
     });
     //Recibir Chat
-    socket.on('chat message', function(msg){
-      mensajesArreglo = [];
-      for(var i = 0 ; i < msg.length ; i++){
-        if(msg[i].from === userInput || msg[i].to === userInput){
-          mensajesArreglo.push(msg[i]);
+    socket.on('chat message', function (msg) {
+        mensajesArreglo = [];
+        for (var i = 0; i < msg.length; i++) {
+            if (msg[i].from === userInput || msg[i].to === userInput) {
+                mensajesArreglo.push(msg[i]);
+            }
         }
-      }
-      leermensajes();
+        leermensajes();
     });
 
     //Recibir Conectados
-    socket.on('user on', function(userOnline){
-      contactos = userOnline;
-      console.log(contactos);
-      var html = "";
-      var userInput = sessionStorage.getItem(USUARIO_SESSION);
-      if(contactos.length > 0){
-        var tmp = [];
-        for(var j = 0 ; j < contactos.length ; j++){
-          if(contactos[j].correo != userInput){
-            tmp.push(contactos[j]);
-          }
+    socket.on('user on', function (userOnline) {
+        contactos = userOnline;
+        console.log(contactos);
+        var html = "";
+        var userInput = sessionStorage.getItem(USUARIO_SESSION);
+        if (contactos.length > 0) {
+            var tmp = [];
+            for (var j = 0; j < contactos.length; j++) {
+                if (contactos[j].correo != userInput) {
+                    tmp.push(contactos[j]);
+                }
+            }
+            contactos = tmp;
         }
-        contactos = tmp;
-      }
-      if(contactos.length > 0){
-        for(var i = 0 ; i < contactos.length ; i++){
-          html +='<a onclick="enviarMensajes(\''+contactos[i].correo+'\')" class="list-group-item list-group-item-action">'+contactos[i].user+'</a>';
+        if (contactos.length > 0) {
+            for (var i = 0; i < contactos.length; i++) {
+                html += '<a onclick="enviarMensajes(\'' + contactos[i].correo + '\')" class="list-group-item list-group-item-action">' + contactos[i].user + '</a>';
+            }
+        } else {
+            html = "No hay Usuarios en linea";
         }
-      }else{
-        html = "No hay Usuarios en linea";
-      }
-      $("#usuariosOnline").html(html);
+        $("#usuariosOnline").html(html);
     });
 
     /** Validacion de session **/
@@ -153,8 +232,8 @@ $(document).ready(function () {
         var userInput = sessionStorage.getItem(USUARIO_SESSION);
         var nameInput = sessionStorage.getItem('NAME');
         socket.emit('user off', {
-          user: nameInput,
-          correo: userInput
+            user: nameInput,
+            correo: userInput
         });
         sessionStorage.clear();
         location.href = "index.html";
@@ -214,18 +293,17 @@ $(document).ready(function () {
                         type: 'POST',
                         url: URL_PUBLICACION,
                         success: function (data) {
-                          console.log("Data Me gusta", data);
+                            console.log("Data Me gusta", data);
                             data = JSON.parse(data);
 
-                          //  if(data.datos){
-                              if (data.datos) {
-                                  var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
-                                  $("#cajamegusta" + mapa.id + "").append(container);
-                              } else {
-                                  var container = '<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>';
-                                  $("#cajamegusta" + mapa.id + "").append(container);
-                              }
-                          //  }
+                            if (data.datos["0"]) {
+                                var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
+                                $("#cajamegusta" + mapa.id + "").append(container);
+                            } else {
+                                var container = '<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>';
+                                $("#cajamegusta" + mapa.id + "").append(container);
+                            }
+
                         }
                     });
                     container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map_' + mapa.id + '" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
@@ -260,7 +338,7 @@ $(document).ready(function () {
     });
 
     /** Funcion que inicia el hilo de busqueda de las notificaciones **/
-  //  consultar_notificaciones();
+    //  consultar_notificaciones();
 });
 var CrearEvento = function () {
     location.href = "crearEvento.html";
@@ -350,46 +428,62 @@ function accion_megusta(id_publicacion, funcion) {
     });
 }
 
-var enviarMensajes = function(correo){
-  console.log(correo);
-  chatActivo = correo;
-  leermensajes();
-  $("#mensajes").show();
-  $("#contactos").hide();
+var enviarMensajes = function (correo) {
+    console.log(correo);
+    chatActivo = correo;
+    leermensajes();
+    $("#mensajes").show();
+    $("#contactos").hide();
 }
 
-var openForm = function() {
+var openForm = function () {
     document.getElementById("myForm").style.display = "block";
 }
-var closeForm = function() {
-  $("#mensajes").hide();
-  $("#contactos").show();
+var closeForm = function () {
+    $("#mensajes").hide();
+    $("#contactos").show();
     document.getElementById("myForm").style.display = "none";
 }
-var volver = function(){
-  chatActivo= '';
-  $("#mensajes").hide();
-  $("#contactos").show();
+var volver = function () {
+    chatActivo = '';
+    $("#mensajes").hide();
+    $("#contactos").show();
 }
 
-var leermensajes = function(){
-  var html = '';
-  var userInput = sessionStorage.getItem(USUARIO_SESSION);
-  if(chatActivo != ''){
-    for(var i = 0 ; i < mensajesArreglo.length ; i++ ){
-      if(mensajesArreglo[i].from === chatActivo){
-        html += '<div class="container-chat"><p class="recibido-chat"> '+mensajesArreglo[i].msg+'</p></div>';
-        //socket.emit('view message', {from:chatActivo , to: userInput});
-      }else if(mensajesArreglo[i].to === chatActivo){
-        html += '<div class="container-chat"><p class="enviado-chat"> '+mensajesArreglo[i].msg+'</p></div>';
-        //socket.emit('view message', {from:userInput , to:chatActivo});
-      }
+var leermensajes = function () {
+    var html = '';
+    var userInput = sessionStorage.getItem(USUARIO_SESSION);
+    if (chatActivo != '') {
+        for (var i = 0; i < mensajesArreglo.length; i++) {
+            if (mensajesArreglo[i].from === chatActivo) {
+                html += '<div class="container-chat"><p class="recibido-chat"> ' + mensajesArreglo[i].msg + '</p></div>';
+                //socket.emit('view message', {from:chatActivo , to: userInput});
+            } else if (mensajesArreglo[i].to === chatActivo) {
+                html += '<div class="container-chat"><p class="enviado-chat"> ' + mensajesArreglo[i].msg + '</p></div>';
+                //socket.emit('view message', {from:userInput , to:chatActivo});
+            }
+        }
+        console.log("Para pintar", html);
+        $("#viewMensajes").html(html);
+        $("#viewMensajes").animate({scrollTop: $("#viewMensajes")[0].scrollHeight}, 400);
+        console.log("Mensajes Actuales ", mensajesArreglo);
+    } else {
+        console.log("llego un nuevo mensaje");
     }
-    console.log("Para pintar" , html);
-    $("#viewMensajes").html(html);
-    $("#viewMensajes").animate({ scrollTop: $("#viewMensajes")[0].scrollHeight}, 400); 
-    console.log("Mensajes Actuales ",mensajesArreglo);
-  }else{
-    console.log("llego un nuevo mensaje");
-  }
+}
+
+function mostrar_comunidades() {
+    var parametros = {"funcion": "lista_comunidades"};
+    $.ajax({
+        data: parametros,
+        type: 'POST',
+        url: URL_AMIGO,
+        success: function (data) {
+            data = JSON.parse(data);
+            $.each(data.datos, function (i, o) {
+                var contenedor = '<div id="comunidad_' + o["id_comunidad"] + '" class="card col-centrada" style="width: 90%;margin-top: 10px;height: 130px"><h4>' + o["nombre_comunidad"] + '</h4><label> Creado por ' + o["usuario_crea_comunidad"] + '</label></div>';
+                $("#listacomunidades").append(contenedor);
+            });
+        }
+    });
 }
