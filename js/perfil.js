@@ -5,6 +5,26 @@ $(document).ready(function () {
 
     perfilini = sessionStorage.getItem(USUARIO_SESSION);
 
+    var parametros_lista = {
+        "correo": perfilini,
+        "funcion": "lista_usuarios"
+    };
+    $.ajax({
+        data: parametros_lista,
+        url: URL_USUARIO,
+        type: 'GET',
+        success: function (data) {
+            data = JSON.parse(data);
+            var lista = data.datos;
+            $("#buscar_persona").autocomplete({
+                source: lista,
+                select: function (event, ui) {
+                    buscador = ui.item.id;
+                }
+            });
+        }
+    });
+
     $("#cerrarperfil").on("click", function () {
         sessionStorage.clear();
         location.href = "index.html";

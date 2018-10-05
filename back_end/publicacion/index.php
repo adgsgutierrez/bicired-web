@@ -41,7 +41,7 @@ class IndexPublicacionLogic {
                         $response = PublicacionLogic::actualizar_megusta($data->id_publicacion, $data->correo);
                     } else if ($data->funcion == "insertar_megusta") {
                         $response = PublicacionLogic::insertar_megusta($data->id_publicacion, $data->correo);
-                    }else {
+                    } else {
                         $response = new RespuestaDTO();
                         $response->setCodigo(Constante::ERROR_PARAMETROS_CD);
                         $response->setMensaje(Constante::ERROR_PARAMETROS_MS);
@@ -64,6 +64,7 @@ class IndexPublicacionLogic {
         }
         echo json_encode($response);
     }
+
 }
 
 $usuario = new IndexPublicacionLogic($metodo, $data);
