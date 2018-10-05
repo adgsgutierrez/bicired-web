@@ -1,6 +1,11 @@
 var mapas = [];
 var correo;
 var buscador;
+var socket;
+var contactos = [];
+var mensajesArreglo = [];
+var chatActivo = '' ;
+
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -17,7 +22,6 @@ var aceptarEvento = function (id_publicacion) {
         url: URL_USUARIO,
         success: function (data) {
             console.log(data);
-
         }, error: function (err) {
             /** MOSTRAR ALERTA DE ERROR**/
             console.log(err);
@@ -69,6 +73,63 @@ $(document).ready(function () {
     $("#loaded").show();
     $("#unloaded").hide();
     correo = sessionStorage.getItem(USUARIO_SESSION);
+    //CHAT
+    $("#mensajes").hide();
+    $("#contactos").show();
+    socket = io('http://localhost:3000');
+    //Usuario Conectado
+    var userInput = sessionStorage.getItem(USUARIO_SESSION);
+    var nameInput = sessionStorage.getItem('NAME');
+    socket.emit('user on', {
+      user: nameInput,
+      correo: userInput
+    });
+
+    //enviarChat
+    $('#enviarChat').on('click',function(){
+      var mensaje = $('#mensajeEnviar').val();
+      if(mensaje != ''){
+        socket.emit('chat message', mensaje , sessionStorage.getItem(USUARIO_SESSION) , chatActivo);
+        $('#mensajeEnviar').val('');
+        return false;
+      }
+    });
+    //Recibir Chat
+    socket.on('chat message', function(msg){
+      mensajesArreglo = [];
+      for(var i = 0 ; i < msg.length ; i++){
+        if(msg[i].from === userInput || msg[i].to === userInput){
+          mensajesArreglo.push(msg[i]);
+        }
+      }
+      leermensajes();
+    });
+
+    //Recibir Conectados
+    socket.on('user on', function(userOnline){
+      contactos = userOnline;
+      console.log(contactos);
+      var html = "";
+      var userInput = sessionStorage.getItem(USUARIO_SESSION);
+      if(contactos.length > 0){
+        var tmp = [];
+        for(var j = 0 ; j < contactos.length ; j++){
+          if(contactos[j].correo != userInput){
+            tmp.push(contactos[j]);
+          }
+        }
+        contactos = tmp;
+      }
+      if(contactos.length > 0){
+        for(var i = 0 ; i < contactos.length ; i++){
+          html +='<a onclick="enviarMensajes(\''+contactos[i].correo+'\')" class="list-group-item list-group-item-action">'+contactos[i].user+'</a>';
+        }
+      }else{
+        html = "No hay Usuarios en linea";
+      }
+      $("#usuariosOnline").html(html);
+    });
+
     /** Validacion de session **/
     $("#buscar_perfil").on('click', function () {
         if (buscador !== undefined) {
@@ -89,6 +150,12 @@ $(document).ready(function () {
     });
 
     $("#cerrarpaginaprincipal").on("click", function () {
+        var userInput = sessionStorage.getItem(USUARIO_SESSION);
+        var nameInput = sessionStorage.getItem('NAME');
+        socket.emit('user off', {
+          user: nameInput,
+          correo: userInput
+        });
         sessionStorage.clear();
         location.href = "index.html";
     });
@@ -147,15 +214,18 @@ $(document).ready(function () {
                         type: 'POST',
                         url: URL_PUBLICACION,
                         success: function (data) {
+                          console.log("Data Me gusta", data);
                             data = JSON.parse(data);
-                            if (data.datos["0"] !== undefined) {
-                                var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
-                                $("#cajamegusta" + mapa.id + "").append(container);
-                            } else {
-                                var container = '<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>';
-                                $("#cajamegusta" + mapa.id + "").append(container);
-                            }
 
+                          //  if(data.datos){
+                              if (data.datos) {
+                                  var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
+                                  $("#cajamegusta" + mapa.id + "").append(container);
+                              } else {
+                                  var container = '<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>';
+                                  $("#cajamegusta" + mapa.id + "").append(container);
+                              }
+                          //  }
                         }
                     });
                     container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map_' + mapa.id + '" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
@@ -190,7 +260,7 @@ $(document).ready(function () {
     });
 
     /** Funcion que inicia el hilo de busqueda de las notificaciones **/
-    consultar_notificaciones();
+  //  consultar_notificaciones();
 });
 var CrearEvento = function () {
     location.href = "crearEvento.html";
@@ -257,7 +327,6 @@ mapInit = function () {
 function subirFotos(id_publicacion) {
     location.href = "fotografias.html?evento=" + id_publicacion;
 }
-
 function actualizar_megusta(id_publicacion) {
     accion_megusta(id_publicacion, "actualizar_megusta");
     $("#cajamegusta" + id_publicacion + "").html("");
@@ -281,3 +350,46 @@ function accion_megusta(id_publicacion, funcion) {
     });
 }
 
+var enviarMensajes = function(correo){
+  console.log(correo);
+  chatActivo = correo;
+  leermensajes();
+  $("#mensajes").show();
+  $("#contactos").hide();
+}
+
+var openForm = function() {
+    document.getElementById("myForm").style.display = "block";
+}
+var closeForm = function() {
+  $("#mensajes").hide();
+  $("#contactos").show();
+    document.getElementById("myForm").style.display = "none";
+}
+var volver = function(){
+  chatActivo= '';
+  $("#mensajes").hide();
+  $("#contactos").show();
+}
+
+var leermensajes = function(){
+  var html = '';
+  var userInput = sessionStorage.getItem(USUARIO_SESSION);
+  if(chatActivo != ''){
+    for(var i = 0 ; i < mensajesArreglo.length ; i++ ){
+      if(mensajesArreglo[i].from === chatActivo){
+        html += '<div class="container-chat"><p class="recibido-chat"> '+mensajesArreglo[i].msg+'</p></div>';
+        //socket.emit('view message', {from:chatActivo , to: userInput});
+      }else if(mensajesArreglo[i].to === chatActivo){
+        html += '<div class="container-chat"><p class="enviado-chat"> '+mensajesArreglo[i].msg+'</p></div>';
+        //socket.emit('view message', {from:userInput , to:chatActivo});
+      }
+    }
+    console.log("Para pintar" , html);
+    $("#viewMensajes").html(html);
+    $("#viewMensajes").animate({ scrollTop: $("#viewMensajes")[0].scrollHeight}, 400); 
+    console.log("Mensajes Actuales ",mensajesArreglo);
+  }else{
+    console.log("llego un nuevo mensaje");
+  }
+}

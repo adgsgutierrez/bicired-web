@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
         <link rel="stylesheet" href="css/sweetalert.css" />
         <link rel="stylesheet" href="css/index.css">
+            <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="js/lib/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
@@ -146,6 +147,39 @@
             </g>
             </svg>
             <center>Cargando publicaciones ...</center>
+        </div>
+
+        <button class="open-button" onclick="openForm()"><i class="fa fa-commenting" aria-hidden="true"></i></button>
+
+        <div class="chat-popup" id="myForm">
+          <div class="list-group form-customize form-container" id="contactos">
+            <div id="usuariosOnline">
+              <a onclick="enviarMensajes(1)" class="list-group-item list-group-item-action">Chat 1</a>
+              <a onclick="enviarMensajes(2)" class="list-group-item list-group-item-action">Chat 2</a>
+              <a onclick="enviarMensajes(3)" class="list-group-item list-group-item-action">Chat 3</a>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col">
+                <button type="button" class="btn cancel" onclick="closeForm()">Cerrar</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-customize form-container" id="mensajes">
+            <label for="msg"><b>Chat con </b></label>
+            <div id="viewMensajes"></div>
+            <div class="form-group">
+              <input type="text" id="mensajeEnviar" name="mensajeEnviar" class="form-control" id="usr">
+            </div>
+            <div class="row">
+              <div class="col">
+                <button type="button" class="btn cancel" onclick="volver()">Volver</button>
+              </div>
+              <div class="col">
+                <button type="submit" class="btn" id="enviarChat">Send</button>
+              </div>
+            </div>
+          </div>
         </div>
     </body>
 </html>

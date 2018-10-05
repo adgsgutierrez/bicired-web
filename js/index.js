@@ -76,6 +76,7 @@ function consultar_login(email , clave , origen,usuario,foto){
                swal("Tenemos inconvenientes", data.mensaje, "error");
            }else{
              sessionStorage.setItem(USUARIO_SESSION, email);
+             sessionStorage.setItem('NAME', data.datos.nombre);
              window.location.href = 'paginaPrincipal.html';
            }
        },error :function(err){
