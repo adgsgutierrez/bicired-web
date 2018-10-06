@@ -16,3 +16,4 @@ var URL_AMIGO = URL_HOST + 'back_end/amigos/';
 var USUARIO_SESSION = 'cookie_session';
 var USUARIO_BUSQUEDA = 'cookie_busqueda';
 var URL_UPLOAD = URL_HOST + 'back_end/publicacion/subirfoto.php';
+var SERVER_CHAT = 'http://dxexperience.com:3000';

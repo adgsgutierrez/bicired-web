@@ -152,7 +152,7 @@ $(document).ready(function () {
     //CHAT
     $("#mensajes").hide();
     $("#contactos").show();
-    socket = io('http://localhost:3000');
+    socket = io(SERVER_CHAT);
     //Usuario Conectado
     var userInput = sessionStorage.getItem(USUARIO_SESSION);
     var nameInput = sessionStorage.getItem('NAME');
@@ -288,7 +288,7 @@ $(document).ready(function () {
                         success: function (data) {
                             console.log("Data Me gusta", data);
                             data = JSON.parse(data);
-                            if (data.datos["0"]) {
+                            if (data.datos) {
                                 var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
                                 $("#cajamegusta" + mapa.id + "").append(container);
                             } else {
@@ -481,7 +481,7 @@ function mostrar_comunidades() {
                         url: URL_AMIGO,
                         success: function (data) {
                             data = JSON.parse(data);
-                            if (data.datos["0"]) {
+                            if (data.datos) {
                                 var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + o["id_comunidad"] + ")'>Salirme</button>";
                                 $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
                             } else {
