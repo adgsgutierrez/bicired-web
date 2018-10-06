@@ -94,7 +94,7 @@ class PublicacionLogic {
 
     public static function actualizar_megusta($id, $correo) {
         $response = new RespuestaDTO();
-        $sql = "update TBL_MEGUSTA set estado_me_gusta = 'D' where persona_me_gusta = '" . $correo . "' and fk_pbl_id=" . $id . "";
+        $sql = "delete from TBL_MEGUSTA where persona_me_gusta = '" . $correo . "' and fk_pbl_id=" . $id . "";
         $result = ConexionDB::consultar($sql);
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_CODE);

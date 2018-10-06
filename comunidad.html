@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>BiciRed</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="img/icon.png" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.4/css/all.css" integrity="sha384-DmABxgPhJN5jlTwituIyzIUk6oqyzf3+XuP7q3VfcWA2unxgim7OSSZKKf0KSsnh" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Concert+One|Noticia+Text" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.css">
+        <link rel="stylesheet" href="bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+        <link rel="stylesheet" href="css/sweetalert.css" />
+        <link rel="stylesheet" href="css/index.css">
+        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+        <script src="bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+        <script type="text/javascript" src="js/lib/sweetalert.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/constantes.js"></script>
+        <script type="text/javascript" src="js/lib/session.js"></script>
+        <script type="text/javascript" src="js/comunidad.js"></script>
+        <style>
+            .floatButton{
+                position: fixed;
+                bottom: 25px;
+                right: 25px;
+                border-radius: 50px;
+                height: 60px;
+                width: 60px;
+                -webkit-box-shadow: 0px 0px 79px -18px rgba(0,0,0,0.75);
+                -moz-box-shadow: 0px 0px 79px -18px rgba(0,0,0,0.75);
+                box-shadow: 0px 0px 79px -18px rgba(0,0,0,0.75);
+            }
+            .card-text{
+                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+                font-size: 1rem;
+                font-weight: 400;
+                line-height: 1.5;
+                color: #212529;
+                text-align: left;
+                padding-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse btn-primary">
+            <!-- <div class="container-fluid"> -->
+            <div class="row" style="width: 100%;">
+                <div class="col-xs-3 col-sm-3	col-md-3	col-lg-3"  onclick="location.href = 'paginaPrincipal.html'">
+                    <a class="navbar-brand" style="font-size: 2rem;">
+                        <img src="img/icon-header.png" class="img-rounded" style="width: 50px;">
+                        <b>BICI-RED</b>
+                    </a>
+                </div>
+                <div class="col-xs-6 col-sm-6	col-md-6	col-lg-6">
+                    <div class="input-group input-text-search">
+                        <input id="buscar_persona" type="text" class="form-control" placeholder="Buscar..."/>
+                        <button id="buscar_perfil"  class="btn btn-primary input-group-btn" type="button"><i class="fa fa-search"></i></button>
+                        <button data-toggle="modal" data-target="#filtrobusqueda" id="busquedaavanzada"  class="btn btn-primary input-group-btn" type="button">Busqueda Avanzada</button>
+                    </div>
+                </div>
+
+                <div class="col-xs-3 col-sm-3	col-md-3 col-lg-3">
+                    <div class="dropdown notificacion" style="right: 120px;">
+                        <span class="badge class-badge" id="badge-icon"></span>
+                        <button class="btn btn-primary" type="button" data-toggle="dropdown"><i class="fa fa-bell" aria-hidden="true"></i></button>
+                        <ul class="dropdown-menu" id="menu-notificacion" style="left: -19rem;">
+                            No se encontraron notificaciones
+                        </ul>
+                    </div>
+                    <div class="notificacion" style="right: 60px;">
+                        <button type="button" class="btn btn-primary" id="botoninvitaciones" onclick="location.href = 'crearMensaje.html';"><i class="fa fa-envelope"></i></button>
+                    </div>
+                    <div class="dropdown notificacion" style="right: 0px;">
+                        <button style="" class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-align-justify"></i></button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  style="left: 30px; position: relative;top: 37px;">
+                            <a style="cursor:pointer" class="dropdown-item"  href="paginaPrincipal.html"><i class="fa fa-home"></i>Home</a>
+                            <a style="cursor:pointer" class="dropdown-item"  href="perfil.html"><i class="fa fa-user-circle"></i> Perfil</a>
+                            <a style="cursor:pointer" class="dropdown-item" id="cerrarpaginaprincipal"><i class="fa fa-sign-out"></i> Cerrar Sesion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- </div> -->
+        </nav>
+        <div class="modal fade" id="filtrobusqueda" tabindex="-1" role="dialog" aria-labelledby="filtrobusqueda" aria-hidden="true" >
+            <div class="modal-dialog modal-lg" style="width: 800px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Buscar Persona</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Edad a buscar:</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <label>De </label>
+                            </div>
+                            <div class="col-sm-5" style="text-align: center">
+                                <input id="edadinicio" class="form-control"/>
+                            </div>
+                            <div class="col-sm-1" style="text-align: center">
+                                <label> A </label>
+                            </div>
+                            <div class="col-sm-5" style="text-align: center">
+                                <input id="edadfin" class="form-control"/>
+                            </div>
+                        </div>
+                        <label>Genero</label>
+                        <select class="form-control" id="generoacb">
+                            <option value="0">Seleccione</option>
+                            <option value="M">Hombre</option>
+                            <option value="F">Mujer</option>
+                        </select>
+                        <button id="buscar_perfil_filtro" type="button" class="btn btn-primary" style="float: right;margin-top: 20px;"><i class="	fa fa-search"></i> Buscar Persona</button>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-sm-12">
+                            <table id="datatableavanzado" class="table table-striped table-bordered" style="width: 100%;"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <center><h1 id="nombre_comunidad"></h1></center>
+                <center><div class="col-sm-8 card-text">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <input id="campopublicar" class="form-control" type="text" placeholder="¿Que estas pensando?"/>
+                            </div>
+                            <div class="col-sm-2">
+                                <button id="publicar" type="button" class="btn btn-primary">Publicar</button>
+                            </div>
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </div>
+        <br>
+
+        <div id = "container" class="col-sm-12   ">
+
+        </div>
+        <br><br><br>
+    </body>
+</html>

@@ -5,7 +5,6 @@ var socket;
 var contactos = [];
 var mensajesArreglo = [];
 var chatActivo = '';
-
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -126,12 +125,10 @@ $(document).ready(function () {
                         $('#datatableavanzado tbody').on('click', 'tr', function () {
                             sessionStorage.setItem(USUARIO_BUSQUEDA, $(this).find("td").eq(2).html());
                             location.href = "perfil.html";
-
                         });
                     }
                 }
             });
-
         }
     });
     /** Validacion de session **/
@@ -163,7 +160,6 @@ $(document).ready(function () {
         user: nameInput,
         correo: userInput
     });
-
     //enviarChat
     $('#enviarChat').on('click', function () {
         var mensaje = $('#mensajeEnviar').val();
@@ -183,7 +179,6 @@ $(document).ready(function () {
         }
         leermensajes();
     });
-
     //Recibir Conectados
     socket.on('user on', function (userOnline) {
         contactos = userOnline;
@@ -208,7 +203,6 @@ $(document).ready(function () {
         }
         $("#usuariosOnline").html(html);
     });
-
     /** Validacion de session **/
     $("#buscar_perfil").on('click', function () {
         if (buscador !== undefined) {
@@ -227,7 +221,6 @@ $(document).ready(function () {
         }
 
     });
-
     $("#cerrarpaginaprincipal").on("click", function () {
         var userInput = sessionStorage.getItem(USUARIO_SESSION);
         var nameInput = sessionStorage.getItem('NAME');
@@ -295,7 +288,6 @@ $(document).ready(function () {
                         success: function (data) {
                             console.log("Data Me gusta", data);
                             data = JSON.parse(data);
-
                             if (data.datos["0"]) {
                                 var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
                                 $("#cajamegusta" + mapa.id + "").append(container);
@@ -336,7 +328,6 @@ $(document).ready(function () {
             swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
         }
     });
-
     /** Funcion que inicia el hilo de busqueda de las notificaciones **/
     //  consultar_notificaciones();
 });
@@ -409,7 +400,6 @@ function actualizar_megusta(id_publicacion) {
     accion_megusta(id_publicacion, "actualizar_megusta");
     $("#cajamegusta" + id_publicacion + "").html("");
     $("#cajamegusta" + id_publicacion + "").append('<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + id_publicacion + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>');
-
 }
 function insertar_megusta(id_publicacion) {
     accion_megusta(id_publicacion, "insertar_megusta");
@@ -481,9 +471,55 @@ function mostrar_comunidades() {
         success: function (data) {
             data = JSON.parse(data);
             $.each(data.datos, function (i, o) {
-                var contenedor = '<div id="comunidad_' + o["id_comunidad"] + '" class="card col-centrada" style="width: 90%;margin-top: 10px;height: 130px"><h4>' + o["nombre_comunidad"] + '</h4><label> Creado por ' + o["usuario_crea_comunidad"] + '</label></div>';
+                var contenedor = '<div id="comunidad_' + o["id_comunidad"] + '" class="card col-centrada" style="width: 90%;margin-top: 10px;height: 130px"><h4 style="cursor:pointer">' + o["nombre_comunidad"] + '</h4><label> Creado por ' + o["usuario_crea_comunidad"] + '</label><div id="botonaccion_' + o["id_comunidad"] + '" style="margin-top:10px;margin-left: 10px;" ></div></div>';
                 $("#listacomunidades").append(contenedor);
+                if (o["usuario_crea_comunidad"] !== correo) {
+                    var parametros = {"integrante": correo, "id_comunidad": o["id_comunidad"], "funcion": "lista_integrante_comunidad"};
+                    $.ajax({
+                        data: parametros,
+                        type: 'POST',
+                        url: URL_AMIGO,
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            if (data.datos["0"]) {
+                                var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + o["id_comunidad"] + ")'>Salirme</button>";
+                                $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
+                            } else {
+                                var contenedor2 = "<button type='button' class='btn btn-primary' style='width: 100px;' onclick='insertar_integrante(" + o["id_comunidad"] + ")'>Unirme</button>";
+                                $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
+                            }
+                        }
+                    });
+                }
+                $("#comunidad_" + o["id_comunidad"] + " h4").on('click', function () {
+                    sessionStorage.setItem(ID_COMUNIDAD, o["id_comunidad"]);
+                    sessionStorage.setItem(NOMBRE_COMUNIDAD, o["nombre_comunidad"]);
+                    location.href = "comunidad.html";
+                });
             });
+        }
+    });
+}
+function actualizar_integrante(id_comunidad) {
+    accion_integrante(id_comunidad, "actualizar_integrante");
+    $("#botonaccion_" + id_comunidad + "").html("");
+    $("#botonaccion_" + id_comunidad + "").append("<button type='button' class='btn btn-primary' style='width: 100px;' onclick='insertar_integrante(" + id_comunidad + ")'>Unirme</button>");
+}
+function insertar_integrante(id_comunidad) {
+    accion_integrante(id_comunidad, "insertar_integrante");
+    $("#botonaccion_" + id_comunidad + "").html("");
+    $("#botonaccion_" + id_comunidad + "").append("<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + id_comunidad + ")'>Salirme</button>");
+
+}
+
+function accion_integrante(id_comunidad, funcion) {
+    var parametros = {"id": id_comunidad, "correo": correo, "funcion": funcion};
+    $.ajax({
+        data: parametros,
+        type: 'PUT',
+        url: URL_AMIGO,
+        success: function (data) {
+            console.log(data);
         }
     });
 }

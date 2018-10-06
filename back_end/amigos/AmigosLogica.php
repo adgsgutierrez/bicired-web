@@ -100,6 +100,83 @@ class AmigoLogic {
         return $response;
     }
 
+    public static function lista_integrante_comunidad($id, $correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select * from TBL_INTEGRANTE_COMUNIDAD where fk_id_comunidad=" . $id . " and integrante='" . $correo . "' and estado_integrante='A'";
+        $arreglo_comunidades = array();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $usuario = new stdClass();
+            $usuario->id_comunidad = $dataResult->fk_id_comunidad;
+            $usuario->integrante = $dataResult->integrante;
+            array_push($arreglo_comunidades, $usuario);
+        }
+        $response->setDatos($arreglo_comunidades);
+        return $response;
+    }
+
+    public static function actualizar_integrante($id, $correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "DELETE FROM TBL_INTEGRANTE_COMUNIDAD where fk_id_comunidad=" . $id . " and integrante='" . $correo . "'";
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        }
+        return $response;
+    }
+
+    public static function insertar_integrante($id, $correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "INSERT INTO TBL_INTEGRANTE_COMUNIDAD (fk_id_comunidad, integrante,estado_integrante) VALUES ('" . $id . "', '" . $correo . "', 'A')";
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        }
+        return $response;
+    }
+
+    public static function publicar_mensaje($id, $correo, $mensaje) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "INSERT INTO TBL_COMUNIDAD_MENSAJES (fk_id_comunidad,mensaje,integrante) VALUES (" . $id . ",'" . $mensaje . "','" . $correo . "')";
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        }
+        return $response;
+    }
+
+    public static function mostrar_publicaciones($id) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select * from TBL_COMUNIDAD_MENSAJES cm
+inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad=" . $id . " order by id_comunidad_mensaje desc";
+        $arreglo_comunidades = array();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $usuario = new stdClass();
+            $usuario->fk_id_comunidad = $dataResult->fk_id_comunidad;
+            $usuario->mensaje = $dataResult->mensaje;
+            $usuario->usr_nombre = $dataResult->usr_nombre;
+            $usuario->usr_genero = $dataResult->usr_genero;
+            $usuario->usr_foto = $dataResult->usr_foto;
+            array_push($arreglo_comunidades, $usuario);
+        }
+        $response->setDatos($arreglo_comunidades);
+        return $response;
+    }
+
 }
 
 ?>
