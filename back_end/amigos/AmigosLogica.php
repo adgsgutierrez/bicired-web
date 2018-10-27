@@ -74,10 +74,19 @@ class AmigoLogic {
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
         $sql = "INSERT INTO TBL_CREAR_COMUNIDAD (nombre_comunidad, usuario_crea_comunidad) VALUES ('" . $nombre . "', '" . $correolog . "')";
+        $id = "";
         $result = ConexionDB::consultar($sql);
         if (!$result) {
             $response->setCodigo(Constante::ERROR_REGISTRO_CD);
             $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        } else {
+            $sql_2 = "SELECT MAX(id_comunidad) as id FROM TBL_CREAR_COMUNIDAD";
+            $result_1 = ConexionDB::consultar($sql_2);
+            while ($dataResult = $result_1->fetch_object()) {
+                $id = $dataResult->id;
+            }
+            $sql2 = "INSERT INTO TBL_INTEGRANTE_COMUNIDAD (fk_id_comunidad, integrante,estado_integrante) VALUES ('" . $id . "', '" . $correolog . "', 'A')";
+            $result = ConexionDB::consultar($sql2);
         }
         return $response;
     }
@@ -163,17 +172,85 @@ class AmigoLogic {
         $sql = "select * from TBL_COMUNIDAD_MENSAJES cm
 inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad=" . $id . " order by id_comunidad_mensaje desc";
         $arreglo_comunidades = array();
+        $arreglo_id_mensaje = array();
         $result = ConexionDB::consultar($sql);
         while ($dataResult = $result->fetch_object()) {
             $usuario = new stdClass();
             $usuario->fk_id_comunidad = $dataResult->fk_id_comunidad;
+            $usuario->id_mensaje = $dataResult->id_comunidad_mensaje;
             $usuario->mensaje = $dataResult->mensaje;
             $usuario->usr_nombre = $dataResult->usr_nombre;
             $usuario->usr_genero = $dataResult->usr_genero;
             $usuario->usr_foto = $dataResult->usr_foto;
+            $arreglo_id_mensaje["mensaje"][] = $dataResult->id_comunidad_mensaje;
             array_push($arreglo_comunidades, $usuario);
         }
+        $separado_por_comas = implode(",", $arreglo_id_mensaje["mensaje"]);
+        $sql2 = "select * from TBL_COMUNIDAD_COMENTARIOS cm
+         inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad_mensajes in (" . $separado_por_comas . ")";
+        $result2 = ConexionDB::consultar($sql2);
+        $arreglo_co = array();
+        while ($dataResult2 = $result2->fetch_object()) {
+            $comentarios = new stdClass();
+            $comentarios->id_comentarios = $dataResult2->id_comunidad_comentarios;
+            $comentarios->id_mensajes = $dataResult2->fk_id_comunidad_mensajes;
+            $comentarios->mensaje = $dataResult2->comentario;
+            $comentarios->usr_nombre = $dataResult2->usr_nombre;
+            $comentarios->usr_genero = $dataResult2->usr_genero;
+            $comentarios->usr_foto = $dataResult2->usr_foto;
+            array_push($arreglo_co, $comentarios);
+        }
+        if ($result2) {
+            $response->setDatos(array("mensajes" => $arreglo_comunidades, "comentarios" => $arreglo_co));
+        } else {
+            $response->setDatos($arreglo_comunidades);
+        }
+        return $response;
+    }
+
+    public static function verificacion_miembro($correo, $id) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select * from TBL_INTEGRANTE_COMUNIDAD where fk_id_comunidad=" . $id . " and integrante='" . $correo . "'";
+        $arreglo_comunidades = array();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $integrante = new stdClass();
+            $integrante->fk_id_comunidad = $dataResult->fk_id_comunidad;
+            $integrante->integrante = $dataResult->integrante;
+            array_push($arreglo_comunidades, $integrante);
+        }
         $response->setDatos($arreglo_comunidades);
+
+        return $response;
+    }
+
+    public static function comentarios($id, $mensaje, $correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "INSERT INTO TBL_COMUNIDAD_COMENTARIOS (fk_id_comunidad_mensajes,comentario,integrante) VALUES (" . $id . ",'" . $mensaje . "','" . $correo . "')";
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        } else {
+            $sql2 = "select * from TBL_COMUNIDAD_COMENTARIOS cm
+         inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad_mensajes=" . $id . "";
+            $result = ConexionDB::consultar($sql2);
+            $arreglo_comunidades = array();
+            while ($dataResult = $result->fetch_object()) {
+                $comentarios = new stdClass();
+                $comentarios->id_comentarios = $dataResult->id_comunidad_comentarios;
+                $comentarios->mensaje = $dataResult->comentario;
+                $comentarios->usr_nombre = $dataResult->usr_nombre;
+                $comentarios->usr_genero = $dataResult->usr_genero;
+                $comentarios->usr_foto = $dataResult->usr_foto;
+                array_push($arreglo_comunidades, $comentarios);
+            }
+            $response->setDatos($arreglo_comunidades);
+        }
         return $response;
     }
 

@@ -286,9 +286,8 @@ $(document).ready(function () {
                         type: 'POST',
                         url: URL_PUBLICACION,
                         success: function (data) {
-                            console.log("Data Me gusta", data);
                             data = JSON.parse(data);
-                            if (data.datos) {
+                            if (data.datos["0"]) {
                                 var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
                                 $("#cajamegusta" + mapa.id + "").append(container);
                             } else {
@@ -481,7 +480,7 @@ function mostrar_comunidades() {
                         url: URL_AMIGO,
                         success: function (data) {
                             data = JSON.parse(data);
-                            if (data.datos) {
+                            if (data.datos["0"]) {
                                 var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + o["id_comunidad"] + ")'>Salirme</button>";
                                 $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
                             } else {
@@ -492,9 +491,28 @@ function mostrar_comunidades() {
                     });
                 }
                 $("#comunidad_" + o["id_comunidad"] + " h4").on('click', function () {
-                    sessionStorage.setItem(ID_COMUNIDAD, o["id_comunidad"]);
-                    sessionStorage.setItem(NOMBRE_COMUNIDAD, o["nombre_comunidad"]);
-                    location.href = "comunidad.html";
+                    var parametros = {"correo": correo, "comunidad_id": o["id_comunidad"], "funcion": "verificar_integrante"};
+                    $.ajax({
+                        data: parametros,
+                        type: 'POST',
+                        url: URL_AMIGO,
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            if (data.datos["0"]) {
+                                sessionStorage.setItem(ID_COMUNIDAD, o["id_comunidad"]);
+                                sessionStorage.setItem(NOMBRE_COMUNIDAD, o["nombre_comunidad"]);
+                                location.href = "comunidad.html";
+                            } else {
+                                swal({
+                                    title: "Usted no se encuentra en esta comunidad",
+                                    type: "warning"
+                                });
+                                
+                            }
+                            console.log(data);
+                        }
+                    });
+
                 });
             });
         }

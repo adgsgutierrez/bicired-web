@@ -21,6 +21,8 @@ class IndexUsuarioLogic {
                             $response = UsuarioLogic::lista_usuarios($data->correo);
                         } else if ($data->funcion == 'datos_perfil') {
                             $response = UsuarioLogic::datos_perfil($data->correo);
+                        } else if ($data->funcion == 'traer_comunidades_correo') {
+                            $response = UsuarioLogic::lista_comunidad($data->correo);
                         } else {
                             $response = new RespuestaDTO();
                             $response->setCodigo(Constante::ERROR_PARAMETROS_CD);

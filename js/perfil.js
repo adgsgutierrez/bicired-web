@@ -20,7 +20,7 @@ $(document).ready(function () {
                 type: 'PUT',
                 url: URL_AMIGO,
                 success: function (data) {
-                    console.log(data);
+                    miscomunidades();
                 }
             });
         }
@@ -79,12 +79,10 @@ $(document).ready(function () {
                         $('#datatableavanzado tbody').on('click', 'tr', function () {
                             sessionStorage.setItem(USUARIO_BUSQUEDA, $(this).find("td").eq(2).html());
                             location.href = "perfil.html";
-
                         });
                     }
                 }
             });
-
         }
     });
     var parametros_lista = {
@@ -135,11 +133,11 @@ $(document).ready(function () {
         $("#añadir").css("display", "none");
     }
     datos_perfil();
+    amigos_bloqueados();
+    amigos();
     $("#actualizar_perfil").on('click', function () {
         actualizar_perfil();
     });
-    amigos_bloqueados();
-    amigos();
     if (busqueda !== perfilini) {
         verificacion_amistad();
         $("#editar").css("display", "none");
@@ -152,6 +150,9 @@ $(document).ready(function () {
         $("#aaaaaa").css("display", "none");
         $("#perfillogea").css("display", "none");
     }
+    $("#miscomunidades").on("click", function () {
+        miscomunidades();
+    });
     $("#aaaaaa").on('click', function () {
         swal({
             title: "Desea agregar a " + $("#nombreac").val() + " ?",
@@ -442,6 +443,54 @@ function amigos() {
                 destroy: true,
                 data: data.data,
                 columns: data.header
+            });
+        }
+    });
+}
+
+function miscomunidades() {
+    var tabla = '';
+    var parametros = {"correo": perfilini, "funcion": "traer_comunidades_correo"};
+    $.ajax({
+        data: parametros,
+        type: 'GET',
+        url: URL_USUARIO,
+        success: function (data) {
+            data = JSON.parse(data);
+            console.log(data);
+            var tabla = $("#datatablecomunidad").DataTable({
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningun dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Ultimo",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                },
+                destroy: true,
+                data: data.data,
+                columns: data.header
+            });
+            $('#datatablecomunidad tbody').on('click', 'tr', function () {
+                sessionStorage.setItem(ID_COMUNIDAD, $(this).children('td').children("div").data("idmiscomunidades"));
+                sessionStorage.setItem(NOMBRE_COMUNIDAD, $(this).children('td').children("div").text());
+                location.href = "comunidad.html";
             });
         }
     });

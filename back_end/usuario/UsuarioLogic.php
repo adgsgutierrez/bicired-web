@@ -378,6 +378,26 @@ class UsuarioLogic {
         return array("data" => $usuario_datos, "header" => $header);
     }
 
+    public static function lista_comunidad($correo) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "select co.id_comunidad,co.nombre_comunidad,co.usuario_crea_comunidad from TBL_INTEGRANTE_COMUNIDAD intco
+        inner join TBL_CREAR_COMUNIDAD co on co.id_comunidad = intco.fk_id_comunidad where intco.integrante = '" . $correo . "'";
+        $comunidades = array();
+        $header = array();
+        $header[] = array("title" => "Nombre Comunidad", "data" => "nombre_comunidad");
+        $header[] = array("title" => "Creador COmunidad", "data" => "creador_comunidad");
+        $arreglocomunidades = array();
+        $result = ConexionDB::consultar($sql);
+        while ($dataResult = $result->fetch_object()) {
+            $comunidades["nombre_comunidad"] = "<div id='nombre_comunidad' data-idmiscomunidades='" . $dataResult->id_comunidad . "'>" . $dataResult->nombre_comunidad . "</div>";
+            $comunidades["creador_comunidad"] = $dataResult->usuario_crea_comunidad;
+            $arreglocomunidades[] = $comunidades;
+        }
+        return array("data" => $arreglocomunidades, "header" => $header);
+    }
+
 }
 
 ?>

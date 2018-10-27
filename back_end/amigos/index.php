@@ -33,6 +33,8 @@ class IndexAmigosLogic {
                         $response = AmigoLogic::lista_integrante_comunidad($data->id_comunidad, $data->integrante);
                     } else if (isset($data->funcion) && $data->funcion == "mostrar_publicaciones") {
                         $response = AmigoLogic::mostrar_publicaciones($data->id);
+                    } else if (isset($data->funcion) && $data->funcion == "verificar_integrante") {
+                        $response = AmigoLogic::verificacion_miembro($data->correo, $data->comunidad_id);
                     } else if (!isset($data->funcion)) {
                         $response = AmigoLogic::anadir_amigo($data->cologeado, $data->coamigo);
                     } else {
@@ -61,6 +63,9 @@ class IndexAmigosLogic {
                     } else if (isset($data->funcion) && $data->funcion == "publicar_mensaje") {
 
                         $response = AmigoLogic::publicar_mensaje($data->id, $data->correo, $data->mensaje);
+                    } else if (isset($data->funcion) && $data->funcion == "comentarios") {
+
+                        $response = AmigoLogic::comentarios($data->id_mensaje, $data->comentario, $data->correo);
                     } else if (isset($data->coamigo)) {
                         $response = AmigoLogic::bloquear_amigo($data->cologeado, $data->coamigo);
                     } else {
