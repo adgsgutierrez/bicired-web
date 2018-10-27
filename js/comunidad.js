@@ -96,6 +96,7 @@ function mostrar_publicaciones(id) {
 }
 
 function insertar_comentario(id_mensaje, comentarios) {
+
     var parametros = {"id_mensaje": id_mensaje, "comentario": comentarios, "correo": correo, "funcion": "comentarios"};
     $.ajax({
         data: parametros,
@@ -103,7 +104,7 @@ function insertar_comentario(id_mensaje, comentarios) {
         type: 'PUT',
         success: function (data) {
             data = JSON.parse(data);
-            console.log(data);
+            $("#cuerpoco_" + id_mensaje + "").html("");
             $.each(data.datos, function (inde, o) {
                 if (o["usr_foto"]) {
                     var conteiner = "<div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h3>" + o["usr_nombre"] + "</h3></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div>";
