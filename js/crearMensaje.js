@@ -15,6 +15,7 @@ $(document).ready(function () {
             });
         } else {
             var parametros = {"correo": correo, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
             $.ajax({
                 data: parametros,
                 type: 'POST',
@@ -22,6 +23,7 @@ $(document).ready(function () {
                 success: function (data) {
                     data = JSON.parse(data);
                     if (data) {
+                        $.unblockUI();
                         var table = $("#datatableavanzado").DataTable({
                             "language": {
                                 "sProcessing": "Procesando...",
@@ -88,12 +90,14 @@ $(document).ready(function () {
         "correo": correo,
         "funcion": "lista_usuarios"
     };
+    $.blockUI({message: '<h2><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros_lista,
         url: URL_USUARIO,
         type: 'GET',
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             var lista = data.datos;
             $("#buscar_persona").autocomplete({
                 source: lista,
@@ -105,14 +109,14 @@ $(document).ready(function () {
     });
     var parametros = {"usuariologeado": correo, "funcion": "amigosmensaje"};
     var caja;
-    var caja2;
+    $.blockUI({message: '<h2 ><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'POST',
         url: URL_USUARIO,
         success: function (data) {
             data = JSON.parse(data);
-            console.log(data);
+            $.unblockUI();
             $.each(data.datos, function (i, o) {
                 if (o["foto"] === null) {
                     if (o["genero"] === "F") {
@@ -153,12 +157,14 @@ $(document).ready(function () {
 });
 function listamensajes() {
     var parametros = {"envia": correo, "recibe": $("#cajaperfilami").data("correoper"), "funcion": "enviarmensaje", "mensaje": $("#textarea").val()};
+    $.blockUI({message: '<h2><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'POST',
         url: URL_USUARIO,
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             $.each(data.datos, function (i, o) {
                 if (o["envia"] === correo) {
                     caja2 = "<div><div class='cajaper item-send-chat'><span>" + o["mensaje"] + "</span></div></div>";
