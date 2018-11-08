@@ -185,25 +185,27 @@ inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad=
             $arreglo_id_mensaje["mensaje"][] = $dataResult->id_comunidad_mensaje;
             array_push($arreglo_comunidades, $usuario);
         }
-        $separado_por_comas = implode(",", $arreglo_id_mensaje["mensaje"]);
-        $sql2 = "select * from TBL_COMUNIDAD_COMENTARIOS cm
-         inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad_mensajes in (" . $separado_por_comas . ")";
-        $result2 = ConexionDB::consultar($sql2);
-        $arreglo_co = array();
-        while ($dataResult2 = $result2->fetch_object()) {
-            $comentarios = new stdClass();
-            $comentarios->id_comentarios = $dataResult2->id_comunidad_comentarios;
-            $comentarios->id_mensajes = $dataResult2->fk_id_comunidad_mensajes;
-            $comentarios->mensaje = $dataResult2->comentario;
-            $comentarios->usr_nombre = $dataResult2->usr_nombre;
-            $comentarios->usr_genero = $dataResult2->usr_genero;
-            $comentarios->usr_foto = $dataResult2->usr_foto;
-            array_push($arreglo_co, $comentarios);
-        }
-        if ($result2) {
-            $response->setDatos(array("mensajes" => $arreglo_comunidades, "comentarios" => $arreglo_co));
-        } else {
-            $response->setDatos($arreglo_comunidades);
+        if (!empty($arreglo_comunidades)) {
+            $separado_por_comas = implode(",", $arreglo_id_mensaje["mensaje"]);
+            $sql2 = "select * from TBL_COMUNIDAD_COMENTARIOS cm
+         inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad_mensajes in (" . $separado_por_comas . ") order by id_comunidad_comentarios desc";
+            $result2 = ConexionDB::consultar($sql2);
+            if ($result2) {
+                $arreglo_co = array();
+                while ($dataResult2 = $result2->fetch_object()) {
+                    $comentarios = new stdClass();
+                    $comentarios->id_comentarios = $dataResult2->id_comunidad_comentarios;
+                    $comentarios->id_mensajes = $dataResult2->fk_id_comunidad_mensajes;
+                    $comentarios->mensaje = $dataResult2->comentario;
+                    $comentarios->usr_nombre = $dataResult2->usr_nombre;
+                    $comentarios->usr_genero = $dataResult2->usr_genero;
+                    $comentarios->usr_foto = $dataResult2->usr_foto;
+                    array_push($arreglo_co, $comentarios);
+                }
+                $response->setDatos(array("mensajes" => $arreglo_comunidades, "comentarios" => $arreglo_co));
+            } else {
+                $response->setDatos($arreglo_comunidades);
+            }
         }
         return $response;
     }
@@ -237,7 +239,7 @@ inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad=
             $response->setMensaje(Constante::ERROR_REGISTRO_MS);
         } else {
             $sql2 = "select * from TBL_COMUNIDAD_COMENTARIOS cm
-         inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad_mensajes=" . $id . "";
+         inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad_mensajes=" . $id . " order by id_comunidad_comentarios desc";
             $result = ConexionDB::consultar($sql2);
             $arreglo_comunidades = array();
             while ($dataResult = $result->fetch_object()) {

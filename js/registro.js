@@ -25,27 +25,28 @@ $(document).ready(function () {
 function ajaxregistro(nombre, correo, genero, clave, claveConfirmada) {
     // var parametros = {nombre: nombre, correo: correo, genero: genero, clave: clave, claveConfirmada: claveConfirmada};
     var parametros = {
-        "correo":correo,
-        "nombre": nombre ,
-        "genero":genero ,
+        "correo": correo,
+        "nombre": nombre,
+        "genero": genero,
         "clave": claveConfirmada
-      };
+    };
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'PUT',
         url: URL_USUARIO,
         success: function (data) {
             data = JSON.parse(data);
-            console.log(data);
-            if(data.codigo != 200){
+            $.unblockUI();
+            if (data.codigo != 200) {
                 swal("Tenemos inconvenientes", data.mensaje, "error");
-            }else{
-              window.location.href = 'paginaPrincipal.html';
+            } else {
+                window.location.href = 'paginaPrincipal.html';
             }
-        },error :function(err){
-           /** MOSTRAR ALERTA DE ERROR**/
-           console.log(err);
-           swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
+        }, error: function (err) {
+            /** MOSTRAR ALERTA DE ERROR**/
+            $.unblockUI();
+            swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
         }
     });
 }

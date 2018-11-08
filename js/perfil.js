@@ -15,11 +15,13 @@ $(document).ready(function () {
             });
         } else {
             var parametros = {"correo": perfilini, "nombre_comunidad": $("#nombre_co").val(), "funcion": "crear_comunidad"};
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
             $.ajax({
                 data: parametros,
                 type: 'PUT',
                 url: URL_AMIGO,
                 success: function (data) {
+                    $.unblockUI();
                     miscomunidades();
                 }
             });
@@ -40,6 +42,7 @@ $(document).ready(function () {
             });
         } else {
             var parametros = {"correo": perfilini, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
             $.ajax({
                 data: parametros,
                 type: 'POST',
@@ -47,6 +50,7 @@ $(document).ready(function () {
                 success: function (data) {
                     data = JSON.parse(data);
                     if (data) {
+                        $.unblockUI();
                         var table = $("#datatableavanzado").DataTable({
                             "language": {
                                 "sProcessing": "Procesando...",
@@ -89,6 +93,7 @@ $(document).ready(function () {
         "correo": perfilini,
         "funcion": "lista_usuarios"
     };
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros_lista,
         url: URL_USUARIO,
@@ -96,6 +101,7 @@ $(document).ready(function () {
         success: function (data) {
             data = JSON.parse(data);
             var lista = data.datos;
+            $.unblockUI();
             $("#buscar_persona").autocomplete({
                 source: lista,
                 select: function (event, ui) {
@@ -201,12 +207,14 @@ function actualizar_perfil() {
             type: "error"
         });
     } else {
+        $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
         $.ajax({
             data: parametros,
             url: URL_USUARIO,
             type: 'PUT',
             success: function (data) {
                 if (data) {
+                    $.unblockUI();
                     swal({
                         title: "Se actualizo correctamente su perfil",
                         type: "success"
@@ -220,12 +228,14 @@ function actualizar_perfil() {
 }
 function datos_perfil() {
     var parametros = {"correo": busqueda, "funcion": "datos_perfil"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_USUARIO,
         type: 'GET',
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             if (data.datos.genero !== null) {
                 if (data.datos.genero === "F") {
                     $("#generoP").text("Mujer");
@@ -263,12 +273,14 @@ function datos_perfil() {
 }
 function agregar_amigo() {
     var parametros = {"cologeado": perfilini, "coamigo": busqueda};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_AMIGO,
         type: 'POST',
         success: function (data) {
             if (data) {
+                $.unblockUI();
                 swal({
                     title: "Usted agrego correctamente a " + $("#nombreac").val(),
                     type: "success"
@@ -285,12 +297,14 @@ function agregar_amigo() {
 
 function verificacion_amistad() {
     var parametros = {"cologeado": perfilini, "coamigo": busqueda, "funcion": "verificar"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_AMIGO,
         type: 'POST',
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             if (data.datos.fk_amg_origen !== null && data.datos.fk_amg_destino !== null) {
                 $("#aaaaaa").css("display", "none");
                 $("#amigos").css("visibility", "visible");
@@ -304,12 +318,14 @@ function verificacion_amistad() {
 
 function eliminar_amigo() {
     var parametros = {"cologeado": perfilini, "coamigo": busqueda, "funcion": "eliminar_amigo"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_AMIGO,
         type: 'POST',
         success: function (data) {
             if (data) {
+                $.unblockUI();
                 swal({
                     title: "Usted elimino correctamente a " + $("#nombreac").val(),
                     type: "success"
@@ -326,12 +342,14 @@ function eliminar_amigo() {
 
 function bloquear_amigo() {
     var parametros = {"cologeado": perfilini, "coamigo": busqueda, "funcion": "bloquear_amigo"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_AMIGO,
         type: 'PUT',
         success: function (data) {
             if (data) {
+                $.unblockUI();
                 swal({
                     title: "Usted bloqueo correctamente a " + $("#nombreac").val(),
                     type: "success"
@@ -348,12 +366,14 @@ function bloquear_amigo() {
 
 function amigos_bloqueados() {
     var parametros = {"cologeado": perfilini, "funcion": "amigos_bloqueados"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_USUARIO,
         type: 'POST',
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             var table = $("#datatableeliminar").DataTable({
                 "language": {
                     "sProcessing": "Procesando...",
@@ -385,14 +405,15 @@ function amigos_bloqueados() {
             });
             $('#datatableeliminar tbody').on('click', 'button', function () {
                 var datos = table.row($(this).parents('tr')).data();
-                console.log(datos.correo);
                 var parametros = {"cologeado": perfilini, "desperfil": datos.correo, "funcion": "desbloquear"};
+                $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
                 $.ajax({
                     data: parametros,
                     url: URL_AMIGO,
                     type: 'PUT',
                     success: function (data) {
                         if (data) {
+                            $.unblockUI();
                             swal({
                                 title: "Usted desbloqueo correctamente a " + datos.nombre,
                                 type: "success"
@@ -409,12 +430,14 @@ function amigos_bloqueados() {
 
 function amigos() {
     var parametros = {"cologeado": perfilini, "funcion": "amigos"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         url: URL_USUARIO,
         type: 'POST',
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             $("#datatableamigos").DataTable({
                 "language": {
                     "sProcessing": "Procesando...",
@@ -451,13 +474,14 @@ function amigos() {
 function miscomunidades() {
     var tabla = '';
     var parametros = {"correo": perfilini, "funcion": "traer_comunidades_correo"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'GET',
         url: URL_USUARIO,
         success: function (data) {
             data = JSON.parse(data);
-            console.log(data);
+            $.unblockUI();
             var tabla = $("#datatablecomunidad").DataTable({
                 "language": {
                     "sProcessing": "Procesando...",

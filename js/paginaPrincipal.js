@@ -10,7 +10,6 @@ function capitalizeFirstLetter(string) {
 }
 
 var aceptarEvento = function (id_publicacion) {
-    console.log("id_publicacion", id_publicacion);
     var parametros = {
         "listar": "guardar_novedad",
         "id_publicacion": id_publicacion
@@ -20,10 +19,9 @@ var aceptarEvento = function (id_publicacion) {
         type: 'GET',
         url: URL_USUARIO,
         success: function (data) {
-            console.log(data);
         }, error: function (err) {
             /** MOSTRAR ALERTA DE ERROR**/
-            console.log(err);
+            $.unblockUI();
             swal("Tenemos inconvenientes", "Tus notificaciones deberán esperar un poco", "error");
         }
     })
@@ -58,7 +56,6 @@ var consultar_notificaciones = function () {
 
             }, error: function (err) {
                 /** MOSTRAR ALERTA DE ERROR**/
-                console.log(err);
                 swal("Tenemos inconvenientes", "Tus notificaciones deberán esperar un poco", "error");
             }
         })
@@ -86,6 +83,7 @@ $(document).ready(function () {
             });
         } else {
             var parametros = {"correo": correo, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
             $.ajax({
                 data: parametros,
                 type: 'POST',
@@ -93,6 +91,7 @@ $(document).ready(function () {
                 success: function (data) {
                     data = JSON.parse(data);
                     if (data) {
+                        $.unblockUI();
                         var table = $("#datatableavanzado").DataTable({
                             "language": {
                                 "sProcessing": "Procesando...",
@@ -269,7 +268,6 @@ $(document).ready(function () {
                     success: function (data) {
                         data = JSON.parse(data);
                         var lista = data.datos;
-                        console.log();
                         $("#buscar_persona").autocomplete({
                             source: lista,
                             select: function (event, ui) {
@@ -281,20 +279,23 @@ $(document).ready(function () {
                 var container = '';
                 mapas.map((mapa) => {
                     var parametros_mapa = {"correo": correo, "id_publicacion": mapa.id, "funcion": "ver_megusta"};
+                    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
                     $.ajax({
                         data: parametros_mapa,
                         type: 'POST',
                         url: URL_PUBLICACION,
                         success: function (data) {
                             data = JSON.parse(data);
-                            if (data.datos["0"]) {
-                                var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
-                                $("#cajamegusta" + mapa.id + "").append(container);
-                            } else {
-                                var container = '<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>';
-                                $("#cajamegusta" + mapa.id + "").append(container);
+                            if (data) {
+                                $.unblockUI();
+                                if (data.datos["0"]) {
+                                    var container = '<div id="actualizar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-default" onclick="actualizar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-down"></i> No me gusta</button>';
+                                    $("#cajamegusta" + mapa.id + "").append(container);
+                                } else {
+                                    var container = '<div id="insertar_megusta" class="col-sm-12"><button  style="float: left;" class="btn btn-primary" onclick="insertar_megusta(' + mapa.id + ')"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>';
+                                    $("#cajamegusta" + mapa.id + "").append(container);
+                                }
                             }
-
                         }
                     });
                     container = container + '<br><div class="card col-centrada" style="width: 80%;"><div class="card-body"><div id="map_' + mapa.id + '" class="mapaStyle" style="width: 100%;height: 200px;  overflow: visible"></div>';
@@ -308,7 +309,6 @@ $(document).ready(function () {
                     fecha.setFullYear(TMPDate[0]);
                     fecha.setHours(TMPHour[0]);
                     fecha.setMinutes(TMPHour[1]);
-                    console.log("fecha.getTime() > Date.now()", fecha, new Date);
                     if (fecha.getTime() > Date.now()) {
                         container = container + '<button style="float: right;" class="btn btn-primary" onclick="irEvento(' + mapa.id + ')">Quiero ir</button></div></div>';
                     } else {
@@ -323,7 +323,7 @@ $(document).ready(function () {
             }
         }, error: function (err) {
             /** MOSTRAR ALERTA DE ERROR**/
-            console.log(err);
+            $.unblockUI();
             swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
         }
     });
@@ -407,18 +407,18 @@ function insertar_megusta(id_publicacion) {
 }
 function accion_megusta(id_publicacion, funcion) {
     var parametros = {"id_publicacion": id_publicacion, "correo": correo, "funcion": funcion};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'POST',
         url: URL_PUBLICACION,
         success: function (data) {
-            console.log(data);
+            $.unblockUI();
         }
     });
 }
 
 var enviarMensajes = function (correo) {
-    console.log(correo);
     chatActivo = correo;
     leermensajes();
     $("#mensajes").show();
@@ -474,12 +474,14 @@ function mostrar_comunidades() {
                 $("#listacomunidades").append(contenedor);
                 if (o["usuario_crea_comunidad"] !== correo) {
                     var parametros = {"integrante": correo, "id_comunidad": o["id_comunidad"], "funcion": "lista_integrante_comunidad"};
+                    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
                     $.ajax({
                         data: parametros,
                         type: 'POST',
                         url: URL_AMIGO,
                         success: function (data) {
                             data = JSON.parse(data);
+                            $.unblockUI();
                             if (data.datos["0"]) {
                                 var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + o["id_comunidad"] + ")'>Salirme</button>";
                                 $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
@@ -492,12 +494,14 @@ function mostrar_comunidades() {
                 }
                 $("#comunidad_" + o["id_comunidad"] + " h4").on('click', function () {
                     var parametros = {"correo": correo, "comunidad_id": o["id_comunidad"], "funcion": "verificar_integrante"};
+                    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
                     $.ajax({
                         data: parametros,
                         type: 'POST',
                         url: URL_AMIGO,
                         success: function (data) {
                             data = JSON.parse(data);
+                            $.unblockUI();
                             if (data.datos["0"]) {
                                 sessionStorage.setItem(ID_COMUNIDAD, o["id_comunidad"]);
                                 sessionStorage.setItem(NOMBRE_COMUNIDAD, o["nombre_comunidad"]);
@@ -507,9 +511,8 @@ function mostrar_comunidades() {
                                     title: "Usted no se encuentra en esta comunidad",
                                     type: "warning"
                                 });
-                                
+
                             }
-                            console.log(data);
                         }
                     });
 
@@ -532,12 +535,13 @@ function insertar_integrante(id_comunidad) {
 
 function accion_integrante(id_comunidad, funcion) {
     var parametros = {"id": id_comunidad, "correo": correo, "funcion": funcion};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'PUT',
         url: URL_AMIGO,
         success: function (data) {
-            console.log(data);
+            $.unblockUI();
         }
     });
 }

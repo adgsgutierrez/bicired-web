@@ -14,6 +14,7 @@ $(document).ready(function () {
             });
         } else {
             var parametros = {"correo": correo, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
             $.ajax({
                 data: parametros,
                 type: 'POST',
@@ -21,6 +22,7 @@ $(document).ready(function () {
                 success: function (data) {
                     data = JSON.parse(data);
                     if (data) {
+                        $.unblockUI();
                         var table = $("#datatableavanzado").DataTable({
                             "language": {
                                 "sProcessing": "Procesando...",
@@ -87,6 +89,7 @@ $(document).ready(function () {
         "correo": correo,
         "funcion": "lista_usuarios"
     };
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros_lista,
         url: URL_USUARIO,
@@ -94,7 +97,7 @@ $(document).ready(function () {
         success: function (data) {
             data = JSON.parse(data);
             var lista = data.datos;
-            console.log();
+            $.unblockUI();
             $("#buscar_persona").autocomplete({
                 source: lista,
                 select: function (event, ui) {
@@ -106,13 +109,14 @@ $(document).ready(function () {
     var parametros = {
         "publicacion": mapa
     };
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'PUT',
         url: URL_PUBLICACION,
         success: function (data) {
             var datos = JSON.parse(data);
-            console.log(datos);
+            $.unblockUI();
             content = "";
             datos.datos.map((foto) => {
                 content = content + '<div class="card" style="    width: 300px;float: left;margin: 20px;">';
@@ -125,13 +129,14 @@ $(document).ready(function () {
             $("#container").html(content);
         }, error: function (err) {
             /** MOSTRAR ALERTA DE ERROR**/
-            console.log(err);
+            $.unblockUI();
             swal("Tenemos inconvenientes", "Uno de nuestros ingenieros esta ajustando todo dale un poco de tiempo, lamentamos las molestias", "error");
         }
     });
 
     $("input[name='foto']").on("change", function () {
         var formData = new FormData($("#uploadimage")[0]);
+        $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
         $.ajax({
             url: URL_UPLOAD,
             type: "POST",
@@ -140,7 +145,7 @@ $(document).ready(function () {
             processData: false,
             success: function (datos) {
                 datos = JSON.parse(datos);
-                console.log(datos);
+                $.unblockUI();
                 content = "";
                 datos.datos.map((foto) => {
                     content = content + '<div class="card" style="    width: 300px;float: left;margin: 20px;">';

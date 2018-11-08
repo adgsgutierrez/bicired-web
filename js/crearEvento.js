@@ -30,6 +30,7 @@ $(document).ready(function () {
             });
         } else {
             var parametros = {"correo": email, "edadinicio": $("#edadinicio").val(), "edadfin": $("#edadfin").val(), "genero": $("#generoacb option:selected").val(), "funcion": "busqueda_avanzada"};
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
             $.ajax({
                 data: parametros,
                 type: 'POST',
@@ -37,6 +38,7 @@ $(document).ready(function () {
                 success: function (data) {
                     data = JSON.parse(data);
                     if (data) {
+                        $.unblockUI();
                         var table = $("#datatableavanzado").DataTable({
                             "language": {
                                 "sProcessing": "Procesando...",
@@ -102,12 +104,14 @@ $(document).ready(function () {
         "correo": email,
         "funcion": "lista_usuarios"
     };
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros_lista,
         url: URL_USUARIO,
         type: 'GET',
         success: function (data) {
             data = JSON.parse(data);
+            $.unblockUI();
             var lista = data.datos;
             $("#buscar_persona").autocomplete({
                 source: lista,
@@ -141,13 +145,14 @@ var renderMapa = function (latitud, longitud) {
         autoclose: true
     });
     var parametros = {"correo": email, "funcion": "listarmigos"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'POST',
         url: URL_USUARIO,
         success: function (data) {
-            console.log("data", data);
             data = JSON.parse(data);
+            $.unblockUI();
             if (data.datos.length > 0) {
                 $.each(data.datos, function (key, value) {
                     $("#amigos").append('<option value=' + value.id + '>' + value.label + '</option>');
@@ -156,6 +161,7 @@ var renderMapa = function (latitud, longitud) {
                 $("#amigos").append('<option value="" disabled> No tienes personas para invitar</option>');
             }
         }, error: function (error) {
+            $.unblockUI();
             console.error(error);
         }
     });
@@ -262,12 +268,13 @@ var guardar = function () {
             descripcion: $("#parrafo").text(),
             usuario: email
         };
-        console.log(parametros);
+        $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
         $.ajax({
             data: parametros,
             url: URL_PUBLICACION,
             type: 'POST',
             success: function (data) {
+                $.unblockUI();
                 swal({
                     title: "Todo Correcto",
                     text: 'El Evento Fue Creado Con Exito',
@@ -287,7 +294,6 @@ var guardar = function () {
                         });
             }
         });
-        console.log(parametros);
     }
 }
 /**
@@ -298,7 +304,6 @@ var mapInit = function () {
         type: 'GET',
         url: 'https://ipinfo.io/geo',
         success: function (data) {
-            console.log(data);
             var ubicacion = data.loc.split(',');
             renderMapa(parseFloat(ubicacion[0]), parseFloat(ubicacion[1]));
         }
