@@ -44,6 +44,7 @@ function mostrar_publicaciones(id) {
         url: URL_AMIGO,
         success: function (data) {
             data = JSON.parse(data);
+            console.log(data);
             $.unblockUI();
             if (data.datos) {
                 $.each(data.datos.mensajes, function (i, o) {
@@ -52,7 +53,7 @@ function mostrar_publicaciones(id) {
                         container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row'><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control' /></div><div class='col-sm-3' style='text-align:center;'><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary' ><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
                         $("#container").append(container);
                     } else {
-                        if (o["genero"] == "F") {
+                        if (o["usr_genero"] == "F") {
                             var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:10px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-mujer.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
                             container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row'><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control'/></div><div class='col-sm-3' style='text-align:center;'><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary'><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
                             $("#container").append(container);
@@ -80,7 +81,7 @@ function mostrar_publicaciones(id) {
                         var conteiner = "<div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h3>" + o["usr_nombre"] + "</h3></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div>";
                         $("#cuerpoco_" + o["id_mensajes"] + "").append(conteiner);
                     } else {
-                        if (o["genero"] == "F") {
+                        if (o["usr_genero"] == "F") {
                             var conteiner = "<div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-mujer.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h3>" + o["usr_nombre"] + "</h3></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div>";
                             $("#cuerpoco_" + o["id_mensajes"] + "").append(conteiner);
                         } else {
@@ -113,7 +114,7 @@ function insertar_comentario(id_mensaje, comentarios) {
                     var conteiner = "<div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h3>" + o["usr_nombre"] + "</h3></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div>";
                     $("#cuerpoco_" + id_mensaje + "").append(conteiner);
                 } else {
-                    if (o["genero"] == "F") {
+                    if (o["usr_genero"] == "F") {
                         var conteiner = "<div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-mujer.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h3>" + o["usr_nombre"] + "</h3></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div>";
                         $("#cuerpoco_" + id_mensaje + "").append(conteiner);
                     } else {
