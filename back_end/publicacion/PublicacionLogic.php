@@ -10,7 +10,7 @@ class PublicacionLogic {
             (tp.fk_pbl_usr_correo IN (
                 SELECT ta.fk_amg_origen FROM TBL_AMIGOS ta WHERE ta.fk_amg_destino = '$correo' and ta.amg_estado = 'A')
                 OR tp.fk_pbl_usr_correo IN (SELECT ta.fk_amg_destino FROM TBL_AMIGOS ta WHERE ta.fk_amg_origen = '$correo' and ta.amg_estado = 'A')
-                OR tp.fk_pbl_usr_correo = '$correo' ) AND pbl_estado = 'A' ORDER BY pk_pbl_id DESC";
+                OR tp.fk_pbl_usr_correo = '$correo' ) AND pbl_estado = 'A' ORDER BY pk_pbl_id DESC limit 10";
         $result = ConexionDB::consultar($sql);
         $publicaciones = array();
         while ($dataResult = $result->fetch_object()) {
