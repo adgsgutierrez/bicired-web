@@ -61,8 +61,7 @@ class IndexAmigosLogic {
 
                         $response = AmigoLogic::insertar_integrante($data->id, $data->correo);
                     } else if (isset($data->funcion) && $data->funcion == "publicar_mensaje") {
-
-                        $response = AmigoLogic::publicar_mensaje($data->id, $data->correo, $data->mensaje);
+                        $response = AmigoLogic::publicar_mensaje($data->id, $data->correo, $data->mensaje, $data->tipo);
                     } else if (isset($data->funcion) && $data->funcion == "comentarios") {
 
                         $response = AmigoLogic::comentarios($data->id_mensaje, $data->comentario, $data->correo);

@@ -138,18 +138,25 @@
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <center><h1 id="nombre_comunidad"></h1></center>
-                <center><div class="col-sm-8 card-text">
-                        <div class="row">
-                            <div class="col-sm-10">
-                                <input id="campopublicar" class="form-control" type="text" placeholder="¿Que estas pensando?"/>
-                            </div>
-                            <div class="col-sm-2">
-                                <button id="publicar" type="button" class="btn btn-primary">Publicar</button>
+                <h1 id="nombre_comunidad" style="text-align: center;"></h1>
+                <div class="col-sm-8 card-text col-centrada" >
+                    <div class="row col-centrada">
+                        <div class="col-sm-5">
+                            <input id="campopublicar" class="form-control" type="text" placeholder="¿Que estas pensando?"/>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="mensaje_imagen" id="mensaje_imagen" readonly="readonly"/>
+                                <label id="botonsubir" class="btn btn-primary from-control input-group-addon" style="width: 110px">
+                                    <i class="fa fa-cloud-upload"></i> Adjuntar<input type="file" id="imagen" name="archivo"  accept=".jpg,.png,.jpeg"  style="display: none;">
+                                </label>
                             </div>
                         </div>
+                        <div class="col-sm-1">
+                            <button id="publicar" type="button" class="btn btn-primary">Publicar</button>
+                        </div>
                     </div>
-                </center>
+                </div>
             </div>
         </div>
         <br>

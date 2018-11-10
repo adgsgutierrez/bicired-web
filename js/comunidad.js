@@ -1,37 +1,42 @@
 var cod_comunidad;
 var correo;
+
 $(document).ready(function () {
     cod_comunidad = sessionStorage.getItem(ID_COMUNIDAD);
     mostrar_publicaciones(cod_comunidad);
     correo = sessionStorage.getItem(USUARIO_SESSION);
     $("#nombre_comunidad").text(sessionStorage.getItem(NOMBRE_COMUNIDAD));
     $("#publicar").on('click', function () {
-        if ($("#campopublicar").val() == "") {
-            swal({
-                title: "No tiene nada para publicar",
-                type: "error"
-            });
-        } else {
-
-            var parametros = {"id": cod_comunidad, "correo": correo, "mensaje": $("#campopublicar").val(), "funcion": "publicar_mensaje"};
-            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
-            $.ajax({
-                data: parametros,
-                type: 'PUT',
-                url: URL_AMIGO,
-                success: function (data) {
-                    if (data) {
-                        $.unblockUI();
-                        $("#container").html("");
-                    }
-                    mostrar_publicaciones(cod_comunidad);
-                }
-            });
-        }
+        publicar_mensajes();
     });
     $("#cerrarpaginaprincipal").on("click", function () {
         sessionStorage.clear();
         location.href = "index.html";
+    });
+    $(document).on('change', ':file', function () {
+        var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+        if ($("#mensaje_imagen").val() !== "") {
+            $("#campopublicar").prop("disabled", true);
+            $("#campopublicar").val("");
+        } else {
+            $("#campopublicar").prop("disabled", false);
+        }
+    });
+
+    $(':file').on('fileselect', function (event, numFiles, label) {
+
+        var input = $(this).parents('.input-group').find(':text'),
+                log = numFiles > 1 ? numFiles + ' files selected' : label;
+        if (input.length) {
+            input.val(log);
+        } else {
+            if (log)
+                $("#mensaje_imagen").html(log);
+        }
+
     });
 });
 
@@ -44,21 +49,36 @@ function mostrar_publicaciones(id) {
         url: URL_AMIGO,
         success: function (data) {
             data = JSON.parse(data);
-            console.log(data);
             $.unblockUI();
             if (data.datos) {
                 $.each(data.datos.mensajes, function (i, o) {
                     if (o["usr_foto"]) {
-                        var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:10px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
-                        container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row'><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control' /></div><div class='col-sm-3' style='text-align:center;'><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary' ><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
+                        if (o["tipo"] === "text") {
+                            var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:5px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+                        } else {
+                            var container = "<div  class='card col-centrada' style='width: 70%;height: 300px;margin-top:5px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' style='text-align:center;'><img src='" + o["mensaje"] + "' style='width:280px;height: 180px;' /></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+
+                        }
+                        container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row' ><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control' /></div><div class='col-sm-3' style='text-align:center;'><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary' ><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
                         $("#container").append(container);
                     } else {
                         if (o["usr_genero"] == "F") {
-                            var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:10px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-mujer.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
-                            container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row'><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control'/></div><div class='col-sm-3' style='text-align:center;'><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary'><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
+                            if (o["tipo"] === "text") {
+                                var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:5px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-mujer.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+                            } else {
+                                var container = "<div  class='card col-centrada' style='width: 70%;height: 300px;margin-top:5px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' style='text-align:center;'><img src='" + o["mensaje"] + "' style='width:280px;height: 180px;' /></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+
+                            }
+                            container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row' ><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control'/></div><div class='col-sm-3' style='text-align:center;'><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary'><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
                             $("#container").append(container);
                         } else {
-                            var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:10px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-hombre.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+                            if (o["tipo"] === "text") {
+
+                                var container = "<div  class='card col-centrada' style='width: 70%;height: 170px;margin-top:5px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='img/perfil-hombre.jpg' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' align='justify' ><p style='font-size:18px;'>" + o["mensaje"] + "</p></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+                            } else {
+                                var container = "<div  class='card col-centrada' style='width: 70%;height: 300px;margin-top:5px;'><div class='card-body'><div class='row'><div class='col-sm-2' style='text-align:center'><img id='imagen' src='" + o["usr_foto"] + "' style='width:50px;height:50px'/></div><div class='col-sm-5'><h2>" + o["usr_nombre"] + "</h2></div></div><div class='row' style='margin-top:10px;'><div class='col-sm-12' style='text-align:center;'><img src='" + o["mensaje"] + "' style='width:280px;height: 180px;' /></div></div><div class='row'><div id='comentarios_" + o["id_mensaje"] + "' style='margin:auto;'><i class='fa fa-comment-o'> Comentar</i></div></div></div></div>";
+
+                            }
                             container += "<div  id='cajacomentarios_" + o["id_mensaje"] + "' class='card col-centrada' style='width: 70%;height: 260px;display:none'><div class='card-body'><div class='row'><div class='col-sm-9' ><input id='comentarios_mensajes_" + o["id_mensaje"] + "' class='form-control'/></div><div class='col-sm-3' style='text-align:center;' ><button id='clickComentar_" + o["id_mensaje"] + "' class='btn btn-primary' ><i class='fa fa-comment-o'></i> Comentar</button></div></div><div class='row'><div id='cuerpoco_" + o["id_mensaje"] + "' style='margin-top:10px;height: 190px;width:100%;overflow-y: scroll;overflow-x: hidden;'></div></div></div>";
 
                             $("#container").append(container);
@@ -128,5 +148,78 @@ function insertar_comentario(id_mensaje, comentarios) {
     });
     $("#comentarios_mensajes_" + id_mensaje + "").val("");
 }
+function publicar_mensajes() {
+    var tipo = '';
+    var file = document.getElementById("imagen").files[0];
+    var mensaje;
+    if ($("#campopublicar").val() === "" && $("#mensaje_imagen").val() === "") {
+        swal({
+            title: "No tiene nada para publicar",
+            type: "error"
+        });
+    } else {
+        if ($("#campopublicar").val() !== "") {
+            tipo = 'text';
+            mensaje = $("#campopublicar").val();
+            var parametros = {
+                funcion: 'publicar_mensaje',
+                id: cod_comunidad,
+                correo: correo,
+                mensaje: mensaje,
+                tipo: tipo
+            };
+            $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
+            $.ajax({
+                data: parametros,
+                type: 'PUT',
+                url: URL_AMIGO,
+                success: function (data) {
+                    if (data) {
+                        $.unblockUI();
+                        $("#container").html("");
+                    }
+                    mostrar_publicaciones(cod_comunidad);
+                }
+            });
+        } else {
+            tipo = 'imagen';
+            getBase64(file).then(data => {
+                var parametros = {
+                    funcion: 'publicar_mensaje',
+                    id: cod_comunidad,
+                    correo: correo,
+                    mensaje: data,
+                    tipo: tipo
+                };
+                $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
+                $.ajax({
+                    data: parametros,
+                    type: 'PUT',
+                    url: URL_AMIGO,
+                    success: function (data) {
+                        if (data) {
+                            $.unblockUI();
+                            $("#container").html("");
+                        }
+                        mostrar_publicaciones(cod_comunidad);
+                    }
+                });
+
+            }
+            );
+        }
+
+    }
+}
+/**Funcion de transformacion de imagen a Base64 INICIO**/
+function getBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+/**Funcion de transformacion de imagen a Base64 FIN**/
 
 
