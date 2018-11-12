@@ -152,11 +152,11 @@ class AmigoLogic {
         return $response;
     }
 
-    public static function publicar_mensaje($id, $correo, $mensaje) {
+    public static function publicar_mensaje($id, $correo, $mensaje, $tipo) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "INSERT INTO TBL_COMUNIDAD_MENSAJES (fk_id_comunidad,mensaje,integrante) VALUES (" . $id . ",'" . $mensaje . "','" . $correo . "')";
+        $sql = "INSERT INTO TBL_COMUNIDAD_MENSAJES (fk_id_comunidad,mensaje,integrante,tipo_mensaje) VALUES (" . $id . ",'" . $mensaje . "','" . $correo . "','" . $tipo . "')";
         $result = ConexionDB::consultar($sql);
         if (!$result) {
             $response->setCodigo(Constante::ERROR_REGISTRO_CD);
@@ -179,6 +179,7 @@ inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad=
             $usuario->fk_id_comunidad = $dataResult->fk_id_comunidad;
             $usuario->id_mensaje = $dataResult->id_comunidad_mensaje;
             $usuario->mensaje = $dataResult->mensaje;
+            $usuario->tipo = $dataResult->tipo_mensaje;
             $usuario->usr_nombre = $dataResult->usr_nombre;
             $usuario->usr_genero = $dataResult->usr_genero;
             $usuario->usr_foto = $dataResult->usr_foto;
