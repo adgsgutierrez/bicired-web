@@ -6,6 +6,8 @@ var lat2;
 var lng1;
 var lng2;
 var mapas = [];
+var ubi = [];
+var ruta = [];
 var email;
 var marker1;
 var marker2;
@@ -163,34 +165,42 @@ var renderMapa = function (latitud, longitud) {
 
     function onMapClick(e) {
         console.log("click to map ", e);
-        if (contador < 2) {
-            if (contador == 0) {
-                lat1 = e.latlng.lat;
-                lng1 = e.latlng.lng;
-            } else {
-                lat2 = e.latlng.lat;
-                lng2 = e.latlng.lng;
-            }
+        ubi.push({latitud : e.latlng.lat, longitud : e.latlng.lng});
+      //  if (ubi.length > 1) {
+            // if (contador == 0) {
+            //     lat1 = e.latlng.lat;
+            //     lng1 = e.latlng.lng;
+            // } else {
+            //     lat2 = e.latlng.lat;
+            //     lng2 = e.latlng.lng;
+            // }
             var targetPoint = L.latLng(e.latlng.lat, e.latlng.lng);
             console.log("Punto que va a colocar", targetPoint);
+            ind = 1;
+            if(contador < 1){
+              ind = contador;
+            }
             var personalize = L.icon({
-                iconUrl: mensajesPuntosMapa[contador].market,
+                iconUrl: mensajesPuntosMapa[ind].market,
                 iconSize: [30, 30], // size of the icon
-                iconAnchor: [mensajesPuntosMapa[contador].point, 30], // point of the icon which will correspond to marker's location
+                iconAnchor: [mensajesPuntosMapa[ind].point, 30], // point of the icon which will correspond to marker's location
                 popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
             });
             L.marker(targetPoint, {icon: personalize, draggable: false}).addTo(map);
             contador = contador + 1;
 
-            if (contador == 2) {
+            if (contador > 1) {
                 var x = document.getElementById("snackbar");
                 x.className = "show";
+                console.log(ubi);
                 getRoute(
-                        lat1,
-                        lng1,
-                        lat2,
-                        lng2,
+                        // lat1,
+                        // lng1,
+                        // lat2,
+                        // lng2,
+                        ubi,
                         function (latlngs) {
+                        //  L.clearLayers();
                             x.className = x.className.replace("show", "");
                             var polyline = L.polyline(latlngs, {color: '#4CAF50', weight: 4, opacity: .8}).addTo(map);
                             // zoom the map to the polyline
@@ -199,9 +209,9 @@ var renderMapa = function (latitud, longitud) {
                         }
                 );
             }
-        } else {
-            cancelar();
-        }
+        // } else {
+        //     cancelar();
+        // }
     }
 
     map.on('click', onMapClick);
@@ -248,18 +258,19 @@ var guardar = function () {
         //lat1, lng1, lat2, lng2
         var parametros = {
             fecha: $("#datetimepicker10").val(),
-            lt1: lat1,
-            ln1: lng1,
-            lt2: lat2,
-            ln2: lng2,
-            descripcion: $("#parrafo").text(),
-            usuario: email
+            ubicacion : ruta,
+            descripcion: "Queremos realizar esta bella Ruta",
+            usuario: email,
+            funcion : "guardar_publicacion"
         };
+        console.log(parametros);
         $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
         $.ajax({
             data: parametros,
+            //contentType: "application/json",
             url: URL_PUBLICACION,
             type: 'POST',
+            dataType: "json",
             success: function (data) {
                 $.unblockUI();
                 swal({
@@ -307,12 +318,15 @@ function cancelar() {
 /***
  consulta del calculo de ruta
  **/
-getRoute = (latitud_a, longitud_a, latitud_b, longitud_b, callback) => {
+getRoute = (ubicaciones, callback) => {
     var url = SERVER_DIRECTIONS;
-    url = url.replace('lat1', latitud_a);
-    url = url.replace('lat2', latitud_b);
-    url = url.replace('lon1', longitud_a);
-    url = url.replace('lon2', longitud_b);
+    //lat1%2Clon1&point=lat2%2Clon2
+    for(var j = 0 ; j < ubicaciones.length ; j++){
+      url = url + ubicaciones[j].latitud + '%2C' +ubicaciones[j].longitud;
+      if( (j + 1) < ubicaciones.length ){
+        url = url + '&point=';
+      }
+    }
     $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         type: 'GET',
@@ -330,6 +344,7 @@ getRoute = (latitud_a, longitud_a, latitud_b, longitud_b, callback) => {
             var points = [];
             var dats = data.paths[0].points.coordinates;
             for (var j = 0; j < dats.length; j++) {
+                ruta.push({latitud:dats[j][1], longitud:dats[j][0]});
                 points.push([dats[j][1], dats[j][0]]);
             }
             callback(points);

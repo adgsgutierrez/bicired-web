@@ -19,4 +19,4 @@ var ID_COMUNIDAD = 'cookie_comunidad';
 var NOMBRE_COMUNIDAD = 'cookie_nombre_comunidad';
 var URL_UPLOAD = URL_HOST + 'back_end/publicacion/subirfoto.php';
 var SERVER_CHAT = 'http://dxexperience.com:3000';
-var SERVER_DIRECTIONS = 'https://graphhopper.com/api/1/route?vehicle=bike&locale=es-419&key=LijBPDQGfu7Iiq80w3HzwB4RUDJbMbhs6BU0dEnn&ch.disable=true&points_encoded=false&elevation=false&instructions=true&point=lat1%2Clon1&point=lat2%2Clon2';
+var SERVER_DIRECTIONS = 'https://graphhopper.com/api/1/route?vehicle=bike&locale=es-419&key=LijBPDQGfu7Iiq80w3HzwB4RUDJbMbhs6BU0dEnn&ch.disable=true&points_encoded=false&elevation=false&instructions=true&point=';

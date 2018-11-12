@@ -18,11 +18,38 @@ class PublicacionLogic {
             $publicacion->pk_pbl_id = $dataResult->pk_pbl_id;
             $publicacion->pbl_fecha = Utils::conventirFecha($dataResult->pbl_fecha);
             $publicacion->number_fecha = $dataResult->pbl_fecha;
-            $publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
-            $publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
-            $publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
-            $publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
+            // $publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
+            // $publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
+            // $publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
+            // $publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
+            // $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
+            $sql_1 = "SELECT * FROM TBL_RUTA_PUBLICACION WHERE id_publicacion = '".$dataResult->pk_pbl_id."'";
+            $ruta = array();
+            $result_1 = ConexionDB::consultar($sql_1);
+            while ($dataResult_1 = $result_1->fetch_object()) {
+              array_push($ruta , array(
+                "latitud" => $dataResult_1->ruta_latitud_origen,
+                "longitud" => $dataResult_1->ruta_longitud_origen
+              ));
+            }
+
+            if(sizeof($ruta) == 0){
+              array_push($ruta , array(
+                "latitud" => $dataResult->pbl_ltd_origen,
+                "longitud" => $dataResult->pbl_ltg_origen
+              ));
+              array_push($ruta , array(
+                "latitud" => $dataResult->pbl_ltd_destino,
+                "longitud" => $dataResult->pbl_ltg_destino
+              ));
+              // $publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
+              // $publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
+              // $publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
+              // $publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
+              // $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
+            }
             $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
+            $publicacion->pbl_ruta = $ruta ;
             $publicacion->fk_pbl_usr_correo = $dataResult->usr_nombre;
             array_push($publicaciones, $publicacion);
         }
@@ -32,12 +59,13 @@ class PublicacionLogic {
         return $response;
     }
 
-    public static function registar_publicacion($fecha, $lt1, $ln1, $lt2, $ln2, $descripcion, $usuario) {
+    public static function registar_publicacion($fecha, $ubicacion, $descripcion, $usuario) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "insert into TBL_PUBLICACION(pbl_fecha,pbl_ltd_origen,pbl_ltg_origen,pbl_ltd_destino,pbl_ltg_destino,pbl_descripcion,pbl_estado,fk_pbl_usr_correo) "
-                . "values('" . $fecha . "'," . doubleval($lt1) . "," . doubleval($ln1) . "," . doubleval($lt2) . "," . doubleval($ln2) . ",'" . $descripcion . "','A','" . $usuario . "') ";
+        $sql = "insert into TBL_PUBLICACION(pbl_fecha,pbl_descripcion,pbl_estado,fk_pbl_usr_correo) "
+                . "values('" . $fecha . "','" . $descripcion . "','A','" . $usuario . "') ";
+        //echo $sql;
         $result = ConexionDB::consultar($sql);
         $id = "";
         if ($result) {
@@ -46,7 +74,16 @@ class PublicacionLogic {
             while ($dataResult = $result_1->fetch_object()) {
                 $id = $dataResult->id;
             }
-            $response->setDatos($publicaciones);
+            $sql = "insert into TBL_RUTA_PUBLICACION(ruta_latitud_origen , ruta_longitud_origen , id_publicacion) values ";
+            for($j = 0 ; $j < sizeof($ubicacion); $j++){
+              $sql = $sql . "(".$ubicacion[$j]->latitud." , ".$ubicacion[$j]->longitud." , ".$id .")";
+              if(($j +1 ) < sizeof($ubicacion)){
+                $sql = $sql . ',';
+              }
+            }
+            //echo $sql;
+            $result = ConexionDB::consultar($sql);
+            //$response->setDatos($publicaciones);
         } else {
             $response->setCodigo(Constante::ERROR_GENERAL_CODE);
             $response->setMensaje(Constante::ERROR_GENERAL_SMS);
