@@ -27,30 +27,40 @@ var aceptarEvento = function (id_publicacion) {
     })
 }
 
-var consultar_notificaciones = function () {
+function consultar_notificaciones() {
     $("#badge-icon").hide();
     setInterval(function () {
         var parametros = {
             "listar": "notificacion",
             "correo": correo
         };
+        $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
         $.ajax({
             data: parametros,
             type: 'GET',
             url: URL_USUARIO,
             success: function (data) {
                 var object = JSON.parse(data);
+                $("#menu-notificacion").html("");
                 if (object.datos.length > 0) {
                     //Colocar el badge
                     $("#badge-icon").html(object.datos.length);
                     $("#badge-icon").show();
                     //consultar_notificaciones
-                    var html = "";
-                    object.datos.map(function (badge) {
-                        html = html + "<li onclick='aceptarEvento(" + badge.id + ")'>" + badge.user + " te ha invitado a un evento el dia " + badge.fecha + "<button type='button' class='btn btn-primary'>Ir</button></li><hr/>";
+                    $.unblockUI();
+                    $.each(object.datos, function (i, o) {
+                        var html = "<div class='row'><div class='col-sm-12'>" + o["mensaje"] + "</div></div><div class='row' style='margin-top: 15px;'><div class='col-sm-6' style='text-align:center;'><button class='btn btn-primary' id='aceptar_" + o["id"] + "'>Aceptar</button></div><div class='col-sm-6' style='text-align:center;'><button class='btn btn-default' id='rechazar_" + o["id"] + "'>Rechazar</button></div></div><hr/>";
+                        $("#menu-notificacion").append(html);
+                        $("#aceptar_" + o["id"] + "").on('click', function () {
+                            actualizarNotificacion(o["id"], o["dato"], 'A', o["envia"]);
+                        });
+                        $("#rechazar_" + o["id"] + "").on('click', function () {
+                            actualizarNotificacion(o["id"], "", 'R', "");
+                        });
                     });
-                    $("#menu-notificacion").html(html);
                 } else {
+                    $.unblockUI();
+                    $("#menu-notificacion").append("No se encontraron notificaciones");
                     $("#badge-icon").hide();
                 }
 
@@ -59,7 +69,7 @@ var consultar_notificaciones = function () {
                 swal("Tenemos inconvenientes", "Tus notificaciones deberán esperar un poco", "error");
             }
         })
-    }, 3000);
+    }, 4000);
 }
 
 
@@ -70,6 +80,7 @@ $(document).ready(function () {
     $("#unloaded").hide();
     correo = sessionStorage.getItem(USUARIO_SESSION);
     mostrar_comunidades();
+    consultar_notificaciones();
     $("#buscar_perfil_filtro").on('click', function () {
         if ($("#edadinicio").val() === "" && $("#edadfin").val() === "" && $("#generoacb option:selected").val() === "0") {
             swal({
@@ -252,7 +263,7 @@ $(document).ready(function () {
                                 lng_d: event.pbl_ltg_destino,
                                 ltd_d: event.pbl_ltd_destino,
                                 fecha: event.pbl_fecha,
-                                ruta : event.pbl_ruta,
+                                ruta: event.pbl_ruta,
                                 number_fecha: event.number_fecha,
                                 descripcion: event.pbl_descripcion,
                                 usuario: capitalizeFirstLetter(event.fk_pbl_usr_correo)
@@ -352,7 +363,7 @@ var map_recursive = (index) => {
 
 //Se actualiza para multiples puntos de coordenadas
     // for(){
-      //waypts.push({location: {lat: mapas[index].ruta[i].latitud, lng: mapas[index].ruta[i].longitud}, stopover: true});
+    //waypts.push({location: {lat: mapas[index].ruta[i].latitud, lng: mapas[index].ruta[i].longitud}, stopover: true});
     //   waypts.push({location: {lat: , }, stopover: true});
     // }
     var coordenada = {
@@ -372,32 +383,32 @@ var map_recursive = (index) => {
         fullscreenControl: false
     });
     poly = new google.maps.Polyline({
-      strokeColor: '#4CAF50',
-      strokeOpacity: 1.0,
-      strokeWeight: 3
+        strokeColor: '#4CAF50',
+        strokeOpacity: 1.0,
+        strokeWeight: 3
     });
     poly.setMap(map);
     var path = [];
 
-    for(var i = 0 ; i < mapas[index].ruta.length ; i++){
-      path.push({lat: parseFloat(mapas[index].ruta[i].latitud), lng: parseFloat(mapas[index].ruta[i].longitud)});
+    for (var i = 0; i < mapas[index].ruta.length; i++) {
+        path.push({lat: parseFloat(mapas[index].ruta[i].latitud), lng: parseFloat(mapas[index].ruta[i].longitud)});
     }
 
     var polyline = new google.maps.Polyline({
-    	path: path,
-    	map: map
+        path: path,
+        map: map
     });
     index = index + 1;
-            if (mapas.length > index) {
-                map_recursive(index);
-            }else{
-              $("#loaded").hide();
-              $("#unloaded").show();
-            }
+    if (mapas.length > index) {
+        map_recursive(index);
+    } else {
+        $("#loaded").hide();
+        $("#unloaded").show();
+    }
 
 
-        // Because path is an MVCArray, we can simply append a new coordinate
-        // and it will automatically appear.
+    // Because path is an MVCArray, we can simply append a new coordinate
+    // and it will automatically appear.
 
     // directionsDisplay.setMap(map);
     // directionsService.route({
@@ -522,11 +533,23 @@ function mostrar_comunidades() {
                             data = JSON.parse(data);
                             $.unblockUI();
                             if (data.datos["0"]) {
-                                var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + o["id_comunidad"] + ")'>Salirme</button>";
-                                $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
+                                if (data.datos["0"]["estado"] == "A") {
+                                    var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;'>Salirme</button>";
+                                    $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
+                                    $("#botonaccion_" + o["id_comunidad"] + "").on('click', function () {
+                                        eliminarNotificacion(o["id_comunidad"], correo, "" + o["usuario_crea_comunidad"] + "");
+                                    });
+                                } else if (data.datos["0"]["estado"] == "P") {
+                                    var contenedor2 = "<button type='button' class='btn btn-default' style='width: 100px;' disabled>Pendiente</button>";
+                                    $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
+                                }
+
                             } else {
-                                var contenedor2 = "<button type='button' class='btn btn-primary' style='width: 100px;' onclick='insertar_integrante(" + o["id_comunidad"] + ")'>Unirme</button>";
+                                var contenedor2 = "<button type='button' class='btn btn-primary' style='width: 100px;'>Unirme</button>";
                                 $("#botonaccion_" + o["id_comunidad"] + "").append(contenedor2);
+                                $("#botonaccion_" + o["id_comunidad"] + "").on('click', function () {
+                                    crear_notificacion_comunidades(o["id_comunidad"], "" + o["usuario_crea_comunidad"] + "", "" + o["nombre_comunidad"] + "");
+                                });
                             }
                         }
                     });
@@ -560,26 +583,64 @@ function mostrar_comunidades() {
         }
     });
 }
-function actualizar_integrante(id_comunidad) {
-    accion_integrante(id_comunidad, "actualizar_integrante");
-    $("#botonaccion_" + id_comunidad + "").html("");
-    $("#botonaccion_" + id_comunidad + "").append("<button type='button' class='btn btn-primary' style='width: 100px;' onclick='insertar_integrante(" + id_comunidad + ")'>Unirme</button>");
-}
-function insertar_integrante(id_comunidad) {
-    accion_integrante(id_comunidad, "insertar_integrante");
-    $("#botonaccion_" + id_comunidad + "").html("");
-    $("#botonaccion_" + id_comunidad + "").append("<button type='button' class='btn btn-default' style='width: 100px;' onclick='actualizar_integrante(" + id_comunidad + ")'>Salirme</button>");
 
-}
-
-function accion_integrante(id_comunidad, funcion) {
-    var parametros = {"id": id_comunidad, "correo": correo, "funcion": funcion};
+function accion_integrante(id_comunidad, correo_ac, funcion) {
+    var parametros = {"id": id_comunidad, "correo": correo_ac, "funcion": funcion};
     $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
         data: parametros,
         type: 'PUT',
         url: URL_AMIGO,
         success: function (data) {
+            $.unblockUI();
+        }
+    });
+}
+function crear_notificacion_comunidades(id_comunidad, correo_creador, nombre_comunidad) {
+    $("#botonaccion_" + id_comunidad + "").html("");
+    $("#botonaccion_" + id_comunidad + "").append("<button type='button' class='btn btn-default' style='width: 100px;' disabled>Pendiente</button>");
+    var mensaje = correo + ' quiere unirse a la comunidad ' + nombre_comunidad;
+    var parametros = {mensaje: mensaje, perfil_envia: correo, perfil_recibe: correo_creador, tipo_notificacion: "comunidad", dato: id_comunidad, "funcion": "notificacion_comunidad"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
+    $.ajax({
+        data: parametros,
+        type: 'PUT',
+        url: URL_AMIGO,
+        success: function (data) {
+            $.unblockUI();
+        }
+    });
+}
+function actualizarNotificacion(id, id_comunidad, constante, correo_ac) {
+    if (constante == "A") {
+        accion_integrante(id_comunidad, correo_ac, "insertar_integrante");
+    }
+    var parametro = {id: id, constante: constante, funcion: "actualizar_notificacion"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
+    $.ajax({
+        data: parametro,
+        url: URL_AMIGO,
+        type: 'PUT',
+        success: function (data) {
+            consultar_notificaciones();
+            $.unblockUI();
+        }
+    });
+
+}
+
+function eliminarNotificacion(id, usuario, usuario_co) {
+    accion_integrante(id, usuario, "actualizar_integrante");
+    $("#botonaccion_" + id + "").html("");
+    $("#botonaccion_" + id + "").append("<button type='button' class='btn btn-primary' style='width: 100px;'>Unirme</button>");
+    var parametro = {id: id, correo: usuario, usuario_creador: usuario_co, funcion: "eliminar_notificacion"};
+    $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
+    $.ajax({
+        data: parametro,
+        url: URL_AMIGO,
+        type: 'PUT',
+        success: function (data) {
+            consultar_notificaciones();
             $.unblockUI();
         }
     });

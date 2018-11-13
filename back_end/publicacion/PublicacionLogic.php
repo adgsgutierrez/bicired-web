@@ -23,33 +23,33 @@ class PublicacionLogic {
             // $publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
             // $publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
             // $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
-            $sql_1 = "SELECT * FROM TBL_RUTA_PUBLICACION WHERE id_publicacion = '".$dataResult->pk_pbl_id."'";
+            $sql_1 = "SELECT * FROM TBL_RUTA_PUBLICACION WHERE id_publicacion = '" . $dataResult->pk_pbl_id . "'";
             $ruta = array();
             $result_1 = ConexionDB::consultar($sql_1);
             while ($dataResult_1 = $result_1->fetch_object()) {
-              array_push($ruta , array(
-                "latitud" => $dataResult_1->ruta_latitud_origen,
-                "longitud" => $dataResult_1->ruta_longitud_origen
-              ));
+                array_push($ruta, array(
+                    "latitud" => $dataResult_1->ruta_latitud_origen,
+                    "longitud" => $dataResult_1->ruta_longitud_origen
+                ));
             }
 
-            if(sizeof($ruta) == 0){
-              array_push($ruta , array(
-                "latitud" => $dataResult->pbl_ltd_origen,
-                "longitud" => $dataResult->pbl_ltg_origen
-              ));
-              array_push($ruta , array(
-                "latitud" => $dataResult->pbl_ltd_destino,
-                "longitud" => $dataResult->pbl_ltg_destino
-              ));
-              // $publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
-              // $publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
-              // $publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
-              // $publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
-              // $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
+            if (sizeof($ruta) == 0) {
+                array_push($ruta, array(
+                    "latitud" => $dataResult->pbl_ltd_origen,
+                    "longitud" => $dataResult->pbl_ltg_origen
+                ));
+                array_push($ruta, array(
+                    "latitud" => $dataResult->pbl_ltd_destino,
+                    "longitud" => $dataResult->pbl_ltg_destino
+                ));
+                // $publicacion->pbl_ltd_origen = $dataResult->pbl_ltd_origen;
+                // $publicacion->pbl_ltg_origen = $dataResult->pbl_ltg_origen;
+                // $publicacion->pbl_ltd_destino = $dataResult->pbl_ltd_destino;
+                // $publicacion->pbl_ltg_destino = $dataResult->pbl_ltg_destino;
+                // $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
             }
             $publicacion->pbl_descripcion = $dataResult->pbl_descripcion;
-            $publicacion->pbl_ruta = $ruta ;
+            $publicacion->pbl_ruta = $ruta;
             $publicacion->fk_pbl_usr_correo = $dataResult->usr_nombre;
             array_push($publicaciones, $publicacion);
         }
@@ -67,23 +67,30 @@ class PublicacionLogic {
                 . "values('" . $fecha . "','" . $descripcion . "','A','" . $usuario . "') ";
         //echo $sql;
         $result = ConexionDB::consultar($sql);
-        $id = "";
         if ($result) {
-            $sql_2 = "SELECT MAX(pk_pbl_id) as id FROM TBL_PUBLICACION;";
+            $sql_2 = "select p.pk_pbl_id as id,u.usr_nombre as nombre,p.pbl_fecha as fecha from TBL_PUBLICACION p inner join TBL_USUARIO u on u.pk_usr_correo=p.fk_pbl_usr_correo order by p.pk_pbl_id desc limit 1;";
             $result_1 = ConexionDB::consultar($sql_2);
+            $publicaciones = array();
             while ($dataResult = $result_1->fetch_object()) {
-                $id = $dataResult->id;
+                $publicacion = new stdClass();
+                $publicacion->id = $dataResult->id;
+                $publicacion->nombre = $dataResult->nombre;
+                $publicacion->fecha = $dataResult->fecha;
+                array_push($publicaciones, $publicacion);
             }
-            $sql = "insert into TBL_RUTA_PUBLICACION(ruta_latitud_origen , ruta_longitud_origen , id_publicacion) values ";
-            for($j = 0 ; $j < sizeof($ubicacion); $j++){
-              $sql = $sql . "(".$ubicacion[$j]->latitud." , ".$ubicacion[$j]->longitud." , ".$id .")";
-              if(($j +1 ) < sizeof($ubicacion)){
-                $sql = $sql . ',';
-              }
+            $sql_3 = "insert into TBL_RUTA_PUBLICACION(ruta_latitud_origen , ruta_longitud_origen , id_publicacion) values ";
+            for ($j = 0; $j < sizeof($ubicacion); $j++) {
+                $sql_3 = $sql_3 . "(" . $ubicacion[$j]->latitud . " , " . $ubicacion[$j]->longitud . " , " . $publicacion->id . ")";
+                if (($j + 1 ) < sizeof($ubicacion)) {
+                    $sql_3 = $sql_3 . ',';
+                }
             }
             //echo $sql;
-            $result = ConexionDB::consultar($sql);
+            $result_2 = ConexionDB::consultar($sql_3);
             //$response->setDatos($publicaciones);
+            if ($result_2) {
+                $response->setDatos($publicaciones);
+            }
         } else {
             $response->setCodigo(Constante::ERROR_GENERAL_CODE);
             $response->setMensaje(Constante::ERROR_GENERAL_SMS);
@@ -91,9 +98,9 @@ class PublicacionLogic {
         return $response;
     }
 
-    public static function invitar_amigos($invitados, $usuario, $idpublicacion) {
+    public static function notificar_amigos($invitados, $usuario, $idpublicacion, $mensaje) {
         for ($index = 0; $index < count($invitados); $index++) {
-            $sql = "INSERT INTO TBL_INVITAR_AMIGOS(fk_pbl_id,usuario_invita,usuario_invitado,invitacion_estado) values (" . intval($idpublicacion) . ",'" . $usuario . "','" . $invitados[$index] . "','P')";
+            $sql = "INSERT INTO TBL_NOTIFICACIONES (mensaje,env_notificacion,rec_notificacion,estado_notificacion,tipo_notificacion,id_dato_notificacion) VALUES ('" . $mensaje . "','" . $usuario . "','" . $invitados[$index] . "','P','publicacion'," . intval($idpublicacion) . ")";
             $result = ConexionDB::consultar($sql);
         }
         $response = new RespuestaDTO();

@@ -236,23 +236,19 @@ class UsuarioLogic {
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
 
-        $sql = "SELECT
-            tia.id_invitacion_amigo as id,
-            tu.usr_nombre as invita ,
-            tp.pbl_descripcion as descripcion,
-            tp.pbl_fecha as fecha
-            FROM TBL_PUBLICACION tp INNER JOIN TBL_INVITAR_AMIGOS tia on tia.fk_pbl_id = tp.pk_pbl_id
-            INNER JOIN TBL_USUARIO tu on tu.pk_usr_correo = tia.usuario_invita
-            WHERE tp.pbl_fecha > NOW() AND tia.usuario_invitado = '" . $usuario . "' AND tia.invitacion_estado = 'P'";
+        $sql = "SELECT * FROM TBL_NOTIFICACIONES where rec_notificacion = '" . $usuario . "' and estado_notificacion='P'";
 
         $result = ConexionDB::consultar($sql);
         $lista_notificacion = array();
         while ($dataResult = $result->fetch_object()) {
             $notificacion = new stdClass();
-            $notificacion->id = $dataResult->id;
-            $notificacion->user = $dataResult->invita;
-            $notificacion->fecha = Utils::conventirFecha($dataResult->fecha);
-            $notificacion->descripcion = $dataResult->descripcion;
+            $notificacion->id = $dataResult->id_notificacion;
+            $notificacion->mensaje = $dataResult->mensaje;
+            $notificacion->envia = $dataResult->env_notificacion;
+            $notificacion->recibe = $dataResult->rec_notificacion;
+            $notificacion->estado = $dataResult->estado_notificacion;
+            $notificacion->tipo = $dataResult->tipo_notificacion;
+            $notificacion->dato = $dataResult->id_dato_notificacion;
             array_push($lista_notificacion, $notificacion);
         }
         $response->setDatos($lista_notificacion);

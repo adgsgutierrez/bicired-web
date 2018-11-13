@@ -27,10 +27,10 @@ class IndexAmigosLogic {
                         $response = AmigoLogic::verificar($data->cologeado, $data->coamigo);
                     } else if (isset($data->funcion) && $data->funcion == "lista_comunidades") {
 
-                        $response = AmigoLogic::lista_comunidades();
+                        $response = AmigoLogic::lista_comunidades($data->correo);
                     } else if (isset($data->funcion) && $data->funcion == "lista_integrante_comunidad") {
 
-                        $response = AmigoLogic::lista_integrante_comunidad($data->id_comunidad, $data->integrante);
+                        $response = AmigoLogic::lista_notificaciones($data->id_comunidad, $data->integrante);
                     } else if (isset($data->funcion) && $data->funcion == "mostrar_publicaciones") {
                         $response = AmigoLogic::mostrar_publicaciones($data->id);
                     } else if (isset($data->funcion) && $data->funcion == "verificar_integrante") {
@@ -65,6 +65,12 @@ class IndexAmigosLogic {
                     } else if (isset($data->funcion) && $data->funcion == "comentarios") {
 
                         $response = AmigoLogic::comentarios($data->id_mensaje, $data->comentario, $data->correo);
+                    } else if (isset($data->funcion) && $data->funcion == "notificacion_comunidad") {
+                        $response = AmigoLogic::notificacion_comunidad($data->mensaje, $data->perfil_envia, $data->perfil_recibe, $data->tipo_notificacion, $data->dato);
+                    } else if (isset($data->funcion) && $data->funcion == "actualizar_notificacion") {
+                        $response = AmigoLogic::actualizar_notificacion($data->id, $data->constante);
+                    } else if (isset($data->funcion) && $data->funcion == "eliminar_notificacion") {
+                        $response = AmigoLogic::eliminar_notificacion($data->id, $data->correo, $data->usuario_creador);
                     } else if (isset($data->coamigo)) {
                         $response = AmigoLogic::bloquear_amigo($data->cologeado, $data->coamigo);
                     } else {

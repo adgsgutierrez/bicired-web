@@ -91,11 +91,11 @@ class AmigoLogic {
         return $response;
     }
 
-    public static function lista_comunidades() {
+    public static function lista_comunidades($correo) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select * from TBL_CREAR_COMUNIDAD";
+        $sql = "select * from TBL_CREAR_COMUNIDAD where id_comunidad NOT in (select id_dato_notificacion from TBL_NOTIFICACIONES  where tipo_notificacion = 'comunidad' and env_notificacion = '" . $correo . "' and estado_notificacion = 'R'); ";
         $arreglo_comunidades = array();
         $result = ConexionDB::consultar($sql);
         while ($dataResult = $result->fetch_object()) {
@@ -109,18 +109,19 @@ class AmigoLogic {
         return $response;
     }
 
-    public static function lista_integrante_comunidad($id, $correo) {
+    public static function lista_notificaciones($id, $correo) {
         $response = new RespuestaDTO();
         $response->setCodigo(Constante::EXITOSO_CODE);
         $response->setMensaje(Constante::EXITOSO_MS);
-        $sql = "select * from TBL_INTEGRANTE_COMUNIDAD where fk_id_comunidad=" . $id . " and integrante='" . $correo . "' and estado_integrante='A'";
+        $sql = "select * from TBL_NOTIFICACIONES where id_dato_notificacion=" . $id . " and env_notificacion='" . $correo . "' and estado_notificacion <> 'R'";
         $arreglo_comunidades = array();
         $result = ConexionDB::consultar($sql);
         while ($dataResult = $result->fetch_object()) {
-            $usuario = new stdClass();
-            $usuario->id_comunidad = $dataResult->fk_id_comunidad;
-            $usuario->integrante = $dataResult->integrante;
-            array_push($arreglo_comunidades, $usuario);
+            $notificacion = new stdClass();
+            $notificacion->id_comunidad = $dataResult->id_notificacion;
+            $notificacion->integrante = $dataResult->env_notificacion;
+            $notificacion->estado = $dataResult->estado_notificacion;
+            array_push($arreglo_comunidades, $notificacion);
         }
         $response->setDatos($arreglo_comunidades);
         return $response;
@@ -253,6 +254,46 @@ inner join TBL_USUARIO u on u.pk_usr_correo=cm.integrante where fk_id_comunidad=
                 array_push($arreglo_comunidades, $comentarios);
             }
             $response->setDatos($arreglo_comunidades);
+        }
+        return $response;
+    }
+
+    public static function notificacion_comunidad($mensaje, $perfil_envia, $perfil_recibe, $tipo_notificacion, $dato) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "INSERT INTO TBL_NOTIFICACIONES (mensaje,env_notificacion,rec_notificacion,estado_notificacion,tipo_notificacion,id_dato_notificacion) VALUES ('" . $mensaje . "', '" . $perfil_envia . "', '" . $perfil_recibe . "','P','" . $tipo_notificacion . "'," . $dato . ")";
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        }
+        return $response;
+    }
+
+    public static function actualizar_notificacion($id, $constante) {
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "update TBL_NOTIFICACIONES set estado_notificacion = '" . $constante . "' where id_notificacion = " . $id;
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
+        }
+        return $response;
+    }
+
+    public static function eliminar_notificacion($id, $correo, $correo2) {
+
+        $response = new RespuestaDTO();
+        $response->setCodigo(Constante::EXITOSO_CODE);
+        $response->setMensaje(Constante::EXITOSO_MS);
+        $sql = "DELETE FROM TBL_NOTIFICACIONES where id_dato_notificacion=" . $id . " and env_notificacion='" . $correo . "' and rec_notificacion='" . $correo2 . "' and tipo_notificacion = 'comunidad';";
+        $result = ConexionDB::consultar($sql);
+        if (!$result) {
+            $response->setCodigo(Constante::ERROR_REGISTRO_CD);
+            $response->setMensaje(Constante::ERROR_REGISTRO_MS);
         }
         return $response;
     }

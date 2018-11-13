@@ -165,50 +165,50 @@ var renderMapa = function (latitud, longitud) {
 
     function onMapClick(e) {
         console.log("click to map ", e);
-        ubi.push({latitud : e.latlng.lat, longitud : e.latlng.lng});
-      //  if (ubi.length > 1) {
-            // if (contador == 0) {
-            //     lat1 = e.latlng.lat;
-            //     lng1 = e.latlng.lng;
-            // } else {
-            //     lat2 = e.latlng.lat;
-            //     lng2 = e.latlng.lng;
-            // }
-            var targetPoint = L.latLng(e.latlng.lat, e.latlng.lng);
-            console.log("Punto que va a colocar", targetPoint);
-            ind = 1;
-            if(contador < 1){
-              ind = contador;
-            }
-            var personalize = L.icon({
-                iconUrl: mensajesPuntosMapa[ind].market,
-                iconSize: [30, 30], // size of the icon
-                iconAnchor: [mensajesPuntosMapa[ind].point, 30], // point of the icon which will correspond to marker's location
-                popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
-            });
-            L.marker(targetPoint, {icon: personalize, draggable: false}).addTo(map);
-            contador = contador + 1;
+        ubi.push({latitud: e.latlng.lat, longitud: e.latlng.lng});
+        //  if (ubi.length > 1) {
+        // if (contador == 0) {
+        //     lat1 = e.latlng.lat;
+        //     lng1 = e.latlng.lng;
+        // } else {
+        //     lat2 = e.latlng.lat;
+        //     lng2 = e.latlng.lng;
+        // }
+        var targetPoint = L.latLng(e.latlng.lat, e.latlng.lng);
+        console.log("Punto que va a colocar", targetPoint);
+        ind = 1;
+        if (contador < 1) {
+            ind = contador;
+        }
+        var personalize = L.icon({
+            iconUrl: mensajesPuntosMapa[ind].market,
+            iconSize: [30, 30], // size of the icon
+            iconAnchor: [mensajesPuntosMapa[ind].point, 30], // point of the icon which will correspond to marker's location
+            popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
+        });
+        L.marker(targetPoint, {icon: personalize, draggable: false}).addTo(map);
+        contador = contador + 1;
 
-            if (contador > 1) {
-                var x = document.getElementById("snackbar");
-                x.className = "show";
-                console.log(ubi);
-                getRoute(
-                        // lat1,
-                        // lng1,
-                        // lat2,
-                        // lng2,
-                        ubi,
-                        function (latlngs) {
+        if (contador > 1) {
+            var x = document.getElementById("snackbar");
+            x.className = "show";
+            console.log(ubi);
+            getRoute(
+                    // lat1,
+                    // lng1,
+                    // lat2,
+                    // lng2,
+                    ubi,
+                    function (latlngs) {
                         //  L.clearLayers();
-                            x.className = x.className.replace("show", "");
-                            var polyline = L.polyline(latlngs, {color: '#4CAF50', weight: 4, opacity: .8}).addTo(map);
-                            // zoom the map to the polyline
-                            map.fitBounds(polyline.getBounds());
-                            $("#instrucciones").show();
-                        }
-                );
-            }
+                        x.className = x.className.replace("show", "");
+                        var polyline = L.polyline(latlngs, {color: '#4CAF50', weight: 4, opacity: .8}).addTo(map);
+                        // zoom the map to the polyline
+                        map.fitBounds(polyline.getBounds());
+                        $("#instrucciones").show();
+                    }
+            );
+        }
         // } else {
         //     cancelar();
         // }
@@ -240,6 +240,8 @@ var renderMapa = function (latitud, longitud) {
             } else {
                 $("#amigos").append('<option value="" disabled> No tienes personas para invitar</option>');
             }
+            $("#amigos").selectpicker({nonSelectedText: 'Seleccione', buttonWidth: '200px', enableCaseInsensitiveFiltering: true,
+                buttonClass: 'btn btn-primary', maxHeight: 300});
         }, error: function (error) {
             $.unblockUI();
         }
@@ -258,16 +260,15 @@ var guardar = function () {
         //lat1, lng1, lat2, lng2
         var parametros = {
             fecha: $("#datetimepicker10").val(),
-            ubicacion : ruta,
+            ubicacion: ruta,
             descripcion: "Queremos realizar esta bella Ruta",
             usuario: email,
-            funcion : "guardar_publicacion"
+            funcion: "guardar_publicacion"
         };
         console.log(parametros);
         $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
         $.ajax({
             data: parametros,
-            //contentType: "application/json",
             url: URL_PUBLICACION,
             type: 'POST',
             dataType: "json",
@@ -279,9 +280,23 @@ var guardar = function () {
                     type: "success"
                 },
                         function () {
-                            if ($(".selectpicker").val()) {
+                            var datos_resultado = data["datos"]["0"];
+
+                            var meses = [
+                                "Enero", "Febrero", "Marzo",
+                                "Abril", "Mayo", "Junio", "Julio",
+                                "Agosto", "Septiembre", "Octubre",
+                                "Noviembre", "Diciembre"
+                            ];
+                            var fecha = datos_resultado["fecha"].split(' ')[0];
+                            var fecha2 = fecha.split('-');
+                            var nueva_fecha = "el dia " + fecha2[2] + " de " + meses[fecha2[1] - 1] + " del " + fecha2[0];
+                            var hora = datos_resultado["fecha"].split(' ')[1];
+                            var mensaje = datos_resultado["nombre"] + " te ha invitado a un evento " + nueva_fecha + " a la hora " + hora;
+                            if ($("#amigos").val()) {
                                 var parametro = {usuario: email,
-                                    invitados: $(".selectpicker").val(), idpublicacion: data};
+                                    invitados: $("#amigos").val(), idpublicacion: data.datos["id"], mensaje: mensaje};
+
                                 $.ajax({
                                     data: parametro,
                                     type: 'POST',
@@ -321,11 +336,11 @@ function cancelar() {
 getRoute = (ubicaciones, callback) => {
     var url = SERVER_DIRECTIONS;
     //lat1%2Clon1&point=lat2%2Clon2
-    for(var j = 0 ; j < ubicaciones.length ; j++){
-      url = url + ubicaciones[j].latitud + '%2C' +ubicaciones[j].longitud;
-      if( (j + 1) < ubicaciones.length ){
-        url = url + '&point=';
-      }
+    for (var j = 0; j < ubicaciones.length; j++) {
+        url = url + ubicaciones[j].latitud + '%2C' + ubicaciones[j].longitud;
+        if ((j + 1) < ubicaciones.length) {
+            url = url + '&point=';
+        }
     }
     $.blockUI({message: '<h2"><img src="img/busy.gif" /> Procesando...</h2>'});
     $.ajax({
@@ -344,7 +359,7 @@ getRoute = (ubicaciones, callback) => {
             var points = [];
             var dats = data.paths[0].points.coordinates;
             for (var j = 0; j < dats.length; j++) {
-                ruta.push({latitud:dats[j][1], longitud:dats[j][0]});
+                ruta.push({latitud: dats[j][1], longitud: dats[j][0]});
                 points.push([dats[j][1], dats[j][0]]);
             }
             callback(points);

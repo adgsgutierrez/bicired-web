@@ -30,11 +30,11 @@ class IndexPublicacionLogic {
                 }
                 break;
             case 'POST':
-            //print_r($data);
-            //echo $data->funcion;
+                //print_r($data);
+                //echo $data->funcion;
                 if ($data) {
                     if (isset($data->invitados)) {
-                        $response = PublicacionLogic::invitar_amigos($data->invitados, $data->usuario, $data->idpublicacion);
+                        $response = PublicacionLogic::notificar_amigos($data->invitados, $data->usuario, $data->idpublicacion, $data->mensaje);
                     } else if ($data->funcion == "guardar_publicacion") {
                         $response = PublicacionLogic::registar_publicacion($data->fecha, $data->ubicacion, $data->descripcion, $data->usuario);
                     } else if ($data->funcion == "ver_megusta") {

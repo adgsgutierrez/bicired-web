@@ -96,7 +96,7 @@ $(document).ready(function () {
         }
 
     });
-    $("#cerrarcrearevento").on("click", function () {
+    $("#cerrarpaginaprincipal").on("click", function () {
         sessionStorage.clear();
         location.href = "index.html";
     });
